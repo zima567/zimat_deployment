@@ -1,0 +1,13 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
+/*Test purposes*/
+.event-unit{
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    margin: 4px;
+    border: 1px solid green;
+}

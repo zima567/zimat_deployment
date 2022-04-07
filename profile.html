@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="media/icons/zimaware-logo-temp.png" type="image/icon type">
+    <link rel="stylesheet" href="css/profile.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="js/profile.js"></script>
+</head>
+<body>
+
+    <!--user avatar, name, address, bio-->
+    <div class="container_profile_head">
+
+        <div class="user_main_avatar" id="user_main_avatar">
+            <img src="media/icons/land2.jpg" id="user_main_avatar_img"/>
+        </div>
+
+        <div class="block_profile_infos">
+            <div class="user_name_address">
+                <div>
+                    <span>Daniel Moise Montezima</span>
+                    <span><img src="media/icons//verify.png"/></span>
+                </div>
+                <span>Oryol, Russia</span>
+            </div>
+            
+            <div class="user_bio" id="user_bio">
+                <span id="user_bio_text"><!--Display biography of user--></span>
+                <span id="see-more">see more</span>
+                <span id="see-less">see less</span>
+            </div>
+
+            <div class="subscriber_sec">
+                <button class="btn" id="btn-subscribe">Subscribe</button>
+                <span id="total_subscribers">10k</span>
+            </div>
+        </div>
+
+    </div>
+
+  
+    <!--Modal full page displayed-->
+    <div class="fullPageDisplay" id="fullPageDisplay">
+        <div class="close-full-screen" id="close-full-screen">close</div>
+        <img src="media/icons/land2.jpg" width="100%" id="fullPageDisplay-img"/>
+    </div>
+
+</body>
+</html>

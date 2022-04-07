@@ -1,0 +1,83 @@
+body{
+    padding: 0;
+    margin: 0;
+}
+
+.event-creation-wrapper{
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    margin-left: 2.5%;
+}
+
+.preview{
+    border: 1px solid blue;
+    min-height: 100px;
+    display: flex;
+    flex: row;
+    flex-wrap: wrap;
+}
+
+.images{
+    width: 35%;
+    margin: 8px;
+}
+
+.event-categories{
+    border: 1px solid green;
+    min-height: 50px;
+    padding: 8px;
+}
+
+.categ-unit{
+    border: 1px solid burlywood;
+    padding: 4px;
+    margin: 4px;
+    border-radius: 5px;
+}
+
+.x-delete{
+    font-size: 11px;
+    padding-left: 8px;
+}
+
+.loc-date-time{
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket-creation{
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket-price{
+    display: flex;
+    flex-direction: row;
+}
+
+label,
+textarea {
+    font-size: .8rem;
+    letter-spacing: 1px;
+}
+textarea {
+    padding: 10px;
+    max-width: 100%;
+    line-height: 1.5;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 1px #999;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.radio-btn{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

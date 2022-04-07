@@ -1,0 +1,16 @@
+#ignore the php mailer files
+phpmailer/
+
+#ignore the media contents official documents and posters
+media/offDoc/
+media/posters/
+
+#ignore all .txt file
+*.txt
+
+#ignore test files
+/test.php
+js/test.js
+
+#ignore global variables file
+api_php/global_server_variables.php

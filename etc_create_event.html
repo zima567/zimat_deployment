@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create event</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="media/icons/zimaware-logo-temp.png" type="image/icon type">
+    <link rel="stylesheet" href="css/etc_create_event.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="js/etc_create_event.js"></script>
+</head>
+<body>
+        <h1>Create event</h1>
+        <div class="event-creation-wrapper">
+
+                <label for="for-event-title">What is the event title:</label>
+                <span><input type="text" placeholder="Enter the title of event" id="event-title"/></span>
+                <label for="for-posters">Upload one or more images:</label>
+                <div class="preview" id="preview"></div>
+                <input type="file" name='files[]' multiple id="event-pictures" accept="image/png, image/gif, image/jpeg" style="display: none;">
+                <div><button id="idBtnUploadImg">Choose event image(s)</button></div>
+    
+                <div>
+                <label for="description">Tell us more about your event:</label>
+                <textarea class="description"  rows="5" cols="33" id="id-description">
+                   
+                </textarea>
+                </div>
+    
+                <label for="for-location">Location & date:</label>
+                <div class="loc-date-time">
+                    <input type="text" placeholder="Location" id="id-location"/>
+                    <input type="datetime-local" value="2021-08-14T00:00" id="id-date-time"/>
+                </div>
+    
+                <label for="categories">Choose event categories:</label>
+                <select name="categList" id="idCategList">
+                    <option value="Education">Education</option>
+                    <option value="Sport">Sport</option>
+                    <option value="Loisirs">Loisirs</option>
+                    <option value="Politique">Politique</option>
+                </select>
+                <div class="event-categories" id="event-categ">
+                    
+                </div>
+    
+                <label for="tickets-creation">Create tickets for your event:</label>
+                <div class="ticket-creation">
+                    <input type="text" placeholder="number of tickets" id="id-nbr-ticket"/>
+                    <span class="ticket-price">
+                        <input type="text" placeholder="unit price" id="id-unit-price"/>
+                        <select name="currency" id="idCurrency">
+                            <option value="usd">USD</option>
+                            <option value="eu">EURO</option>
+                            <option value="rbles">RUBLES</option>
+                            <option value="gdes">GOURDES</option>
+                        </select>
+                    </span>
+                </div>
+    
+                <label for="payment-method">Payment method:</label>
+                <div>
+                    <span class="radio-btn">
+                        <input type="radio" id="off-line" value="OFFLINE" name="payment-method" checked>
+                        <label for="off-line">Offline payment</label>
+                    </span>
+                   
+                    <span class="radio-btn">
+                        <input type="radio" id="on-line" value="ONLINE" name="payment-method">
+                        <label for="online-payment">Online payment</label> 
+                    </span>     
+                </div>
+    
+                <div>
+                    <button class="btn-submit"  id="submit-event">Submit event</button>
+                </div>
+        </div>
+</body>
+</html>

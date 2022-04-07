@@ -1,0 +1,72 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
+.logo_brand{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.logo_icon{
+    margin: 8px;
+    margin-right: 16px;
+}
+
+.main_headline{
+    display: flex;
+    flex-direction: column;
+    margin: 8px;
+}
+
+.input_box{
+    display: flex;
+    flex-direction: column;
+    margin: 8px;
+}
+
+.input_box input{
+    width: 80%;
+    height: 30px;
+    border-radius: 15px;
+    border-width: 0.1px;
+    padding: 4px;
+    padding-left: 8px;
+}
+
+.input_unit{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.errorText{
+    color: red;
+    font-size: 11px;
+}
+
+.input_box button {
+    width: 40%;
+    height: 30px;
+    border-radius: 15px;
+    border-width: 0.1px;
+    padding:4px;
+}
+
+textarea{
+     resize: none;
+}
+
+.utils_links{
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    margin-top: 25px;
+}
+
+.ownership{
+    position: absolute;
+    bottom: 16px;
+    padding-left: 8px;
+}

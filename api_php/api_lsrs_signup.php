@@ -34,6 +34,9 @@ try{
     $sql_random_code = "INSERT INTO `verification_code` (`idUserFK`, `code`, `type`) VALUES(?,?,?)";
     $stmt4 = $connection->prepare($sql_random_code);
 
+    $sql_insert_verified = "INSERT INTO `user_verified` (`idUserFK`) VALUES(?)";
+    $stmt5 = $connection->prepare($sql_insert_verified);
+
     $stmt1->execute([$username, $email]);
     if(!$stmt1->rowCount()>0){
 
@@ -45,6 +48,8 @@ try{
         $idInsertedUser = $connection->lastInsertId();
         //Initiate user_profile table
         $stmt3->execute([$idInsertedUser]);
+        //Initiate user_verified
+        $stmt5->execute([$idInsertedUser]);
         $connection->commit();
 
         $resultSignUp['sign_up_success']= 1;

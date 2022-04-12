@@ -7,7 +7,48 @@ body{
 .event-unit{
     display: flex;
     flex-direction: column;
-    padding: 8px;
     margin: 4px;
     border: 1px solid green;
+    border-radius: 10px;
+}
+
+.unit-head{
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    border: 1px solid red;
+}
+
+.unit-head img {
+    border: 1px solid yellow;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    padding: 4px;
+}
+
+.unit-head .user_infos{
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+}
+
+.poster-display{
+    border: 1px solid purple;
+    min-height: 250px;
+}
+
+.poster-display img{
+    width: 100%;
+}
+.box-details{
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+}
+
+.btn-unit-actions{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
 }

@@ -55,7 +55,9 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
                     if(in_array($fileType, $allowTypes)){ 
                         if($_FILES["posters"]["size"][$key] <= 800000){
                                 // Upload file to server 
-                            if(move_uploaded_file($_FILES["posters"]["tmp_name"][$key], $targetFilePath)){ 
+                            if(move_uploaded_file($_FILES["posters"]["tmp_name"][$key], $targetFilePath)){
+                                //Base on where this image will be use in folder structure we remove ../
+                                $targetFilePath = str_replace("../","", $targetFilePath);
                                 // Image db insert sql
                                 array_push($arrPosterToUpload, array("target"=>$targetFilePath));
     

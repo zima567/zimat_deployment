@@ -40,7 +40,7 @@ try{
             //Set session variables
             session_start();
             $_SESSION['idUser'] = $row_select_user['idUser'];
-            $_SESSION['verified'] = $row_verified['verified'];
+            //$_SESSION['verified'] = $row_verified['verified'];
 
             //Return username
             $authentification['username'] = $row_select_user['username'];

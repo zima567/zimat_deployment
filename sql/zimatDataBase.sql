@@ -77,7 +77,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimatdb`.`user_verified` (
   `idUserFK` INT NOT NULL auto_increment,
-  `doc` VARCHAR(255),
+  `doc` VARCHAR(255) NULL,
   `verified` BOOLEAN DEFAULT(0),
   PRIMARY KEY (`idUserFK`),
    INDEX `index_user_verified_From_origin` (`idUserFK` ASC),
@@ -254,6 +254,48 @@ CREATE TABLE IF NOT EXISTS `zimatdb`.`event_ticket_counter` (
   CONSTRAINT `fk_idEventFK_idEvent_eventTicketCounter`
     FOREIGN KEY (`idEventFK`)
     REFERENCES `zimatdb`.`event` (`idEvent`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `zimatdb`.`user_follower`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `zimatdb`.`user_follower` (
+  `idUserFK` INT NOT NULL,
+  `idFollowerFK` INT NULL,
+  `followDate` DATETIME,
+  PRIMARY KEY (`idUserFK`,`idFollowerFK`),
+  INDEX `index_idUserFK_From_user_follower` (`idUserFK` ASC),
+  CONSTRAINT `fk_idUserFK_idUser_user_follower`
+    FOREIGN KEY (`idUserFK`)
+    REFERENCES `zimatdb`.`user` (`idUser`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+     CONSTRAINT `fk_idUserFK_idFollowerFK_user_follower`
+    FOREIGN KEY (`idFollowerFK`)
+    REFERENCES `zimatdb`.`user` (`idUser`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `zimatdb`.`event_like`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `zimatdb`.`event_like` (
+  `idEventFK` INT NOT NULL,
+  `idLikerFK` INT NULL,
+  `likeDate` DATETIME,
+  PRIMARY KEY (`idEventFK`,`idLikerFK`),
+  INDEX `index_idEventFK_From_event_like` (`idEventFK` ASC),
+  CONSTRAINT `fk_idEventFK_idEvent_event_like`
+    FOREIGN KEY (`idEventFK`)
+    REFERENCES `zimatdb`.`event` (`idEvent`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+     CONSTRAINT `fk_idLikerFK_idEventFK_event_like`
+    FOREIGN KEY (`idLikerFK`)
+    REFERENCES `zimatdb`.`user` (`idUser`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

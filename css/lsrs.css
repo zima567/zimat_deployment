@@ -1,6 +1,11 @@
 body{
     margin: 0;
     padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif;
+}
+
+.page-wrapper{
+    padding: 16px;
 }
 
 .logo_brand{
@@ -12,6 +17,21 @@ body{
 .logo_icon{
     margin: 8px;
     margin-right: 16px;
+}
+
+#text-logo{
+    margin:0 auto;
+	width:250px;
+	font-family:'Lily Script One', cursive;
+	font-size:35px;
+	font-weight:bold;
+	text-align:center;
+	color:#413b3b;
+	-webkit-transition:0.2s ease all;
+	   -moz-transition:0.2s ease all;
+	    -ms-transition:0.2s ease all;
+	     -o-transition:0.2s ease all;
+	        transition:0.2s ease all;
 }
 
 .main_headline{
@@ -26,13 +46,20 @@ body{
     margin: 8px;
 }
 
-.input_box input{
-    width: 80%;
-    height: 30px;
+.input_box span{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input_box input, .input_box textarea{
+    width: 90%;
+    padding:15px 10px;
+    outline:none;
     border-radius: 15px;
     border-width: 0.1px;
-    padding: 4px;
     padding-left: 8px;
+    border:1px solid #bbb;
 }
 
 .input_unit{
@@ -41,17 +68,38 @@ body{
     margin-bottom: 18px;
 }
 
+.input_unit span{
+    width: 90%;
+    justify-content: start;
+    padding-left: 22px;
+}
+
 .errorText{
     color: red;
     font-size: 11px;
 }
 
 .input_box button {
-    width: 40%;
-    height: 30px;
+    padding:10px 50px;
+	width:auto;
+	background:#1abc9c;
+	border:none;
     border-radius: 15px;
-    border-width: 0.1px;
-    padding:4px;
+	color:white;
+	cursor:pointer;
+    -webkit-transition:0.2s ease all;
+	   -moz-transition:0.2s ease all;
+	    -ms-transition:0.2s ease all;
+	     -o-transition:0.2s ease all;
+	        transition:0.2s ease all;
+}
+
+button:hover {
+	opacity:0.8;
+}
+
+button:active {
+	opacity:0.4;
 }
 
 textarea{
@@ -65,8 +113,29 @@ textarea{
     margin-top: 25px;
 }
 
+.utils_links a {
+	text-decoration: none;
+    color: inherit;
+    outline: none;
+    transition: background-color .25s ease-out;
+	display: inline-block;
+    padding: 0 1px;
+	border-bottom: 0.2em solid #ccc;
+}
+
+.utils_links a:hover {
+	background-color: #ccc;
+}
+
 .ownership{
-    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     bottom: 16px;
-    padding-left: 8px;
+    margin-top: 100px;
+}
+
+#text-logo:hover {
+	color:#6495ed;
 }

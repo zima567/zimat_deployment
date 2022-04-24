@@ -72,12 +72,17 @@ function supportRequest(myFunc, email, support_msg, support_type){
         data: {"email": email, "support_msg":support_msg, "support_type":support_type},
         type: "POST",
         dataType : "json",
+        beforeSend:function(){
+            $("#loading-circle").css("display","flex");
+        }
     })
     .done(function( response ) {
+        $("#loading-circle").css("display","none");
         console.log(response);
         myFunc(response, support_type);
     })
     .fail(function( xhr, status, errorThrown ) {
+        $("#loading-circle").css("display","none");
         alert( "Sorry, there was a problem!" );
         console.log( "Error: " + errorThrown );
         console.log( "Status: " + status );

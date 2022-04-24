@@ -209,12 +209,17 @@ function ResetRequest(myFunc, option, email, value=""){
         data: {"option": option, "email": email, "value":value},
         type: "POST",
         dataType : "json",
+        beforeSend:function(){
+            $("#loading-circle").css("display","flex");
+        }
     })
     .done(function( response ) {
+        $("#loading-circle").css("display","none");
         console.log(response);
         myFunc(response, option);
     })
     .fail(function( xhr, status, errorThrown ) {
+        $("#loading-circle").css("display","none");
         alert( "Sorry, there was a problem!" );
         console.log( "Error: " + errorThrown );
         console.log( "Status: " + status );

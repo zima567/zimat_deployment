@@ -4,7 +4,6 @@
     var passwordConfVerified = false;
 
 $(document).ready(function(){
-
     //Disable sign up button
     $("#idBtnSignUp").attr("disabled", true);
 
@@ -105,12 +104,17 @@ $(document).ready(function(){
             data: {"email": emailVar, "username": usernameVar, "password":passwordVar},
             type: "POST",
             dataType : "json",
+            beforeSend:function(){
+                $("#loading-circle").css("display","flex");
+            }
         })
         .done(function( response ) {
+            $("#loading-circle").css("display","none");
             console.log(response);
             FRPSignup(response);
         })
         .fail(function( xhr, status, errorThrown ) {
+            $("#loading-circle").css("display","none");
             alert( "Sorry, there was a problem!" );
             console.log( "Error: " + errorThrown );
             console.log( "Status: " + status );

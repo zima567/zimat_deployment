@@ -4,6 +4,38 @@ body{
     font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif;
 }
 
+.loading-circle{
+    position: absolute;
+    height: 100vh;
+    width: 100%;
+	margin: 0;
+	padding: 0;
+	display: none;
+	justify-content: center;
+	align-items: center;
+    opacity: 0.6;
+    background-color: #ffffff;
+    z-index: 9999;
+}
+
+.loadingspinner {
+	pointer-events: none;
+	width: 4.5em;
+	height: 4.5em;
+	border: 0.4em solid transparent;
+	border-color: #eee;
+	border-top-color: #3E67EC;
+	border-radius: 50%;
+	animation: loadingspin 1s linear infinite;
+}
+
+@keyframes loadingspin {
+	100% {
+			transform: rotate(360deg)
+	}
+}
+
+
 .page-wrapper{
     padding: 16px;
 }

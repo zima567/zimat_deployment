@@ -38,7 +38,7 @@ try{
     $sql_select_following = "SELECT `idUserFK` FROM `user_follower` WHERE `idFollowerFK` =?";
     $stmt1 = $connection->prepare($sql_select_following);
 
-    $sql_select_all ="SELECT `idEvent`, `title`, `location`, `dateTime`, `status`, `directorFK`, `username`,`avatar`, `address`, `verified` FROM ((((`event` INNER JOIN `user_follower` ON `event`.`directorFK`= `user_follower`.`idUserFK`) INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `user_verified` ON `event`.`directorFK` = `user_verified`.`idUserFK`)  WHERE `user_follower`.`idUserFK`=? AND `user_follower`.`idFollowerFK`=? AND `dateTime`>=? " ;
+    $sql_select_all ="SELECT `idEvent`, `title`, `postMessage`, `location`, `dateTime`, `status`, `directorFK`, `postDateTime`, `username`,`avatar`, `address`, `verified` FROM ((((`event` INNER JOIN `user_follower` ON `event`.`directorFK`= `user_follower`.`idUserFK`) INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `user_verified` ON `event`.`directorFK` = `user_verified`.`idUserFK`)  WHERE `user_follower`.`idUserFK`=? AND `user_follower`.`idFollowerFK`=? AND `dateTime`>=? ORDER BY `postDateTime` DESC" ;
     $stmt2 = $connection->prepare($sql_select_all);
 
     $sql_select_Poster = "SELECT `linkToPoster` FROM `event_poster` WHERE `idEventFK` =?";
@@ -46,6 +46,9 @@ try{
 
     $sql_select_price = "SELECT `price`, `currency`, `onlinePayment`, `offlinePayment` FROM `event_pricing` WHERE `idEventFK`=? ORDER BY `latestUpdate`";
     $stmt4 = $connection->prepare($sql_select_price);
+
+    $sql_event_like = "SELECT `idLikerFK` FROM `event_like` WHERE `idEventFK` =?";
+    $stmt5 = $connection->prepare($sql_event_like);
     
     if(isset($_SESSION['idUser'])){
         $idUserOnline = $_SESSION['idUser'];
@@ -65,16 +68,20 @@ try{
                         //query the event into there temp array to be added to API array
                         $temp_arr = array("idEvent"=>$row2['idEvent'],
                                                               "title"=>$row2['title'],
+                                                              "postMessage"=>$row2['postMessage'],
                                                               "location"=>$row2['location'],
                                                               "dateTime"=>$row2['dateTime'],
                                                               "status"=>$row2['status'],
                                                               "directorFK"=>$row2['directorFK'],
+                                                              "postDateTime"=>$row2['postDateTime'],
                                                               "username"=>$row2['username'],
                                                               "avatar"=>$row2['avatar'],
                                                               "address"=>$row2['address'],
                                                               "verified"=>$row2['verified'],
                                                               "posters"=>array(),
-                                                              "prices"=>array());
+                                                              "prices"=>array(),
+                                                              "nbrLike"=>0,
+                                                              "userLiked"=>0);
                         $stmt3->execute([$row2['idEvent']]);
                         $posterTemp = array();
                         if($stmt3->rowCount()>0){
@@ -94,6 +101,25 @@ try{
                                 array_push($priceTemp, $row4['price']." ".$row4['currency']);
                             }
                             $temp_arr['prices'] = $priceTemp;
+                        }
+
+                        //Get the number of like for that event
+                        $stmt5->execute([$row2['idEvent']]);
+                        if($stmt5->rowCount()>0){
+                            $temp_arr['nbrLike'] = $stmt5->rowCount();
+                
+                            if(isset($_SESSION['idUser'])){
+                                $userLiked=0;
+                                while($row_likes = $stmt5->fetch()){
+                                    if($row_likes['idLikerFK']==$_SESSION['idUser']){
+                                        $userLiked = 1;
+                                    }
+                                }
+                                if($userLiked){
+                                    $temp_arr['userLiked'] =1;
+                                }
+                            }
+
                         }
 
                         //Add this event infos to upper array closer to main Array Api

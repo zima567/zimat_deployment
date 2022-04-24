@@ -35,6 +35,24 @@ CREATE TABLE IF NOT EXISTS `zimatdb`.`user_profile` (
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `zimatdb`.`user_socials`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `zimatdb`.`user_socials` (
+  `idUserFK` INT NOT NULL,
+  `facebook` VARCHAR(255) NULL DEFAULT("NONE"),
+  `instagram` VARCHAR(255) NULL DEFAULT("NONE"),
+  `twitter` VARCHAR(255) NULL DEFAULT("NONE"),
+  `vk` VARCHAR(255) NULL DEFAULT("NONE"),
+  PRIMARY KEY (`idUserFK`),
+  INDEX `fk_idUserFK_user_user_socials_index` (`idUserFK` ASC),
+  CONSTRAINT `fk_idUserFK_user_user_socials`
+	FOREIGN KEY (`idUserFK`)
+    REFERENCES `zimatdb`.`user` (`idUser`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `zimatdb`.`verification_code`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimatdb`.`verification_code` (
@@ -62,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `zimatdb`.`user_support` (
   PRIMARY KEY (`idIssue`))
 ENGINE = InnoDB;
 
--- SECTION FOR EVENT TABLES ###Last add
+-- SECTION FOR EVENT TABLES ###Last add 13.04.2022
 -- -----------------------------------------------------
 -- Table `zimatdb`.`category`
 -- -----------------------------------------------------
@@ -94,11 +112,13 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `zimatdb`.`event` (
   `idEvent` INT NOT NULL auto_increment,
   `title` VARCHAR(255) NULL,
+  `postMessage` VARCHAR(255),
   `description` TEXT(300) NULL,
   `location` VARCHAR(255),
   `dateTime` DATETIME NOT NULL,
   `status` VARCHAR(255) NULL, /*OUTDATED, SCHEDULED, POSPONED*/
   `directorFK` INT NOT NULL,
+  `postDateTime` DATETIME NOT NULL,
   PRIMARY KEY (`idEvent`),
   INDEX `index_idEvent_From_origin` (`idEvent` ASC),
   CONSTRAINT `fk_directorFK_idUser`

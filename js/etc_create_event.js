@@ -4,13 +4,9 @@ $(document).ready(function(){
 
 
     //Get today date and set min-date
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = today.getFullYear();
-    today = yyyy+'-'+ mm + '-' + dd +"T00:00";
-    $("#id-date-time").val(today);
-    $("#id-date-time").attr('min', today);
+    console.log(currentDateAndTime());
+    $("#id-date-time").val(currentDateAndTime());
+    $("#id-date-time").attr('min', currentDateAndTime());
 
     //Control click on button to upload images
     $("#idBtnUploadImg").on("click", function(){
@@ -78,6 +74,7 @@ $(document).ready(function(){
     $("#submit-event").on("click", function(){
         
         let eventTitle = $("#event-title").val();
+        let postMessage = $("#post-short-msg").val();
         let eventDescription = $("#id-description").val();
         let eventLocation = $("#id-location").val();
         let eventDateTime = $("#id-date-time").val();
@@ -86,6 +83,7 @@ $(document).ready(function(){
         let eventTicketPrice = $("#id-unit-price").val();
         let priceCurrency = $("#idCurrency").val();
         let paymentMethod = $("input[name='payment-method']:checked").val();
+        let postDateTime = currentDateAndTime();
 
         if(eventTitle!="" && eventLocation!="" && eventDateTime!=""){
             //Form data for submission
@@ -108,6 +106,7 @@ $(document).ready(function(){
             
             //append other vars
             formData.append('title', eventTitle);
+            formData.append('postMessage', postMessage)
             formData.append('description', eventDescription);
             formData.append('location', eventLocation);
             formData.append('dateTime', eventDateTime);
@@ -115,6 +114,7 @@ $(document).ready(function(){
             formData.append('ticketPrice', eventTicketPrice);
             formData.append('currency', priceCurrency);
             formData.append('paymentMethod', paymentMethod);
+            formData.append('postDateTime', postDateTime);
 
             $.ajax({
                 url:"api_php/api_etc_create_event.php",
@@ -144,6 +144,22 @@ $(document).ready(function(){
 
 });
 
+//Get current date and time
+function currentDateAndTime(){
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    var hours = today.getHours();
+        if(hours<10) hours = "0"+hours;
+    var minutes = today.getMinutes();
+        if(minutes<10) minutes = "0"+minutes;
+    var seconds = today.getSeconds();
+        if(seconds<10) seconds = "0"+seconds;
+    today = yyyy+'-'+ mm + '-' + dd +"T"+hours+":"+minutes+":"+ seconds;
+
+    return today;
+}
 
 //display categories into box
 function displayCateg(categ, index){

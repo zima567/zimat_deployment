@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    
+
     //Get data from input fields
     $("#idBtnLogin").on("click", function(){
         let emailVar = $("#idEmail").val().trim();
@@ -31,12 +31,17 @@ $(document).ready(function(){
                 data: {"email": emailVar, "password":passwordVar},
                 type: "POST",
                 dataType : "json",
+                beforeSend:function(){
+                    $("#loading-circle").css("display","flex");
+                }
             })
             .done(function( response ) {
+                $("#loading-circle").css("display","none");
                 console.log(response);
                 RPLogin(response);
             })
             .fail(function( xhr, status, errorThrown ) {
+                $("#loading-circle").css("display","none");
                 alert( "Sorry, there was a problem!" );
                 console.log( "Error: " + errorThrown );
                 console.log( "Status: " + status );

@@ -10,35 +10,131 @@
     <script src="js/etc_home.js"></script>
 </head>
 <body>
-    <h1>Home</h1>
-    <h2>Logout the system</h2>
-    <button id="logout">logout</button>
-    
-    <h2>Create an event</h2>
-    <button id="create-event-btn">Create an event</button>
 
-    <h2>Catalogue events</h2>
-    <div class="catalogue-event" id="idCatalogue">
+   <nav class="navbar">
+        <div class="nav-wrapper">
+            <img src="media/icons/zimaccess.png" class="brand-img" alt="">
+            <input type="text" class="search-box" placeholder="search">
+            <div class="nav-items">
+                <img src="media/icons/home.PNG" class="icon" alt="">
+                <img src="media/icons/like.PNG" class="icon" alt="">
+                <div class="icon user-profile"></div>
+            </div>
+        </div>
+    </nav>
 
-        <!--div class="event-unit" id="id-">
-            <div class="unit-head">
-                <img src="media/icons/pro.png"/>
-                <span class="user_infos">
-                    <span>Username</span>
-                    <span>Address user</span>
-                </span>
-            </div>
-            <div class="poster-display">
-                <img src="media/posters/belPrestans.jpg"/>
-            </div>
-            <div class="box-details">
-                <span>Event title</span>
-                <span>Location</span>
-                <span>Time and date</span>
-                <span>Price</span>
-            </div>
-        </div-->
+    <section class="main">
+        <div class="wrapper">
+            <div class="left-col">
+                <div class="status-wrapper">
+                    <div class="status-card">
+                        <div class="profile-pic"><img src="media/icons/cover 1.png" alt=""></div>
+                        <p class="username">user_name_1</p>
+                    </div>
+                    <div class="status-card">
+                        <div class="profile-pic"><img src="media/icons/cover 2.png" alt=""></div>
+                        <p class="username">user_name_2</p>
+                    </div>
+                    <div class="status-card">
+                        <div class="profile-pic"><img src="media/icons/cover 3.png" alt=""></div>
+                        <p class="username">user_name_3</p>
+                    </div>
 
+                <!--+5 more status card elements.--> 
+                </div>
+        </div>
+    </section>
+
+    <section class="main">
+    <div class="wrapper">
+        <div class="left-col" id="idCatalogue">
+            <!--status wrappers--> 
+
+            <!--div class="post">
+                <div class="info">
+                    <div class="user">
+                        <div class="profile-pic"><img src="img/cover 1.png" alt=""></div>
+                        <p class="username">zimaware</p>
+                        <span class="username"><img src="media/icons/verified.png" width="20"/></span>
+                    </div>
+                    <img src="img/option.PNG" class="options" alt="">
+                </div>
+                <img src="img/cover 1.png" class="post-image" alt="">
+                <div class="post-content">
+                    <div class="reaction-wrapper">
+                        <img src="img/like.PNG" class="heart-icon icon" id="event-like-btn-" alt="">
+                        <img src="media/icons/report.png" class="report icon" alt="">
+                    </div>
+                    <p class="likes">1,012 likes</p>
+                    <p class="description"><span>username </span> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Pariatur tenetur veritatis placeat, molestiae impedit aut provident eum quo natus molestias?</p>
+                    <div class="main-info description">
+                        <span><img src="media/icons/location.png"/><span>Ул. Пушкина 80, Орел</span></span>
+                        <span><img src="media/icons/clock.png"/><span>15.04.2022 20:00</span></span>
+                        <span><img src="media/icons/price.png"/><span>40 USD</span></span>
+                    </div>
+                    <p class="post-time">2 minutes ago</p>
+                </div>
+                <div class="comment-wrapper">
+                    <button class="main-action-btn">Buy ticket</button>
+                    <button class="comment-btn">share</button>
+                </div>
+            </div-->
+      
+            <!--+5 more post elements--> 
+        </div>
     </div>
+</section>
+
+<section class="main">
+    <div class="wrapper"> 
+        <!--left col element-->
+        <div class="right-col">
+            <div class="profile-card">
+                <div class="profile-pic">
+                    <img src="media/icons/profile-pic.png" alt="profile picture">
+                </div>
+                <div>
+                    <p class="username">zimaware</p>
+                    <p class="sub-text">location</p>
+                </div>
+                <button class="action-btn">logout</button>
+            </div>
+            <p class="suggestion-text">Suggestions for you</p>
+            <div class="profile-card">
+                <div class="profile-pic">
+                    <img src="media/icons/cover 9.png" alt="">
+                </div>
+                <div>
+                    <p class="username">Wawou</p>
+                    <p class="sub-text">location</p>
+                </div>
+                <button class="action-btn">follow</button>
+            </div>
+            <div class="profile-card">
+                <div class="profile-pic">
+                    <img src="media/icons/cover 10.png" alt="">
+                </div>
+                <div>
+                    <p class="username">Sasou</p>
+                    <p class="sub-text">location</p>
+                </div>
+                <button class="action-btn">follow</button>
+            </div>
+            <div class="profile-card">
+                <div class="profile-pic">
+                    <img src="media/icons/cover 11.png" alt="">
+                </div>
+                <div>
+                    <p class="username">Ford</p>
+                    <p class="sub-text">location</p>
+                </div>
+                <button class="action-btn">follow</button>
+            </div>
+        
+        </div>
+    </div>
+</section>
+
+
 </body>
 </html>

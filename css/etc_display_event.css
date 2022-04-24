@@ -1,0 +1,408 @@
+/* 
+* Design by Robert Mayer:https://goo.gl/CJ7yC8
+*
+*I intentionally left out the line that was supposed to be below the subheader simply because I don't like how it looks.
+*
+* Chronicle Display Roman font was substituted for similar fonts from Google Fonts.
+*/
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    background: #fafafa;
+    position: relative;
+    font-family: 'roboto', sans-serif;
+  }
+  
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 98%;
+    border-radius: 7px 7px 7px 7px;
+    -webkit-box-shadow: 0px 14px 32px 0px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0px 14px 32px 0px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 14px 32px 0px rgba(0, 0, 0, 0.15);
+  }
+  
+  .product-img {
+      width: 100%;
+      min-height: 420px;
+  }
+  
+  .product-img img {
+    border-radius: 7px 0 0 7px;
+  }
+  
+  .product-info {
+    min-height: 420px;
+    width: 100%;
+    border-radius: 0 7px 10px 7px;
+    background-color: #ffffff;
+  }
+  
+  .product-text {
+    min-height: 300px;
+    width: 100%;
+  }
+
+  /*CSS properties for read more..*/
+  /*START*/
+  .toggleLink{
+    color:red;
+    text-decoration:underline;
+  }
+  .toggleLink:hover{
+    cursor:pointer;
+  }
+  .elaboration{
+    display:none;
+  }
+  /*END*/
+  
+  .product-text h1 {
+    margin: 0 0 0 38px;
+    padding-top: 52px;
+    font-size: 34px;
+    color: #474747;
+  }
+  
+  .product-text h1,
+  .product-price-btn p {
+    font-family: 'Bentham', serif;
+  }
+  
+  .product-text h2 {
+    margin: 0 0 47px 38px;
+    font-size: 13px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    color: #d2d2d2;
+    letter-spacing: 0.2em;
+  }
+  
+  .product-text p {
+    min-height: 125px;
+    margin: 0 0 0 38px;
+    font-family: 'Playfair Display', serif;
+    color: #8d8d8d;
+    line-height: 1.7em;
+    font-size: 15px;
+    font-weight: lighter;
+    overflow: hidden;
+  }
+
+  .location-date-time-etc{
+    font-family: 'Playfair Display', serif;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 8px;
+  }
+
+  .location-date-time-etc span{
+    margin: 4px;
+
+  }
+  
+  .product-price-btn {
+    height: 103px;
+    width: 327px;
+    margin-top: 17px;
+    position: relative;
+  }
+  
+  .product-price-btn p {
+    display: inline-block;
+    position: absolute;
+    top: -13px;
+    height: 50px;
+    font-family: 'Trocchi', serif;
+    margin: 0 0 0 38px;
+    font-size: 28px;
+    font-weight: lighter;
+    color: #474747;
+  }
+  
+  .product-price-btn span {
+    display: inline-block;
+    height: 50px;
+    font-family: 'Suranna', serif;
+    font-size: 34px;
+  }
+  
+  .product-price-btn button {
+    float:right;
+    /*display: inline-block;*/
+    height: 50px;
+    width: 176px;
+    margin: 0 40px 0 16px;
+    box-sizing: border-box;
+    border: transparent;
+    border-radius: 60px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #ffffff;
+    background-color: #9cebd5;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .product-price-btn button:hover {
+    background-color: #79b0a1;
+  }
+
+  /*FOR the slide show*/
+  /* Slideshow container */
+.slideshow-container {
+  max-width: 1000px;
+  position: relative;
+  margin: auto;
+}
+
+/* Hide the images by default */
+.mySlides {
+  display: none;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+/* Fading animation */
+.fade {
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
+/*END of slide show CSS*/
+
+  /*@media (max-width: 1100px){
+    .right-col, .search-box{
+        display: none;
+    }
+    .nav-wrapper,
+    .wrapper{
+        width: 90%;
+    }
+    .wrapper{
+        display: block;
+    }
+}*/
+
+/*MODAL CSS For number of tickets and payment*/
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 14px;
+  border: 1px solid red;
+  width: 90%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.box-payment{
+  border: 1px solid yellow;
+  padding: 8px;
+}
+
+.box-payment .summary-box{
+  border: 1px solid blue;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.summary-box .small-header-unit{
+ width: 25%;
+ display: flex;
+ flex-direction: column;
+ 
+}
+.small-header-unit img{
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  border: 1px solid red;
+}
+
+.small-header-unit .incrementer-lil-box{
+  border: 1px solid pink;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.small-header-unit .btn-nbr-ticket{
+  width: 50%;
+}
+
+.small-header-unit .nbr-ticket-inc-dec{
+  display: block;
+  padding: 2px;
+  text-align: center;
+  border: 1px solid #f2f2f2;
+  width: 50%;
+}
+
+.box-payment .payment-option{
+  border: 1px solid green;
+  padding: 8px;
+}
+
+.box-payment .diff-offline-payments{
+  display: none;
+}
+
+.box-payment .opt-offline-payment{
+  display: none;
+}
+
+.box-payment .box-payment-option-display{
+  border: 1px solid purple;
+  padding: 8px;
+}
+
+.payment-option-display .card-input-unit{
+  display: flex;
+  flex-direction: column;
+}
+
+.box-payment .box-btn-checkout{
+  border: 1px solid red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+}
+/*END of modal of card details*/
+
+/*CSS for agent box*/
+.wrapper-agents{
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+}
+
+.wrapper-agents .agent-unit{
+  margin: 4px;
+  border: 3px solid #50506d;
+  padding: 4px;
+  border-radius: 15px;
+}
+
+.agent-unit .info-unit{
+  display: flex;
+  flex-direction: column;
+  padding-left: 4px;
+}
+
+.agent-unit .link-unit{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 8px;
+}
+
+@media (min-width: 500px){
+  .wrapper {
+    flex-direction: row;
+    height: 420px;
+    width: 654px;
+    margin: 50px auto;
+    border-radius: 7px 7px 7px 7px;
+    -webkit-box-shadow: 0px 14px 32px 0px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0px 14px 32px 0px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 14px 32px 0px rgba(0, 0, 0, 0.15);
+  }
+  
+  .product-img {
+    min-height: 420px;
+    float: left;
+    height: 420px;
+    width: 327px;
+  }
+  
+  .product-info {
+    float: left;
+    min-height: 500px;
+    width: 327px;
+    border-radius: 0 7px 10px 7px;
+    background-color: #ffffff;
+  }
+  
+  .product-text {
+    min-height: 300px;
+    width: 327px;
+    background-color: #ffffff;
+  }
+
+}

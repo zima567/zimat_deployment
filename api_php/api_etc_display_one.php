@@ -24,7 +24,7 @@ try{
     $sql_select_posters = "SELECT `linkToPoster` FROM `event_poster` WHERE `idEventFK`=?"; //many records
     $stmt2 = $connection->prepare($sql_select_posters);
 
-    $sql_select_prices = "SELECT * FROM `event_pricing` WHERE `idEventFK`=?"; //many records
+    $sql_select_prices = "SELECT * FROM `event_pricing` WHERE `idEventFK`=? ORDER BY `latestUpdate` DESC"; //many records
     $stmt3 = $connection->prepare($sql_select_prices);
 
     $sql_event_categ = "SELECT `category`.`title` FROM `event_categ` INNER JOIN `category` ON `event_categ`.`idCategFK` = `category`.`idCategory` WHERE `idEventFK` =?";
@@ -37,9 +37,12 @@ try{
     $stmt6 = $connection->prepare($sql_available_ticket); //Return number of available ticket
      /*Remember to prevent access to agents info and available ticket to offline user */
 
+     $sql_is_agent = "SELECT `idAgentFK` FROM `event_agent` WHERE `idAgentFK` =? AND `idEventFK` =?";
+     $stmt7 = $connection->prepare($sql_is_agent);
+
     $stmt1->execute([$eventID]);
     if($stmt1->rowCount()>0){
-         //This event exist
+        //This event exist
         $row_event_info = $stmt1->fetch();
         $temp_arr_event = array("idEvent"=>$row_event_info['idEvent'],
                                             "title"=>$row_event_info['title'],
@@ -58,7 +61,9 @@ try{
                                             "prices"=>array(),
                                             "categories"=>array(),
                                             "agents"=>array(),
-                                            "availableTicket"=>0);
+                                            "availableTicket"=>0,
+                                            "isAgent"=>0,
+                                            "isOnline"=>0);
         
         //Select posters
         $stmt2->execute([$eventID]);
@@ -95,7 +100,8 @@ try{
 
         //If user is online send those informations
         if(isset($_SESSION['idUser'])){
-
+            //user is online
+            $temp_arr_event['isOnline'] = 1;
             //Select agents
             $stmt5->execute([$eventID]);
             if($stmt5->rowCount()>0){
@@ -116,6 +122,12 @@ try{
             if($stmt6->rowCount()>0){
                 $row_count_ticket_Available = $stmt6->fetch();
                 $temp_arr_event['availableTicket'] = $row_count_ticket_Available['availableTicket'];
+            }
+
+            //Check if user is agent
+            $stmt7->execute([$_SESSION['idUser'], $eventID]);
+            if($stmt7->rowCount()>0){
+                $temp_arr_event['isAgent'] = 1;
             }
 
         }

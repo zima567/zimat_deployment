@@ -25,6 +25,7 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
         //the minimun info for an event is available
         //Post Variables
         $title = $_POST['title'];
+        $postMessage = isset($_POST['postMessage'])? $_POST['postMessage'] : ""; 
         $description = isset($_POST['description'])? $_POST['description'] : "";
         $location = $_POST['location'];
         $dateTime = $_POST['dateTime'];
@@ -34,6 +35,7 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
         $ticketPrice = isset($_POST['ticketPrice'])? $_POST['ticketPrice'] : 0;
         $currency = isset($_POST['currency'])? $_POST['currency'] : "";
         $paymentMethode = isset($_POST['paymentMethod'])? $_POST['paymentMethod'] : "";
+        $postDateTime = isset($_POST['postDateTime'])? $_POST['postDateTime'] : "0000-00-00 00:00:00";
 
         //If there is posters for that event
         if(isset($_FILES['posters'])){
@@ -86,12 +88,11 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
         $minQuota = 50;
         $falseVar = 0;
         $trueVar =1;
-        $defaultTimeStr = "0000-00-00 00:00:00";
     
         try{
             //Queries
             //Think about adding a transaction for the queries*********
-            $sql_insert_event = "INSERT INTO `event` (`title`, `description`, `location`, `dateTime`, `status`, `directorFK`) VALUES(?,?,?,?,?,?)";
+            $sql_insert_event = "INSERT INTO `event` (`title`, `postMessage`, `description`, `location`, `dateTime`, `status`, `directorFK`,`postDateTime`) VALUES(?,?,?,?,?,?,?,?)";
             $stmt1 = $connection->prepare($sql_insert_event);
 
             $sql_insert_posters = "INSERT INTO `event_poster`(`linkToPoster`, `dateUploaded`, `idEventFK`) VALUES(?,?,?)";
@@ -118,7 +119,7 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
             //Start a transaction
             $connection->beginTransaction();
             //Insert event
-            $stmt1->execute([$title, $description, $location, $dateTime, $status, $userId]);
+            $stmt1->execute([$title, $postMessage, $description, $location, $dateTime, $status, $userId, $postDateTime]);
             //Get last inserted event id
             $idInsertedEvent = $connection->lastInsertId();
 
@@ -128,7 +129,7 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
                 if($FILES_length === count($arrPosterToUpload)){
                     //All the image files has been uploaded to server
                     foreach($arrPosterToUpload as $arrToDb){
-                        $stmt2->execute([$arrToDb['target'], $defaultTimeStr, $idInsertedEvent]); 
+                        $stmt2->execute([$arrToDb['target'], $postDateTime, $idInsertedEvent]); 
                     }
                 }
                 else{
@@ -206,7 +207,7 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
                     $onlineVar =1;
                 }
 
-                $stmt5->execute([$ticketPrice, $currency, $onlineVar, $offlineVar, $defaultTimeStr, $idInsertedEvent]);
+                $stmt5->execute([$ticketPrice, $currency, $onlineVar, $offlineVar, $postDateTime, $idInsertedEvent]);
             }
            
             //insert event main agent

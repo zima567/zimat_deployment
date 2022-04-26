@@ -38,7 +38,7 @@ try{
     $sql_select_following = "SELECT `idUserFK` FROM `user_follower` WHERE `idFollowerFK` =?";
     $stmt1 = $connection->prepare($sql_select_following);
 
-    $sql_select_all ="SELECT `idEvent`, `title`, `postMessage`, `location`, `dateTime`, `status`, `directorFK`, `postDateTime`, `username`,`avatar`, `address`, `verified` FROM ((((`event` INNER JOIN `user_follower` ON `event`.`directorFK`= `user_follower`.`idUserFK`) INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `user_verified` ON `event`.`directorFK` = `user_verified`.`idUserFK`)  WHERE `user_follower`.`idUserFK`=? AND `user_follower`.`idFollowerFK`=? AND `dateTime`>=? ORDER BY `postDateTime` DESC" ;
+    $sql_select_all ="SELECT `idEvent`, `title`, `postMessage`, `location`, `dateTime`, `status`, `directorFK`, `postDateTime`, `username`, `idUser`,`avatar`, `address`, `verified` FROM ((((`event` INNER JOIN `user_follower` ON `event`.`directorFK`= `user_follower`.`idUserFK`) INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `user_verified` ON `event`.`directorFK` = `user_verified`.`idUserFK`)  WHERE `user_follower`.`idUserFK`=? AND `user_follower`.`idFollowerFK`=? AND `dateTime`>=? ORDER BY `postDateTime` DESC" ;
     $stmt2 = $connection->prepare($sql_select_all);
 
     $sql_select_Poster = "SELECT `linkToPoster` FROM `event_poster` WHERE `idEventFK` =?";
@@ -75,6 +75,7 @@ try{
                                                               "directorFK"=>$row2['directorFK'],
                                                               "postDateTime"=>$row2['postDateTime'],
                                                               "username"=>$row2['username'],
+                                                              "idUser"=>$row2['idUser'],
                                                               "avatar"=>$row2['avatar'],
                                                               "address"=>$row2['address'],
                                                               "verified"=>$row2['verified'],

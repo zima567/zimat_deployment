@@ -155,10 +155,10 @@ function displayEventToCatalogue2(res){
             //Take care of profile picture
              //Take care of profile picture
              if(arrEF['avatar']!="NONE"){
-                event_unit+=' <div class="profile-pic"><img src="'+arrEF['avatar']+'" alt=""></div>';
+                event_unit+=' <div class="profile-pic"><a href="profile.html?e='+arrEF['idUser']+'"><img src="'+arrEF['avatar']+'" alt=""></a></div>';
             }
             else{
-                event_unit+=' <div class="profile-pic"><img src="media/icons/pro.png" alt=""></div>';
+                event_unit+=' <div class="profile-pic"><a href="profile.html?e='+arrEF['idUser']+'"><img src="media/icons/user-icon.png" alt=""></a></div>';
             }
 
             //continue concatination

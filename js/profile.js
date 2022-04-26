@@ -1,11 +1,14 @@
-$(document).ready(function(){
+var bio ="";
 
-    var bio = "Steven Paul Jobs was born on February 24, 1955 in San Francisco, California. His unwed biological parents, Joanne Schieble and Abdulfattah Jandali\
-    California. His unwed biological parents, Joanne Schieble and Abdulfattah Jandali";
-    var subs = 5400;
-    //Process the bio and display it
-    var bioProcessed = displayBio(bio);
-    $("#user_bio_text").text(bioProcessed);
+$(document).ready(function(){
+    //api destination file
+    let destination = "api_php/api_profile.php";
+     //Get the user ID from the URL
+     let userID = getParameter('e');
+     let obj ={idUser:userID};
+    //let obj ={idUser:2};
+    standardFunctionRequest(destination, obj, stdDisplayUserInfo);
+
     //Onclick on see-more
     $("#see-more").on("click", function(){
         let bioReprocessed = displayFullBio(bio);
@@ -17,8 +20,28 @@ $(document).ready(function(){
         $("#user_bio_text").text(bioReprocessed);
     });
 
-    //Display the total of followers
-    $("#total_subscribers").text(displayTotalSubscribers(subs));
+    $("#myBtn").on("click", function(){
+        $("#myModal").css("display","block");
+    });
+
+    $("#x-modal").on("click", function(){
+        $("#myModal").css("display","none");
+    });
+
+    //Take of ticket save and generation
+    $("#content-tab-ticket").on("click", ".generate-qrcode", function(e){
+        e.preventDefault();
+        let ticketID = e.target.id;
+
+        //Then send the request with the ticketID
+        //Then fill the html template with the response
+        //pass the hashcode to the function that create qrcode save the img
+        //hide then clean everything
+        let hash = "www.zimaware.com"
+        createQRcode(hash);
+
+    });
+
 
     //To show fullscreen profile picture
     $("#user_main_avatar").on("click", function(){
@@ -35,6 +58,21 @@ $(document).ready(function(){
     });
 
 });
+
+//Get parameters from URL
+function getParameter(p)
+{
+    var url = window.location.search.substring(1);
+    var varUrl = url.split('&');
+    for (var i = 0; i < varUrl.length; i++)
+    {
+        var parameter = varUrl[i].split('=');
+        if (parameter[0] == p)
+        {
+            return parameter[1];
+        }
+    }
+}
 
 function displayBio(bio){
     let bioLength = bio.length;
@@ -55,7 +93,8 @@ function displayFullBio(bio){
     return bio;
 }
 
-function displayTotalSubscribers(total){
+
+function displayTotalNumber(total){
     let myTot = parseInt(total);
     let myTotStr ="";
     if(myTot>999 && myTot<1499){
@@ -89,6 +128,86 @@ function displayTotalSubscribers(total){
     }
 
     return myTotStr;
+}
+
+function stdDisplayUserInfo(res){
+    //Handle user avar
+    if(res['avatar'] =="NONE"){
+        $("#userimage").attr("src", "media/icons/user-icon.png");
+    }
+    else{
+        $("#userimage").attr("src", res['avatar']);
+    }
+
+    $("#user-fname-lname").text(res['firstName']+" "+ res['lastName']);
+    $("#username").text(res['username']);
+
+    //Display bio
+    bio = res['bio'];
+    $("#user_bio_text").text(displayBio(bio));
+
+    //Take care of total user events
+    let totEvent ='';
+    if(res['events']>1){
+        totEvent ='<h2>'+res['events']+'</h2> <span>EVENTS</span>';
+    }
+    else{
+        totEvent ='<h2>'+res['events']+'</h2> <span>EVENT</span>';
+    }
+    $("#event-tot").html(totEvent);
+
+    //Take care of total following
+    let totFollowing ='<h2>'+displayTotalNumber(res['following'])+'</h2> <span>FOLLOWING</span>';
+    $("#following-tot").html(totFollowing);
+
+    //take care of total followers
+    let totFollowers = '';
+    if(res['followers']>1){
+        totFollowers = '<h2>'+displayTotalNumber(res['followers'])+'</h2> <span>FOLLOWERS</span>';
+    }
+    else{
+        totFollowers = '<h2>'+displayTotalNumber(res['followers'])+'</h2> <span>FOLLOWER</span>';
+    }
+    $("#followers-tot").html(totFollowers);
+
+    if(res['actor']=="SELF"){
+        $("#btn-follow").css("display","none");
+        $("#btn-unfollow").css("display","none");
+    }
+    else{
+        $("#btn-edit").css("display","none");
+        if(res['alreadyFollower']==1){
+            $("#btn-follow").css("display","none");
+        }
+        else{
+            $("#btn-unfollow").css("display","none");
+        }
+
+    }
+    
+}
+
+function standardFunctionRequest(destination, dataObj, helperFunc){
+    $.ajax({
+        url: destination,
+        data: dataObj,
+        type: "POST",
+        //dataType : "json",
+    })
+    .done(function( response ) {
+        helperFunc(response);
+        console.log(response);
+    })
+    .fail(function( xhr, status, errorThrown ) {
+        alert( "Sorry, there was a problem!" );
+        console.log( "Error: " + errorThrown );
+        console.log( "Status: " + status );
+        console.dir( xhr );
+    });
+}
+
+function consoleDisplay(res){
+    console.log(res);
 }
 
 
@@ -140,7 +259,8 @@ function createQRcode(codeTicket, logoLink="media/icons/user-temp.png"){
     //TEST QRCODE
     $.getScript("easyqrcodejs/src/easy.qrcode.js", function() {
         //Show to allow screenshot
-        $("#ticket-preview").show();
+        //$("#ticket-preview").show();
+        $("#myModal").css("display","block");
 
         var qrcode = new QRCode(document.getElementById("qrcode"), {
             text: codeTicket,
@@ -150,17 +270,17 @@ function createQRcode(codeTicket, logoLink="media/icons/user-temp.png"){
             logoBackgroundColor: '#f1f1f1',
             logoBackgroundTransparent: false,
             backgroundImage: undefined,
-            width: 270,
-            height: 250,
+            width: 100,
+            height: 100,
         });
 
-        html2canvas(document.getElementById("ticket-preview"),		{
+        html2canvas(document.getElementById("ticket-content"),		{
             allowTaint: true,
             useCORS: true
         }).then(function (canvas) {
             var anchorTag = document.createElement("a");
             document.body.appendChild(anchorTag);
-            document.getElementById("previewImg").appendChild(canvas);	
+            //document.getElementById("previewImg").appendChild(canvas);	
             anchorTag.download = "filename.jpg";
             anchorTag.href = canvas.toDataURL();
             anchorTag.target = '_blank';
@@ -169,7 +289,8 @@ function createQRcode(codeTicket, logoLink="media/icons/user-temp.png"){
 
         //clear
         qrcode.clear();
-        $("#ticket-preview").hide();
+        //$("#ticket-preview").hide();
+        $("#myModal").css("display","none");
 
     });
 

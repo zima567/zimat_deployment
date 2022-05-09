@@ -1,7 +1,9 @@
+//data variables
+var emailVar="";
+var texAreaVal ="";
+var emailVerified = false;
+
 $(document).ready(function(){
-        //data variables
-        var emailVar="";
-        var texAreaVal ="";
 
         //Focus out email
         $("#idEmail").focusout(function(){
@@ -12,9 +14,10 @@ $(document).ready(function(){
             let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
             if($("#idEmail").val().trim().match(regexEmail)){
                 emailVar = $("#idEmail").val().trim();
+                emailVerified = true;
             }
             else{
-        
+                emailVerified = false;
                 if($("#idEmail").val().trim()!=""){
                     $("#errorEmail").text("Incorrect email address");
                 }
@@ -26,11 +29,16 @@ $(document).ready(function(){
         });
 
         //On click on button send issue
-        $("#idBtnSend").on("click", function(){
+        $("#idBtnSend").on("click", function(e){
+            e.preventDefault();
+
+            //clean
+            $("#errorSupport").val("");
             texAreaVal = $("#support-msg").val().trim();
-            if(emailVar!="" && texAreaVal!=""){
+            if(emailVar!="" && texAreaVal!="" && emailVerified){
                 supportRequest(MRPSupport, emailVar, texAreaVal, "DIVERS");
             }
+
         });
 });
 
@@ -44,10 +52,16 @@ function MRPSupport(res, support_type){
                 //make the email and text field readoly
                 //hide button
                 //chage text in headlie
-                $("#idEmail").attr("disabled", true);
-                $("#support-msg").attr("readonly", true);
-                $("#idBtnSend").css("display", "none");
-                $("#msg-prompt").text("Message has been sent successfully to our team. We will come back to you as soon as possible.");
+                $("#box-form").css("display", "none");
+                
+                let supportAlert1 = '<div class="alert alert-success" role="alert">\
+                <h4 class="alert-heading">Well done!</h4>\
+                <p>We have successfully received your message. Our team will be reviewing it and we will answer you as soon as possible.</p>\
+                <hr>\
+                <p class="mb-0">You can still contact us directly via our contacts below.</p>\
+                </div>';
+
+                $("#alert-support-page").html(supportAlert1);
             }
             else{
                 //message was not sent

@@ -1,8 +1,8 @@
-body{
+/*body{
     margin: 0;
     padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif;
-}
+}*/
 
 .loading-circle{
     position: absolute;
@@ -18,7 +18,7 @@ body{
     z-index: 9999;
 }
 
-.loadingspinner {
+/*.loadingspinner {
 	pointer-events: none;
 	width: 4.5em;
 	height: 4.5em;
@@ -33,10 +33,10 @@ body{
 	100% {
 			transform: rotate(360deg)
 	}
-}
+}*/
 
 
-.page-wrapper{
+/*.page-wrapper{
     padding: 16px;
 }
 
@@ -170,4 +170,48 @@ textarea{
 
 #text-logo:hover {
 	color:#6495ed;
+}*/
+
+/*CSS FOR NEW LOGIN PAGE*/
+.divider:after,
+.divider:before {
+content: "";
+flex: 1;
+height: 1px;
+background: #eee;
+}
+.h-custom {
+height: calc(100% - 73px);
+}
+
+#std_scan_bg{
+    border-radius: 15px;
+}
+#text-slogan{
+    font-style: italic;
+}
+.bottom-socials a{
+    text-decoration: none;
+}
+.bottom-socials i{
+    font-size: 24px;
+}
+.error-text{
+    color: red;
+    font-size: 11px;
+    font-style: italic;
+}
+
+/*CSS for reset page specifically*/
+.box-form{
+    position: relative;
+    width: 90%;
+    left: 5%;
+    padding: 8px;
+}
+
+@media (max-width: 450px) {
+.h-custom {
+height: 100%;
+}
 }

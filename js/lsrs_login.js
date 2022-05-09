@@ -1,5 +1,28 @@
 $(document).ready(function(){
 
+    //Get potentential anouncements from url
+    if(getUrlParameter("signup")!=false && getUrlParameter("emailsent")!=false){
+        if(getUrlParameter("signup")=="success" && getUrlParameter("emailsent")==1){
+            let elementAlert1 = '<div class="alert alert-warning alert-dismissible fade show" role="alert">\
+            <strong>Dear user!</strong> You have successfully registered to our platform. Congratulations!<br>\
+            An email have been successfully sent to your registered email address. Please go to your inbox to confirm your account.<br>\
+            If ever you encounter a problem of any sort, kindly reach to our <a href="#">support team</a>.\
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\
+          </div>';
+            $("#login-page-alert").html(elementAlert1);
+        }
+        else{
+            let elementAlert2 = '<div class="alert alert-warning alert-dismissible fade show" role="alert">\
+            <strong>Dear user!</strong> You have successfully registered to our platform. Congratulations!<br>\
+            But the confirmation email could not be sent to your registered email address.<br>\
+            Do not worry you will have the possibility to request for email confirmation in your account settings.\
+            If ever you encounter another problem, kindly reach to our <a href="#">support team</a>.\
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\
+          </div>';
+            $("#login-page-alert").html(elementAlert2);
+        }
+    }
+
     //Get data from input fields
     $("#idBtnLogin").on("click", function(){
         let emailVar = $("#idEmail").val().trim();
@@ -51,6 +74,23 @@ $(document).ready(function(){
     });
 });
 
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+    return false;
+};
+
+
 function RPLogin(res){
     let accessDenied = false;
     if(res['db_connection']=="SUCCEED" && res['query_error']=="NONE"){
@@ -66,7 +106,6 @@ function RPLogin(res){
         }
 
         if(!accessDenied){
-            //alert("@"+res['username']+" you have logged in successfully");
             //clean the input fields
             $("#idEmail").val("");
             $("#idPassword").val("");

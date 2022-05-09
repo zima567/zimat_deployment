@@ -290,7 +290,11 @@ function MPREvent(res){
         //Continue concatination
         //Get array prices
         let arrPrices = arrEvent['prices'];
-        let lastPrice = arrPrices[0];
+        let lastPrice = {onlinePayment:0, offlinePayment:0, price:"undefined", currency:""};
+        if(arrPrices.length>0){
+            lastPrice = arrPrices[0];
+        }
+
         HTMLElement+='</div>\
         <div class="location-date-time-etc">\
           <span><img src="media/icons/location.png"/><span>'+arrEvent['location']+'</span></span>\

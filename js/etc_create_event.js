@@ -32,8 +32,15 @@ $(document).ready(function(){
                 }
             }
             else{
-                alert("You cannot add more than 3 pictures: "+input.files.length);
+                //alert("You cannot add more than 3 pictures: "+input.files.length);
+                let popHtmlContent = '<p>Oops! You have selected '+input.files.length+'pictures files.<br><br>You can select maximun 3 pictures files</p>';
+                $("#id-content-popup").html(popHtmlContent);
+
+                //Empty files iput
                 $("#event-pictures").val(null);
+                //Show popup
+                $(".custom-model-main").addClass('model-open');
+                
             }
         }
 
@@ -131,14 +138,25 @@ $(document).ready(function(){
                 {
                     console.log("success response...");
                     console.log(data);
+                    RPEventCreation(data);
+
                 }
                });
 
             //alert(eventTitle + eventLocation + eventDateTime);
         }
         else{
-            alert("Empty required fields");
+            //alert("Empty required fields");
+            let popHtmlContent = '<p>Oops! You have empty required field(s).<br><br>Please make sure everything is correct before submitting event</p>';
+            $("#id-content-popup").html(popHtmlContent);
+            $(".custom-model-main").addClass('model-open');
         }
+    });
+
+    //POPUP Handling 
+    //$(".custom-model-main").addClass('model-open');
+    $(".close-btn, .bg-overlay").click(function(){
+        $(".custom-model-main").removeClass('model-open');
     });
 
 
@@ -165,4 +183,61 @@ function currentDateAndTime(){
 function displayCateg(categ, index){
     let addedCateg = "<span class='categ-unit'>"+categ+"<a class='x-delete' id='"+index+"'>X</a></span>";
     $("#event-categ").append(addedCateg);
+}
+
+//Function to process event creation return
+function RPEventCreation(res){
+    if(res['db_connection']=="SUCCEED"){
+        //Connection to DB succeed
+        if(res['status']==1){
+            //event creation succed
+            $("#operation-status-text").text("Your event has been successfully created");
+            $("#see-event-iacc-link").attr("href", "profile.html?e="+res['idCreator']);
+            //Hide event creation wrapper
+            $("#event-creation-wrapper").css("display", "none");
+            //Show box after event submit
+            $("#box-after-event-submit").css("display", "flex");
+        }
+        else{
+            //event creation failed
+            $("#operation-status-icon").html('<i class="bi bi-x-circle-fill"></i>')
+            $("#operation-status-text").text("Event creation failed");
+
+            //Show potentials errors
+            let errorString ="";
+            if(res['dbcon_error']!="NONE"){
+                errorString+='<span>'+res['dbcon_error']+'<span>';
+            }
+            if(res['error_msg']!="NONE"){
+                errorString+='<span>'+res['error_msg']+'<span>';
+            }
+            if(res['posters_failed']!="NONE"){
+                errorString+='<span>'+res['posters_failed']+'<span>';
+            }
+            if(res['query_error']!="NONE"){
+                errorString+='<span>'+res['query_error']+'<span>';
+            }
+            $("#error-log").html(errorString);
+
+            //Create buttons and append
+            if(res['idCreator']==0){
+                let newBtn ='<a href="lsrs_login.html"><button type="button" class="btn btn-light">Log into your account</button></a>';
+                $("#box-action-btns").append(newBtn);
+                //Hide button create new event
+                $("#create-event-link").css("display","none");
+            }
+            
+            //Hide specific buttons
+            $("#see-event-iacc-link").css("display", "none");
+            $("#event-settings-link").css("display", "none");
+           //Hide event creation wrapper
+           $("#event-creation-wrapper").css("display", "none");
+           //Show box after event submit 
+            $("#box-after-event-submit").css("display", "flex");
+        }
+    }
+    else{
+        //connection to DB failed
+        alert("Connection to database failed");
+    }
 }

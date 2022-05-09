@@ -44,7 +44,7 @@ if(isset($_POST['email']) && isValidEmail($_POST['email']) && isset($_POST['supp
             $receiver =$gsv_receiverN1; //by default the receiver of request support will be zimaware@gmail.com
             $receiverTitle = "Our grettings dear team member. You have to help a potential customer of our platform";
             $subject = "Request for support";
-            $body ="<h1>Testing phase</h1><br><p>Support request message: <strong>".$support_msg."</strong></p>";
+            $body ="<h1>SUPPORT REQUEST</h1><br><p>Support request message: <br><p>".$support_msg."</p></p>";
             $altbody ="Support request message: ".$support_msg;
 
             //Start transaction

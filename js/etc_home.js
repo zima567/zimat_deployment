@@ -1,5 +1,15 @@
+
 $(document).ready(function(){
-   
+    
+    //Bottom menu jquery
+   $('.app-navigation-toggle').click(function() {
+
+    $('.app-navigation-container').toggleClass('open', 300);
+
+    $(this).toggleClass('active');
+
+    });
+    
     let pastLimit = getPastdayDate();
     //Unfold events to catalogue //To be modified
     //************************************ */
@@ -11,7 +21,7 @@ $(document).ready(function(){
     })
     .done(function( response ) {
         console.log(response);
-        displayEventToCatalogue2(response);
+        eventsRequestHandler(response);
     })
     .fail(function( xhr, status, errorThrown ) {
         alert( "Sorry, there was a problem!" );
@@ -20,6 +30,108 @@ $(document).ready(function(){
         console.dir( xhr );
     });
     /************************************** */
+
+    /**************USER SUGGESTION START************* */
+    $.ajax({
+        url: "api_php/api_etc_suggestion.php",
+        data: {},
+        type: "POST",
+        //dataType : "json",
+    })
+    .done(function( response ) {
+        console.log(response);
+        usersRequestHandler(response);
+    })
+    .fail(function( xhr, status, errorThrown ) {
+        alert( "Sorry, there was a problem!" );
+        console.log( "Error: " + errorThrown );
+        console.log( "Status: " + status );
+        console.dir( xhr );
+    });
+
+     /**************USER SUGGESTION END************* */
+
+     /*Dislay my Events into subCatalogue */
+    $("#btn-my-events").on("click", function(){
+        //Show sub-catalogue
+        $("#catalogue-my-events-tickets").css("display","flex");
+
+        $.ajax({
+            url: "api_php/api_etc_display.php",
+            data: {myEvent:"VAR_SET"},
+            type: "POST",
+            //dataType : "json",
+        })
+        .done(function( response ) {
+            console.log(response);
+            myEventsRequestHandler(response);
+        })
+        .fail(function( xhr, status, errorThrown ) {
+            alert( "Sorry, there was a problem!" );
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+            console.dir( xhr );
+        });
+
+    });
+
+    /*Display my purchase tickets */
+    $("#btn-my-tickets").on("click", function(){
+       //Show sub-catalogue
+        $("#catalogue-my-events-tickets").css("display","flex");
+        
+        $.ajax({
+            url: "api_php/api_etc_display.php",
+            data: {myTicket:"VAR_SET"},
+            type: "POST",
+            //dataType : "json",
+        })
+        .done(function( response ) {
+            console.log(response);
+            myTicketsRequestHandler(response);
+        })
+        .fail(function( xhr, status, errorThrown ) {
+            alert( "Sorry, there was a problem!" );
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+            console.dir( xhr );
+        });
+
+    });
+
+    $("#catalogue-my-events-tickets").on("click", ".main-action-btn", function(e){
+        e.preventDefault();
+        let ticketID = e.target.id;
+        let thisCard = $(this).closest(".ticketCard");
+        let idCard = $(thisCard).prop("id");
+        let eventTitle = $("#"+idCard).find(".info").find("h1").text();
+        let postImgLink = $("#"+idCard).find(".post-image").attr("src");
+        let eventLocation = $("#"+idCard).find(".this-event-location").text();
+        let eventDateTime = $("#"+idCard).find(".this-event-dateTime").text();
+        let eventPrice = $("#"+idCard).find(".this-event-price").text();
+        let hashCode = $("#"+idCard).find("input").val();
+        let eventCreator = $("#"+idCard).find(".this-event-creator").text();
+        let eventOrderDate = $("#"+idCard).find(".this-event-orderDate").text();
+
+        //Complete the template ticket card
+        $("#id-title-event").text(eventTitle);
+        $("#id-img-poster").attr("src", postImgLink);
+        $("#id-address-event").text(eventLocation); 
+        $("#id-date-time-event").text(eventDateTime); 
+        $("#id-price").text(eventPrice);
+        $("#id-creator").text(eventCreator);  
+        $("#id-purchase-date").text(eventOrderDate); 
+        
+        //Generate the ticket
+        createQRcode(hashCode);
+
+    });
+
+    $("#bottom-show-hide").on("click", function(){
+        if($("#catalogue-my-events-tickets").css("display") =="flex"){
+            $("#catalogue-my-events-tickets").css("display","none");
+        } 
+    });
 
     //logout of the system
     $("#logout").on("click", function(){
@@ -31,7 +143,7 @@ $(document).ready(function(){
         })
         .done(function( response ) {
             console.log(response);
-            //RPLogin(response);
+            logoutHelper(response);
         })
         .fail(function( xhr, status, errorThrown ) {
             alert( "Sorry, there was a problem!" );
@@ -48,7 +160,7 @@ $(document).ready(function(){
     });
 
     //Go to display event page
-    $("#idCatalogue").on("click", "button", function(event){
+    $("#idCatalogue").on("click", ".btn-get-your-ticket", function(event){
         event.preventDefault();
         let eventID = event.target.id;
         eventID = eventID.replace("id-main-action-btn-","");
@@ -86,8 +198,16 @@ $(document).ready(function(){
 
     })
 
+    //POPUP Handling 
+    //$(".custom-model-main").addClass('model-open');
+    $(".close-btn, .bg-overlay").click(function(){
+      $(".custom-model-main").removeClass('model-open');
+    });
+
+
     //End of hadling page complete load with jquery
 });
+
 
 function getPastdayDate() {
 
@@ -141,13 +261,59 @@ function currentDateAndTime(){
     return today;
 }
 
-  
-function displayEventToCatalogue2(res){
-    let arrEventFollowing = res['arr_events_following'];
-    
-    if(arrEventFollowing.length>0){
-        for(let i = 0; i<arrEventFollowing.length; i++){
-            let arrEF = arrEventFollowing[i];
+function createQRcode(codeTicket,logoLink="media/icons/user-temp.png"){
+
+    //TEST QRCODE
+    $.getScript("easyqrcodejs/src/easy.qrcode.js", function() {
+        //Show to allow screenshot
+        //$("#ticket-preview").show();
+        $("#ticketCard-template").css("display","block");
+
+        var qrcode = new QRCode(document.getElementById("qrcode-template"), {
+            text: codeTicket,
+            logo: logoLink,
+            logoWidth: undefined,
+            logoHeight: undefined,
+            logoBackgroundColor: '#f1f1f1',
+            logoBackgroundTransparent: false,
+            backgroundImage: undefined,
+            width: 100,
+            height: 100,
+        });
+
+        html2canvas(document.getElementById("ticketCard-template"),		{
+            allowTaint: true,
+            useCORS: true
+        }).then(function (canvas) {
+            var anchorTag = document.createElement("a");
+            document.body.appendChild(anchorTag);
+            //document.getElementById("previewImg").appendChild(canvas);	
+            anchorTag.download = "filename.jpg";
+            anchorTag.href = canvas.toDataURL();
+            anchorTag.target = '_blank';
+            anchorTag.click();
+        });
+
+        //clear
+        qrcode.clear();
+        $("#ticketCard-template").css("display","none");
+        //$("#ticket-preview").hide();
+        //$("#myModal").css("display","none");
+
+    });
+
+}
+
+function logoutHelper(res){
+    if(res['succ_logout']==1){
+        window.location.replace("lsrs_login.html");
+    }
+}
+
+function appendEventsToCatalogue(arrEventSelection, catalogue="idCatalogue"){
+    if(arrEventSelection.length>0){
+        for(let i = 0; i<arrEventSelection.length; i++){
+            let arrEF = arrEventSelection[i];
             let event_unit = '<div class="post">\
             <div class="info">\
                 <div class="user">';
@@ -218,14 +384,166 @@ function displayEventToCatalogue2(res){
                 <p class="post-time">'+timeSince((new Date(arrEF['postDateTime'])).getTime())+' ago</p>\
                 </div>\
                 <div class="comment-wrapper">\
-                <button class="main-action-btn" id="id-main-action-btn-'+arrEF['idEvent']+'">Get your ticket</button>\
+                <button class="main-action-btn btn-get-your-ticket" id="id-main-action-btn-'+arrEF['idEvent']+'">Get your ticket</button>\
                 <button class="comment-btn" id="id-share-btn">share</button>\
                 </div>\
                 </div>';
     
             //Append this event
-            $("#idCatalogue").append(event_unit);
+            $("#"+catalogue).append(event_unit);
         }
+
+    }else{
+        //No events from following
+        //$("#idCatalogue").append("<h4>No events</h4>");
+        return 0;
+    }
+    //Events have been displayed to catalogue
+    return 1;
+
+}
+
+function appendUserCard(arr, suggest_why){
+    if(arr.length>0){
+        for(let i=0; i<arr.length;i++){
+            let userUnit = arr[i];
+            let tempAvatar = userUnit['avatar'];
+            if(userUnit['avatar']=="NONE"){
+                tempAvatar = "media/icons/user-icon.png";
+            }
+            
+            let elToAppend ='<div class="status-card">\
+                <div class="profile-pic"><a href="profile.html?e='+userUnit['idUser']+'"><img src="media/icons/ripple.gif" class="lazy-user" alt="" data-src="'+tempAvatar+'" data-srcset="'+tempAvatar+'"></a></div>\
+                <p class="username">'+userUnit['username']+'</p>\
+                <p class="infoplus">'+suggest_why+'</p>\
+                </div>';
+            
+            $("#status-wrapper").append(elToAppend);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+function appendMyTickets(arr){
+    if(arr.length>0){
+        for(let i=0;i<arr.length;i++){
+            let unitTicket = arr[i];
+            let HTMLTicketCard = '<div class="post ticketCard" id="ticketCard-id-'+unitTicket['idTicket']+'" >\
+            <div class="info">\
+                <h1>'+unitTicket['title']+'</h1>\
+            </div>';
+
+            //Take care of poster image
+            let arrPosters = unitTicket['posters'];
+            HTMLTicketCard+='<img src="media/icons/loadingSpinner.gif" class="lazy post-image" alt="" data-src="'+arrPosters[0]+'" data-srcset="'+arrPosters[0]+'">';
+            //Continue concatination
+            HTMLTicketCard+='<div class="section-info-qrcode">\
+            <div class="main-info description">\
+                <span><img src="media/icons/location.png"/><span class="this-event-location">'+unitTicket['location']+'</span></span>\
+                <span><img src="media/icons/clock.png"/><span class="this-event-dateTime">'+unitTicket['dateTime']+'</span></span>';
+            
+            //Handle price
+            let arrPrices = unitTicket['prices'];
+            HTMLTicketCard+='<span><img src="media/icons/price.png"/><span class="this-event-price">'+arrPrices[0]+'</span></span>\
+                </div>\
+                <div class="qrcode" id="qrcode-'+unitTicket['idTicket']+'">QRCODE</div>\
+                <input id="hashCode-id-'+unitTicket['idTicket']+'" type="text" style="display:none;" value="'+unitTicket['ticketHash']+'"/>\
+                </div>\
+                <div class="main-info" style="font-style: italic; font-size: 11px; padding: 4px;">\
+                    <span style="margin: 4px;">Creator: <span class="this-event-creator">@'+unitTicket['username']+'</span></span>\
+                    <!--span style="margin: 4px;">Seller: <span>@zima</span></span-->\
+                    <span style="margin: 4px;">Purchase date: <span class="this-event-orderDate">'+unitTicket['orderDate']+'</span></span>\
+                </div>\
+                <div class="comment-wrapper">\
+                <button class="main-action-btn" id="generate-ticket-id-'+unitTicket['idTicket']+'">Generate ticket</button>\
+                </div>\
+                </div>';
+            
+            //Append this ticket to catalogue
+            $("#catalogue-my-events-tickets").append(HTMLTicketCard);
+
+        }
+        return 1;
+    }
+    return 0;
+}
+
+function usersRequestHandler(res){
+    //Set profile image and link to user page
+    let userProfileData = res['arr_status'];
+    if(userProfileData['user_online']!=0){
+        let userLink = "profile.html?e="+userProfileData['idUserOnline'];
+        $("#profile-link").attr("href", userLink);
+        //Set profile link for bottom menu
+        $("#profile-link2").attr("href", userLink);
+        if(userProfileData['user_avatar']!="NONE"){
+            $("#profile-img").attr("src", userProfileData['user_avatar']);
+        }
+    }
+    else{
+        let loginIcon = '<a href="lsrs_login.html"><img src="media/icons/login.png" alt="login-icon"/></a>'
+        $("#logout").html(loginIcon);
+    }
+
+    //Handle return of users as suggestions
+    let arrUsersEL = res['arr_users_EL'];
+    let resultArrUsersEL = appendUserCard(arrUsersEL, "Liked your post");
+    //if(!resultArrUsersEL){alert("No user from which u like events");}
+
+    let arrUsersFY = res['arr_users_FY'];
+    let resultArrUsersFY = appendUserCard(arrUsersFY, "Follows you");
+    //if(!resultArrUsersFY){alert("No user from from following");}
+
+    let arrUsersMTF = res['arr_users_MTF'];
+    let resultArrUsersMTF = appendUserCard(arrUsersMTF, "official account");
+    //if(!resultArrUsersMTF){alert("No user from mandatory");}
+
+            //Lazy load handling
+            let Lazyimages = [].slice.call($(".lazy-user"));
+    
+            if("IntersectionObserver" in window){
+                let observer = new IntersectionObserver((entries, observer)=>{
+                    entries.forEach(function(entry){
+                        if(entry.isIntersecting){
+                            let lazyimage = entry.target;
+                            lazyimage.src = lazyimage.dataset.src;
+                            lazyimage.srcset = lazyimage.dataset.srcset;
+                            lazyimage.classList.remove("lazy-user");
+                            observer.unobserve(lazyimage);
+                        }
+                    })
+                });
+                //Loop through all images
+                Lazyimages.forEach((lazyimage)=>{
+                    observer.observe(lazyimage);
+                })
+            }
+
+}
+
+function eventsRequestHandler(res){
+
+    //Handle return of events from user following
+    let arrEventFollowing = res['arr_events_following'];
+    let resultEventFollowing = appendEventsToCatalogue(arrEventFollowing);
+    //if(!resultEventFollowing){alert("No events from following");}
+
+    let arrEventDefault = res['arr_event_default'];
+    let resultEventDefault = appendEventsToCatalogue(arrEventDefault);
+    //if(!resultEventDefault){alert("No events from Default");}
+
+    if(!resultEventFollowing && !resultEventDefault){
+        let NoEventsTodisplay = '  <div class="no-event-ofyours">\
+            <img src="media/icons/event_icon.png"/>\
+            <p> No event for you,<br>\
+            follow other users to see what they are organizing<br>\
+            <a href="etc_create_event.html">Create your own event</a>. </p>\
+             </div>';
+        $("#idCatalogue").append(NoEventsTodisplay);
+    }
+
+    
 
         //Lazy load handling
         let Lazyimages = [].slice.call($(".lazy"));
@@ -247,12 +565,63 @@ function displayEventToCatalogue2(res){
                 observer.observe(lazyimage);
             })
         }
+}
 
+function myEventsRequestHandler(res){
+    let myEventArr = res['arr_my_event'];
+    //Empty catalogue before appending elements
+    //$("#catalogue-my-events-tickets").empty();
+    $("#catalogue-my-events-tickets").children().not(':first-child').remove();
+    let resultMyEventArr = appendEventsToCatalogue(myEventArr, "catalogue-my-events-tickets");
 
-    }else{
-        //No events from following
-        $("#idCatalogue").append("<h4>No events</h4>");
-    }
+            //Lazy load handling
+            let Lazyimages = [].slice.call($(".lazy"));
+    
+            if("IntersectionObserver" in window){
+                let observer = new IntersectionObserver((entries, observer)=>{
+                    entries.forEach(function(entry){
+                        if(entry.isIntersecting){
+                            let lazyimage = entry.target;
+                            lazyimage.src = lazyimage.dataset.src;
+                            lazyimage.srcset = lazyimage.dataset.srcset;
+                            lazyimage.classList.remove("lazy");
+                            observer.unobserve(lazyimage);
+                        }
+                    })
+                });
+                //Loop through all images
+                Lazyimages.forEach((lazyimage)=>{
+                    observer.observe(lazyimage);
+                })
+            }
+}
+
+function myTicketsRequestHandler(res){
+    let myTicketArr = res['arr_my_ticket'];
+    //$("#catalogue-my-events-tickets").empty();
+    $("#catalogue-my-events-tickets").children().not(':first-child').remove();
+    let resultMyTicketArr = appendMyTickets(myTicketArr);
+
+            //Lazy load handling
+            let Lazyimages = [].slice.call($(".lazy"));
+    
+            if("IntersectionObserver" in window){
+                let observer = new IntersectionObserver((entries, observer)=>{
+                    entries.forEach(function(entry){
+                        if(entry.isIntersecting){
+                            let lazyimage = entry.target;
+                            lazyimage.src = lazyimage.dataset.src;
+                            lazyimage.srcset = lazyimage.dataset.srcset;
+                            lazyimage.classList.remove("lazy");
+                            observer.unobserve(lazyimage);
+                        }
+                    })
+                });
+                //Loop through all images
+                Lazyimages.forEach((lazyimage)=>{
+                    observer.observe(lazyimage);
+                })
+            }
 }
 
 //Function to handle number of likes displayed
@@ -280,7 +649,10 @@ function likeActionHandler(res, eventID, element, imgLikeElement){
     }
     else{
         //something prevent action to work fine
-        alert(res['action_error']+"<br>ETC...");
+        //alert(res['action_error']+"\nETC...");
+        let popHtmlContent = '<p>Sorry! You are not logged in.<br><br><a href="lsrs_login.html"><button class="main-action-btn">LOGIN NOW</button></a></p>';
+        $("#id-content-popup").html(popHtmlContent);
+        $(".custom-model-main").addClass('model-open');
     }
 
 }

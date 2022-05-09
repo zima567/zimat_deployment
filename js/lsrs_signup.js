@@ -2,17 +2,16 @@
     var usernameVerified = false;
     var passwordVerified = false;
     var passwordConfVerified = false;
+    var termsAndConditionsVerified = false;
 
 $(document).ready(function(){
-    //Disable sign up button
-    $("#idBtnSignUp").attr("disabled", true);
 
-    //Focus out email
-    $("#idEmail").focusout(function(){
-        //clean
+    $("#idBtnSignUp").on("click", function(){
+      
+        //EMAIL VALIDATION
         $("#errorEmail").text("");
 
-        //Email validation
+        //Email regex
         let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if($("#idEmail").val().trim().match(regexEmail)){
             verificationRequest(MRPSignup, "EMAIL", $("#idEmail").val().trim());
@@ -26,39 +25,31 @@ $(document).ready(function(){
                 $("#errorEmail").text("This field is required");
             }
         }
-        
-    });
 
-    //Focus out username
-    $("#idUsername").focusout(function(){
-        //clean
+        //USERNAME VALIDATION
         $("#errorUsername").text("");
 
         //At least one lower case English letter, (?=.*?[a-z])
         //minimum 3
         //digit at the end
-        let regexUsername = /^[a-z]{3,}\d*$/;
+        let regexUsername = /^[a-zA-Z_]{3,}\d*$/;
         if($("#idUsername").val().trim().match(regexUsername)){
             verificationRequest(MRPSignup, "USERNAME", $("#idUsername").val());
         }
         else{
 
             if($("#idUsername").val().trim()!=""){
-                $("#errorUsername").text("username must have at least three characters, must have letters(lower case), can have digit at the end");
+                $("#errorUsername").text("The three first characters must be letters, can have underscore, can have digit only at the end");
             }
             else{
                 $("#errorUsername").text("This field is required");
             }
 
         }
-        
-    });
 
-    //Focus out password
-    $("#idPassword").focusout(function(){
+        //PASSWORD VALIDATION
         //clean
         $("#errorPassword").text("");
-        $("#idPasswordConf").val("");
 
         //At least one lower case English letter, (?=.*?[a-z])
         //At least one digit, (?=.*?[0-9])
@@ -69,57 +60,64 @@ $(document).ready(function(){
         if(!$("#idPassword").val().trim().match(regxPassword)){
             $("#errorPassword").text("Minimun 8 characters, at least one letter, one number and one special character");
             passwordVerified = false;
-            activateBtnSubmit();
         }
         else{
             passwordVerified = true;
-            activateBtnSubmit();
         }
-    });
 
-    //Focus out password configuration
-    $("#idPasswordConf").focusout(function(){
-        //clean
-        $("#errorPasswordConf").text("");
-        if($("#idPasswordConf").val().trim() === $("#idPassword").val().trim()){
-            passwordConfVerified = true;
-            activateBtnSubmit();
+        //CONFIRMATION PASSWORD VALIDATION
+         //clean
+         $("#errorPasswordConf").text("");
+
+         if($("#idPasswordConf").val().trim() == $("#idPassword").val().trim()){
+             passwordConfVerified = true;
+         }
+         else{
+             $("#errorPasswordConf").text("password does not match");
+             passwordConfVerified = false;
+         }
+
+
+        
+        if($("#idTermsConditions").is(":checked")){
+            $("#errorTermsAndConditions").text("");
+            termsAndConditionsVerified = true;
         }
         else{
-            $("#errorPasswordConf").text("password does not match");
-            passwordConfVerified = false;
-            activateBtnSubmit();
+            $("#errorTermsAndConditions").text("You cannot proceed without accepting our terms and conditions");
+            termsAndConditionsVerified = false;
         }
-    });
 
-    $("#idBtnSignUp").on("click", function(){
         //values from input fields
-        let emailVar = $("#idEmail").val().trim();
-        let usernameVar = $("#idUsername").val().trim();
-        let passwordVar = $("#idPassword").val().trim();
+        if(emailVerified && usernameVerified && passwordConfVerified && termsAndConditionsVerified){
+            let emailVar = $("#idEmail").val().trim();
+            let usernameVar = $("#idUsername").val().trim();
+            let passwordVar = $("#idPassword").val().trim();
+    
+            //Send the request to the api
+            $.ajax({
+                url: "api_php/api_lsrs_signup.php",
+                data: {"email": emailVar, "username": usernameVar, "password":passwordVar},
+                type: "POST",
+                dataType : "json",
+                beforeSend:function(){
+                    $("#loading-circle").css("display","flex");
+                }
+            })
+            .done(function( response ) {
+                $("#loading-circle").css("display","none");
+                console.log(response);
+                FRPSignup(response);
+            })
+            .fail(function( xhr, status, errorThrown ) {
+                $("#loading-circle").css("display","none");
+                alert( "Sorry, there was a problem!" );
+                console.log( "Error: " + errorThrown );
+                console.log( "Status: " + status );
+                console.dir( xhr );
+            });
+        }
 
-        //Send the request to the api
-        $.ajax({
-            url: "api_php/api_lsrs_signup.php",
-            data: {"email": emailVar, "username": usernameVar, "password":passwordVar},
-            type: "POST",
-            dataType : "json",
-            beforeSend:function(){
-                $("#loading-circle").css("display","flex");
-            }
-        })
-        .done(function( response ) {
-            $("#loading-circle").css("display","none");
-            console.log(response);
-            FRPSignup(response);
-        })
-        .fail(function( xhr, status, errorThrown ) {
-            $("#loading-circle").css("display","none");
-            alert( "Sorry, there was a problem!" );
-            console.log( "Error: " + errorThrown );
-            console.log( "Status: " + status );
-            console.dir( xhr );
-        });
 
     });
 });
@@ -132,12 +130,10 @@ function MRPSignup(res, inputField){
             if(inputField =="EMAIL"){
                 $("#errorEmail").text("This email exists already, signup with another one");
                 emailVerified = false;
-                activateBtnSubmit();
             }
             else if(inputField =="USERNAME"){
                 $("#errorUsername").text("This username exists already, choose another one");
                 usernameVerified = false;
-                activateBtnSubmit();
             }
            
         }
@@ -145,11 +141,9 @@ function MRPSignup(res, inputField){
             //No record found
             if(inputField == "EMAIL"){
                 emailVerified = true;
-                activateBtnSubmit();
             }
             else if(inputField == "USERNAME"){
                 usernameVerified = true;
-                activateBtnSubmit();
             }
         }
      
@@ -180,35 +174,26 @@ function verificationRequest(myFunc, inputField, value){
     });
 }
 
-function activateBtnSubmit(){
-     if(emailVerified && usernameVerified && passwordVerified && passwordConfVerified){
-        $("#idBtnSignUp").attr("disabled", false);
-     }
-     else{
-        $("#idBtnSignUp").attr("disabled", true);
-     }
-}
-
 function FRPSignup(res){
     if(res['db_connection'] =="SUCCEED" && res['query_error']=="NONE"){
         if(res['sign_up_success'] ==1){
+            let emailSend = 0;
+
             $("input").val("");
             emailVerified = false;
             usernameVerified = false;
             passwordVerified = false;
             passwordConfVerified = false;
-            activateBtnSubmit();
-            alert("Successfully registered");
+
+            if(res['email_verification_sent'] == 1){
+                emailSend = 1;
+            }
+
+            window.location.href = "lsrs_login.html?signup=success&emailsent="+emailSend;
+            
         }
         else{
             alert("Sign up failed, please try again by paying carefull attention to the requirements");
-        }
-
-        if(res['email_verification_sent'] == 1){
-            alert("verification link has been sent to your email address");
-        }
-        else{
-            alert("Verification link failed to be sent. Try request for verification in your profile account");
         }
     }
 }

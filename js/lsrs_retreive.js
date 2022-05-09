@@ -5,14 +5,32 @@ var passwordVerifiedConf = false;
 $(document).ready(function(){
 
     //At first hide code field and btn submit
-    $("#idBtnSubmitCode").css("display","none");
-    $("#idCode").css("display","none");
     $("#idRequestCode").attr("disabled", true);
-    $("#receiveNewCode").css("display", "none");
-    $(".block-pwd-reset").css("display", "none");
+    $("#box-submit-code").css("display","none");
+    $("#box-reset-fields").css("display","none");
+    //$("#receiveNewCode").css("display", "none");
+    //$(".block-pwd-reset").css("display", "none");
    
+    $("#idEmail").on("change", function(){
+        $("#errorEmail").text("");
+
+        //Email validation
+       let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+       if($("#idEmail").val().trim().match(regexEmail)){
+           verificationRequest(MRPVerification, "EMAIL", $("#idEmail").val().trim());
+       }
+       else{
+           if($("#idEmail").val().trim()!=""){
+               $("#errorEmail").text("Incorrect email address");
+           }
+           else{
+               $("#errorEmail").text("This field is required");
+           }
+       }
+
+    });
     //Verified if email exist in our database
-    $("#idEmail").focusout(function(){
+    /*$("#idEmail").focusout(function(){
         $("#errorEmail").text("");
 
              //Email validation
@@ -29,9 +47,36 @@ $(document).ready(function(){
                     $("#errorEmail").text("This field is required");
                 }
             }
+    });*/
+
+    /*$("#idNewPwd").focusout(function(){
+        
     });
 
-    $("#idNewPwd").focusout(function(){
+      //Focus out password configuration
+      $("#idConfNewPwd").focusout(function(){
+        
+    });*/
+
+    //On click on request code btn
+    $("#idRequestCode").on("click", function(e){
+        e.preventDefault();
+        ResetRequest(MRPReset, "SEND_CODE", $("#idEmail").val().trim());
+    });
+
+    //On click on submit code btn
+    $("#idBtnSubmitCode").on("click", function(e){
+        e.preventDefault();
+        //$("#errorCode").text("");
+        //$("#receiveNewCode").css("display", "none");
+        ResetRequest(MRPReset, "SUBMIT_CODE", $("#idEmail").val().trim(), $("#idCode").val().trim());
+    });
+
+    //On click on reset code btn
+    $("#idBtnReset").on("click", function(e){
+        e.preventDefault();
+
+        //HANDLE PASSWORD
         $("#errorNewPwd").text("");
         $("#errorConfNewPwd").val("");
 
@@ -44,44 +89,30 @@ $(document).ready(function(){
         if(!$("#idNewPwd").val().trim().match(regxPassword)){
             $("#errorNewPwd").text("Minimun 8 characters, at least one letter, one number and one special character");
             passwordVerified = false;
-            activateBtnSubmit();
+            //activateBtnSubmit();
         }
         else{
             passwordVerified = true;
-            activateBtnSubmit();
+            //activateBtnSubmit();
         }
-    });
 
-      //Focus out password configuration
-      $("#idConfNewPwd").focusout(function(){
+        //HANDLE CONFIRMATION PASSWORD
         //clean
         $("#errorConfNewPwd").text("");
         if($("#idConfNewPwd").val().trim() === $("#idNewPwd").val().trim()){
             passwordVerifiedConf = true;
-            activateBtnSubmit();
+            //activateBtnSubmit();
         }
         else{
             $("#errorConfNewPwd").text("password does not match");
             passwordVerifiedConf = false;
-            activateBtnSubmit();
+            //activateBtnSubmit();
         }
-    });
 
-    //On click on request code btn
-    $("#idRequestCode").on("click", function(){
-        ResetRequest(MRPReset, "SEND_CODE", $("#idEmail").val().trim());
-    });
-
-    //On click on submit code btn
-    $("#idBtnSubmitCode").on("click", function(){
-        $("#errorCode").text("");
-        $("#receiveNewCode").css("display", "none");
-        ResetRequest(MRPReset, "SUBMIT_CODE", $("#idEmail").val().trim(), $("#idCode").val().trim());
-    });
-
-    //On click on reset code btn
-    $("#idBtnReset").on("click", function(){
-        ResetRequest(MRPReset, "RESET_PASSWORD", $("#idEmail").val().trim(), $("#idNewPwd").val().trim());
+        if(passwordVerified && passwordVerifiedConf){
+            ResetRequest(MRPReset, "RESET_PASSWORD", $("#idEmail").val().trim(), $("#idNewPwd").val().trim());
+        }
+        
     });
 
     //On click on resendCode after failed match code submission
@@ -147,15 +178,16 @@ function MRPReset(res, option){
         //Analize the response then do some action
         if(res['option_status'] ==1){
             //display field to insert code and btn to submit it
-            $("#idEmail").attr("disabled", true);
-            $("#idRequestCode").css("display","none");
-            $("#idCode").css("display","block");
-            $("#idBtnSubmitCode").css("display","block");
+            $("#box-request-code").css("display","none");
+            $("#box-submit-code").css("display","block");
+            //$("#idCode").css("display","block");
+            //$("#idBtnSubmitCode").css("display","block");
         }
         else{
             //send a message that code failed to be sent
             $("#errorEmail").text("Code failed to be sent to that email address");
             $("#idRequestCode").text("Resend code");
+            $("#idRequestCode").attr("disabled", true);
 
         }
     }
@@ -163,34 +195,49 @@ function MRPReset(res, option){
         //Analize the response then do some action
         if(res['option_status'] == 1){
             //display fields and btn to rest pwd
-            $("#idCode").css("display","none");
-            $("#idBtnSubmitCode").css("display","none");
-            $(".block-pwd-reset").css("display", "block");
-            $("#idBtnReset").attr("disabled", true);
+            $("#box-submit-code").css("display","none");
+            ///$("#idBtnSubmitCode").css("display","none");
+            $("#box-reset-fields").css("display", "block");
+           // $("#idBtnReset").attr("disabled", true);
         }
         else{
             //Code did not match. cannot reset pwd.
             submitCodeTry = submitCodeTry +1;
-            $("#errorCode").text("The code you entered did not match");
-            $("#receiveNewCode").css("display", "block");
+            $("#errorCode").text("The code you entered did not match, you can ask for code to be resent by clicking below");
 
-            if(submitCodeTry>4){
+            //if(submitCodeTry>4){
                 //refresh page
-                location.reload();
-            }
+                //location.reload();
+            //}
         }
     }
     else if(option =="RESET_PASSWORD"){
 
-        $(".block-pwd-reset").css("display", "none");
+        //$("#box-reset-fields").css("display", "none");
+        //Hide the form
+        $("#box-form").css("display","none");
         if(res['option_status'] ==1){
             //Password has been reset successfully
-            $("#main-msg").text("Password has been reset successfully! Now you can login your account with your new password.");
+            let pwdAlert1 = '<div class="alert alert-success" role="alert">\
+            <h4 class="alert-heading">Well done!</h4>\
+            <p>You successfully changed your password. Now you can easily login into your account with those credentials.</p>\
+            <hr>\
+            <p class="mb-0">Do you want to login now? <a href="lsrs_login.html">Log in</a></p>\
+          </div>';
+
+           $("#box-alert-reset").html(pwdAlert1);
     
         }
         else{
             //password failed to be reset
-            $("#main-msg").text("Password failed to be reset. Please try again. If you need help reach to our customer service");
+            let pwdAlert2 = '<div class="alert alert-success" role="alert">\
+            <h4 class="alert-heading">Well done!</h4>\
+            <p>We are sorry, the reset of your password has been unsuccessful. Please try again.</p>\
+            <hr>\
+            <p class="mb-0">Cannot reset your password? <a href="lsrs_support.html">Contact our customer support</a></p>\
+          </div>';
+
+          $("#box-alert-reset").html(pwdAlert2);
         }
     }
     else{
@@ -210,11 +257,11 @@ function ResetRequest(myFunc, option, email, value=""){
         type: "POST",
         dataType : "json",
         beforeSend:function(){
-            $("#loading-circle").css("display","flex");
+           // $("#loading-circle").css("display","flex");
         }
     })
     .done(function( response ) {
-        $("#loading-circle").css("display","none");
+        //$("#loading-circle").css("display","none");
         console.log(response);
         myFunc(response, option);
     })

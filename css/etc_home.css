@@ -84,6 +84,22 @@ body{
     background-size: cover;
 }
 
+/*User display when feed is empty*/
+.no-event-ofyours{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.no-event-ofyours p {
+    text-align: center;
+    font: 200;
+    font-weight: 100;
+    font-family:Georgia, 'Times New Roman', Times, serif; 
+}
+
 /*POSTS*/
 .post{
     width: 100%;
@@ -179,7 +195,7 @@ body{
     height: 30px;
 }
 
-.comment-wrapper .main-action-btn{
+.main-action-btn{
     border: none;
     border-radius: 15px;
     padding: 8px;
@@ -270,13 +286,18 @@ body{
     margin-right: 15px;
 }
 
+.status-card .infoplus{
+    font-size: 9px;
+    font-style: italic;
+}
+
 .profile-pic{
     width: 70px;
     height: 70px;
     border-radius: 50%;
     overflow: hidden;
     padding: 3px;
-    background: linear-gradient(45deg, rgb(255, 230, 0), rgb(255, 0, 128) 80%);
+    background: linear-gradient(45deg, rgb(131,234,241), rgb(99,164,255) 80%);
 }
 
 .profile-pic img{
@@ -352,6 +373,264 @@ body{
     font-weight: 700;
     margin: 20px 0;
 }
+
+/*CSS Bottom navigation*/
+.app-navigation-container {
+    background-color: white;
+    position: fixed;
+    bottom: 60px;
+    left: 10%;
+    width: 80%;
+    margin: auto;
+    border-radius: 15px;
+    overflow: hidden;
+    height: 0;
+}
+
+.app-navigation-container.open {
+    height: auto;
+}
+
+.app-navigation-container-header {
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 18px;
+    background-color: rgb(245, 245, 245);
+    padding: 5px 0;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.app-navigation-container-icons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.app-navigation-container-icon {
+    width: 20%;
+    text-align: center;
+    font-size: 50px;
+    padding: 25px 0;
+}
+
+.app-navigation-container-icon a {
+    color: rgb(60, 60, 60);
+}
+
+.app-navigation-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: white;
+    text-align: center;
+    line-height: 40px;
+    color: rgb(230, 230, 230);
+    position: fixed;
+    top: calc(100% - 50px);
+    left: calc(50% - 20px);
+    cursor: pointer;
+    transition: all 200ms;
+}
+
+/*CSS POPUP INFORMATION BOX*/
+.custom-model-main {
+    text-align: center;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0; /* z-index: 1050; */
+    -webkit-overflow-scrolling: touch;
+    outline: 0;
+    opacity: 0;
+    -webkit-transition: opacity 0.15s linear, z-index 0.15;
+    -o-transition: opacity 0.15s linear, z-index 0.15;
+    transition: opacity 0.15s linear, z-index 0.15;
+    z-index: -1;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+  .model-open {
+    z-index: 99999;
+    opacity: 1;
+    overflow: hidden;
+  }
+  .custom-model-inner {
+    -webkit-transform: translate(0, -25%);
+    -ms-transform: translate(0, -25%);
+    transform: translate(0, -25%);
+    -webkit-transition: -webkit-transform 0.3s ease-out;
+    -o-transition: -o-transform 0.3s ease-out;
+    transition: -webkit-transform 0.3s ease-out;
+    -o-transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out;
+    display: inline-block;
+    vertical-align: middle;
+    width: 600px;
+    margin: 30px auto;
+    max-width: 97%;
+  }
+  .custom-model-wrap {
+    display: block;
+    width: 100%;
+    position: relative;
+    background-color: #fff;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+    background-clip: padding-box;
+    outline: 0;
+    text-align: left;
+    padding: 20px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    max-height: calc(100vh - 70px);
+      overflow-y: auto;
+  }
+  .model-open .custom-model-inner {
+    -webkit-transform: translate(0, 0);
+    -ms-transform: translate(0, 0);
+    transform: translate(0, 0);
+    position: relative;
+    z-index: 999;
+  }
+  .model-open .bg-overlay {
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99;
+  }
+  .bg-overlay {
+    background: rgba(0, 0, 0, 0);
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    -webkit-transition: background 0.15s linear;
+    -o-transition: background 0.15s linear;
+    transition: background 0.15s linear;
+  }
+  .close-btn {
+    position: absolute;
+    right: 0;
+    top: -30px;
+    cursor: pointer;
+    z-index: 99;
+    font-size: 30px;
+    color: #fff;
+  }
+
+  /*CSS MY CATALOGUE-MYEVENTS-TICKETS*/
+  .button-mini-menu{
+    background-color: white;
+    border-radius: 5px;   
+  }
+
+ 
+  .button-mini-menu button{
+      padding: 12px;
+      border-radius: 15px;
+      border: none;
+      margin: 8px;
+  }
+
+  .button-mini-menu button i{
+      font-size: 16px;
+      padding-right: 8px;
+  }
+  .catalogue-my-events-tickets{
+      border: 2px solid #81b1b9;
+      box-shadow: 2px 12px 2px 1px rgba(0, 0, 255, .2);
+      border-radius: 5px;
+      max-height: 1200px;
+      padding: 12px;
+      background-color: white;
+      display: none;
+      flex-direction: column;
+      overflow-x: hidden;
+      overflow-y: auto;
+    
+  }
+
+  .catalogue-my-events-tickets .post{
+      /*width: 50%;*/
+  }
+
+  /*box-info & QRcode*/
+  .post .section-info-qrcode{
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around; 
+  }
+
+  .section-info-qrcode .main-info{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+  }
+
+  .section-info-qrcode .qrcode{
+    width: 100px;
+    height: 100px;
+    background-color: azure;
+  }
+
+.catalogue-my-events-tickets .ticketCard .comment-wrapper{
+    justify-content: center;
+}
+.catalogue-my-events-tickets .ticketCard .main-action-btn{
+   width: 80%;
+}
+
+  
+  @media screen and (min-width:800px){
+      .custom-model-main:before {
+        content: "";
+        display: inline-block;
+        height: auto;
+        vertical-align: middle;
+        margin-right: -0px;
+        height: 100%;
+      }
+  }
+  @media screen and (max-width:799px){
+    .custom-model-inner{margin-top: 45px;}
+  }
+/*END CSS POPUP*/  
+
+.app-navigation-toggle:hover {
+    background-color: rgb(200, 200, 200);
+}
+
+.app-navigation-toggle.active {
+    background-color: rgb(200, 200, 200);
+}
+
+@media screen and (max-width:992px) {
+    .app-navigation-container-icon {
+        width: 25%;
+    }
+}
+
+@media screen and (max-width:768px) {
+    .app-navigation-container-icon {
+        width: 50%;
+    }
+}
+
+/*END Bottom navbar CSS*/
 
 @media (max-width: 1100px){
     .right-col, .search-box{

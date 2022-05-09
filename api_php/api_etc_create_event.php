@@ -11,7 +11,7 @@ $APIResponse = array_merge($APIResponse, $con_status);
 
 //Utilities variables
 $queryError = array("query_error"=>"NONE");
-$eventCreationResult = array("status"=>0, "error_msg"=>"NONE", "posters_failed"=>"NONE");
+$eventCreationResult = array("status"=>0, "error_msg"=>"NONE", "posters_failed"=>"NONE", "idCreator"=>0);
 $errorUpload="NONE";
 $arrPosterToUpload = array();
 $FILES_length = 0;
@@ -19,6 +19,7 @@ $FILES_length = 0;
 
 if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
     //user is online
+    $eventCreationResult['idCreator'] = $_SESSION['idUser'];
     //Verified if user is certified in order to add payment on the platform*****************
 
     if(isset($_POST['title']) && $_POST['title']!="" && isset($_POST['location']) && $_POST['location'] && isset($_POST['dateTime']) && $_POST['dateTime']){

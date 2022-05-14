@@ -1,10 +1,20 @@
 var bio ="";
 
 $(document).ready(function(){
+
+    //Bottom menu jquery
+   $('.app-navigation-toggle').click(function() {
+
+    $('.app-navigation-container').toggleClass('open', 300);
+
+    $(this).toggleClass('active');
+
+    });
+
     //api destination file
     let destination = "api_php/api_profile.php";
      //Get the user ID from the URL
-     let userID = getParameter('e');
+     let userID = getParameter("e");
      let obj ={idUser:userID};
     //let obj ={idUser:2};
     standardFunctionRequest(destination, obj, stdDisplayUserInfo);
@@ -14,34 +24,12 @@ $(document).ready(function(){
         let bioReprocessed = displayFullBio(bio);
         $("#user_bio_text").text(bioReprocessed);
     });
+
     //OnClick on see-less
     $("#see-less").on("click", function(){
         let bioReprocessed = displayBio(bio);
         $("#user_bio_text").text(bioReprocessed);
     });
-
-    $("#myBtn").on("click", function(){
-        $("#myModal").css("display","block");
-    });
-
-    $("#x-modal").on("click", function(){
-        $("#myModal").css("display","none");
-    });
-
-    //Take of ticket save and generation
-    $("#content-tab-ticket").on("click", ".generate-qrcode", function(e){
-        e.preventDefault();
-        let ticketID = e.target.id;
-
-        //Then send the request with the ticketID
-        //Then fill the html template with the response
-        //pass the hashcode to the function that create qrcode save the img
-        //hide then clean everything
-        let hash = "www.zimaware.com"
-        createQRcode(hash);
-
-    });
-
 
     //To show fullscreen profile picture
     $("#user_main_avatar").on("click", function(){
@@ -55,6 +43,52 @@ $(document).ready(function(){
     $("#close-full-screen").on("click", function(){
         
        $("#fullPageDisplay").fadeOut();
+    });
+
+    //HANDLE BUTTONS ACTIONS CLICKS
+    $("#button-action").on("click", ".follow_unfollow", function(e){
+        e.preventDefault();
+        let userID = e.target.id;
+        userID = userID.replace("btn-un-follow-id-","");
+        let actionType = "FOLLOW_UNFOLLOW";
+
+        $.ajax({
+            url: "api_php/api_btn_action.php",
+            data: {actionType: actionType, user_to_follow_unfollow: userID, actionDateTime: currentDateAndTime()},
+            type: "POST",
+            dataType : "json",
+        })
+        .done(function( response ) {
+            console.log(response);
+            MPBtnFollowUnfollow(response);
+        })
+        .fail(function( xhr, status, errorThrown ) {
+            alert( "Sorry, there was a problem!" );
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+            console.dir( xhr );
+        });
+
+    });
+
+    //logout of the system
+    $("#logout").on("click", function(){
+        $.ajax({
+            url: "api_php/api_lsrs_logout.php",
+            data: {},
+            type: "POST",
+            dataType : "json",
+        })
+        .done(function( response ) {
+            console.log(response);
+            logoutHelper(response);
+        })
+        .fail(function( xhr, status, errorThrown ) {
+            alert( "Sorry, there was a problem!" );
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+            console.dir( xhr );
+        });
     });
 
 });
@@ -74,6 +108,29 @@ function getParameter(p)
     }
 }
 
+//Get current date and time
+function currentDateAndTime(){
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    var hours = today.getHours();
+        if(hours<10) hours = "0"+hours;
+    var minutes = today.getMinutes();
+        if(minutes<10) minutes = "0"+minutes;
+    var seconds = today.getSeconds();
+        if(seconds<10) seconds = "0"+seconds;
+    today = yyyy+'-'+ mm + '-' + dd +"T"+hours+":"+minutes+":"+ seconds;
+
+    return today;
+}
+
+function logoutHelper(res){
+    if(res['succ_logout']==1){
+        window.location.replace("lsrs_login.html");
+    }
+}
+
 function displayBio(bio){
     let bioLength = bio.length;
     let sliceBio = bio;
@@ -87,10 +144,10 @@ function displayBio(bio){
     return sliceBio;
 }
 
-function displayFullBio(bio){
+function displayFullBio(biographie){
     $("#see-more").css("display", "none");
     $("#see-less").css("display", "block");
-    return bio;
+    return biographie;
 }
 
 
@@ -130,59 +187,88 @@ function displayTotalNumber(total){
     return myTotStr;
 }
 
-function stdDisplayUserInfo(res){
-    //Handle user avar
-    if(res['avatar'] =="NONE"){
-        $("#userimage").attr("src", "media/icons/user-icon.png");
-    }
-    else{
-        $("#userimage").attr("src", res['avatar']);
-    }
-
-    $("#user-fname-lname").text(res['firstName']+" "+ res['lastName']);
-    $("#username").text(res['username']);
-
-    //Display bio
-    bio = res['bio'];
-    $("#user_bio_text").text(displayBio(bio));
-
-    //Take care of total user events
-    let totEvent ='';
-    if(res['events']>1){
-        totEvent ='<h2>'+res['events']+'</h2> <span>EVENTS</span>';
-    }
-    else{
-        totEvent ='<h2>'+res['events']+'</h2> <span>EVENT</span>';
-    }
-    $("#event-tot").html(totEvent);
-
-    //Take care of total following
-    let totFollowing ='<h2>'+displayTotalNumber(res['following'])+'</h2> <span>FOLLOWING</span>';
-    $("#following-tot").html(totFollowing);
-
-    //take care of total followers
-    let totFollowers = '';
-    if(res['followers']>1){
-        totFollowers = '<h2>'+displayTotalNumber(res['followers'])+'</h2> <span>FOLLOWERS</span>';
-    }
-    else{
-        totFollowers = '<h2>'+displayTotalNumber(res['followers'])+'</h2> <span>FOLLOWER</span>';
-    }
-    $("#followers-tot").html(totFollowers);
-
-    if(res['actor']=="SELF"){
-        $("#btn-follow").css("display","none");
-        $("#btn-unfollow").css("display","none");
-    }
-    else{
-        $("#btn-edit").css("display","none");
-        if(res['alreadyFollower']==1){
-            $("#btn-follow").css("display","none");
+function MPBtnFollowUnfollow(res){
+    if(res['status']==1){
+        //Update number of followers
+        let totFollowers = '';
+        if(res['total']>1){
+            totFollowers = '<h2>'+displayTotalNumber(res['total'])+'</h2> <span>FOLLOWERS</span>';
         }
         else{
-            $("#btn-unfollow").css("display","none");
+            totFollowers = '<h2>'+displayTotalNumber(res['total'])+'</h2> <span>FOLLOWER</span>';
+        }
+        $("#followers-tot").html(totFollowers);
+      
+        if(res['actionType']=="FOLLOW"){
+            $("#button-action .follow_unfollow").text("UNFOLLOW");
+        }
+        else{
+            $("#button-action .follow_unfollow").text("FOLLOW"); 
+        }
+    }
+}
+
+function stdDisplayUserInfo(res){
+  if(res['user_found']==1){
+        //Handle user avar
+        if(res['avatar'] =="NONE"){
+            $("#userimage").attr("src", "media/icons/user-icon.png");
+        }
+        else{
+            $("#userimage").attr("src", res['avatar']);
         }
 
+        $("#user-fname-lname").text(res['firstName']+" "+ res['lastName']);
+        $("#username").text(res['username']);
+
+        //Display bio
+        bio = res['bio'];
+        $("#user_bio_text").text(displayBio(bio));
+
+        //Take care of total user events
+        let totEvent ='';
+        if(res['events']>1){
+            totEvent ='<h2>'+res['events']+'</h2> <span>EVENTS</span>';
+        }
+        else{
+            totEvent ='<h2>'+res['events']+'</h2> <span>EVENT</span>';
+        }
+        $("#event-tot").html(totEvent);
+
+        //Take care of total following
+        let totFollowing ='<h2>'+displayTotalNumber(res['following'])+'</h2> <span>FOLLOWING</span>';
+        $("#following-tot").html(totFollowing);
+
+        //take care of total followers
+        let totFollowers = '';
+        if(res['followers']>1){
+            totFollowers = '<h2>'+displayTotalNumber(res['followers'])+'</h2> <span>FOLLOWERS</span>';
+        }
+        else{
+            totFollowers = '<h2>'+displayTotalNumber(res['followers'])+'</h2> <span>FOLLOWER</span>';
+        }
+        $("#followers-tot").html(totFollowers);
+
+        if(res['actor']=="SELF"){
+            //$("#btn-follow").css("display","none");
+            //$("#btn-unfollow").css("display","none");
+            let groupBtn = '<button id="btn-edit-id-'+res['idUser']+'">EDIT</button>\
+                            <button id="btn-share-id-'+res['idUser']+'">SHARE</button>';
+            $("#button-action").append(groupBtn);
+        }
+        else{
+            //$("#btn-edit").css("display","none");
+            if(res['alreadyFollower']==1){
+                //$("#btn-follow").css("display","none");
+                $("#button-action").append('<button class="follow_unfollow" id="btn-un-follow-id-'+res['idUser']+'">UNFOLLOW</button> ');
+            }
+            else{
+                //$("#btn-unfollow").css("display","none");
+                $("#button-action").append('<button class="follow_unfollow" id="btn-un-follow-id-'+res['idUser']+'">FOLLOW</button>');
+            }
+            $("#button-action").append('<button id="btn-share-id-'+res['idUser']+'">SHARE</button>');
+
+        }
     }
     
 }
@@ -254,7 +340,7 @@ function consoleDisplay(res){
 
  //*/
 
-function createQRcode(codeTicket, logoLink="media/icons/user-temp.png"){
+/*function createQRcode(codeTicket, logoLink="media/icons/user-temp.png"){
 
     //TEST QRCODE
     $.getScript("easyqrcodejs/src/easy.qrcode.js", function() {
@@ -294,4 +380,4 @@ function createQRcode(codeTicket, logoLink="media/icons/user-temp.png"){
 
     });
 
-}
+}*/

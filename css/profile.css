@@ -228,77 +228,84 @@
     align-items: center;
 }
 
-.tab-user-account{
-    border: 1px solid blue;
-    display: flex;
-    flex-direction: row;
-    justify-content: left;
-}
 
-.tab-user-account span{
-    padding: 8px;
-    margin: 4px;
-}
-
-.wrapper-contents{
-    border: 1px solid green;
-    min-height: 250px;
-    margin-bottom: 100px;
-}
-
-/*Ticket card*/
-.ticket-wrapper{
-    border:1px solid red;
-    padding: 8px;
+/*CSS Bottom navigation*/
+.app-navigation-container {
+    background-color: white;
+    position: fixed;
+    bottom: 60px;
+    left: 10%;
+    width: 80%;
+    margin: auto;
     border-radius: 15px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-   
+    overflow: hidden;
+    height: 0;
 }
 
+.app-navigation-container.open {
+    height: auto;
+}
 
-/*Modal CSS*/
-/* The Modal (background) */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  }
-  
-  /* Modal Content/Box */
-  .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
-  }
-  
-  /* The Close Button */
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
+.app-navigation-container-header {
+    text-align: center;
+    text-transform: uppercase;
     font-weight: bold;
-  }
-  
-  .close:hover,
-  .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-  }
+    font-size: 18px;
+    background-color: rgb(245, 245, 245);
+    padding: 5px 0;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
 
-  .ticket-content .qrcode{
-      border: 1px solid blue;
-      width: 100px;
-      height: 100px;
-  }
+.app-navigation-container-icons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.app-navigation-container-icon {
+    width: 20%;
+    text-align: center;
+    font-size: 50px;
+    padding: 25px 0;
+}
+
+.app-navigation-container-icon a {
+    color: rgb(60, 60, 60);
+}
+
+.app-navigation-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: white;
+    text-align: center;
+    line-height: 40px;
+    color: rgb(230, 230, 230);
+    position: fixed;
+    top: calc(100% - 50px);
+    left: calc(50% - 20px);
+    cursor: pointer;
+    transition: all 200ms;
+}
+
+.app-navigation-toggle:hover {
+    background-color: rgb(200, 200, 200);
+}
+
+.app-navigation-toggle.active {
+    background-color: rgb(200, 200, 200);
+}
+
+@media screen and (max-width:992px) {
+    .app-navigation-container-icon {
+        width: 25%;
+    }
+}
+
+@media screen and (max-width:768px) {
+    .app-navigation-container-icon {
+        width: 50%;
+    }
+}
+/*END Bottom navigation*/

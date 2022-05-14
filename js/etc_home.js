@@ -181,9 +181,9 @@ $(document).ready(function(){
 
         $.ajax({
             url: "api_php/api_btn_action.php",
-            data: {actionType: actionType, eventID: eventID, likeDateTime: currentDateAndTime()},
+            data: {actionType: actionType, eventID: eventID, actionDateTime: currentDateAndTime()},
             type: "POST",
-            //dataType : "json",
+            dataType : "json",
         })
         .done(function( response ) {
             console.log(response);
@@ -484,6 +484,9 @@ function usersRequestHandler(res){
     else{
         let loginIcon = '<a href="lsrs_login.html"><img src="media/icons/login.png" alt="login-icon"/></a>'
         $("#logout").html(loginIcon);
+
+        //For bottom menu
+        $("#profile-link2").attr("href", "lsrs_login.html");
     }
 
     //Handle return of users as suggestions
@@ -631,13 +634,13 @@ function likeActionHandler(res, eventID, element, imgLikeElement){
 
         let parentNodeID = $(element).closest(".post-content").prop("id");
        
-        if(res['total_likes']>1){
+        if(res['total']>1){
         
-            $('#'+parentNodeID).find('#event-like-nbr-'+eventID).html(res['total_likes']+" likes");
+            $('#'+parentNodeID).find('#event-like-nbr-'+eventID).html(res['total']+" likes");
         }
         else{
             
-            $('#'+parentNodeID).find('#event-like-nbr-'+eventID).html(res['total_likes']+" likes");
+            $('#'+parentNodeID).find('#event-like-nbr-'+eventID).html(res['total']+" likes");
         }
 
         if(res['status']==1){

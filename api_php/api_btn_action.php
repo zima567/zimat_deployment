@@ -11,7 +11,7 @@ $APIResponse = array_merge($APIResponse, $con_status);
 
 //Utilities variables
 $queryError = array("query_error"=>"NONE");
-$actionResult = array("status"=>0, "actionType"=>"NONE", "total_likes"=>0, "action_error"=>"NONE");
+$actionResult = array("status"=>0, "actionType"=>"NONE", "total"=>0, "action_error"=>"NONE");
 $errorMsg="";
 
 //Post variables
@@ -20,8 +20,7 @@ $errorMsg="";
 if(isset($_SESSION['idUser']) && isset($_POST['actionType'])){
     //post variables here...
     $actionType = $_POST['actionType'];
-    $eventID = $_POST['eventID'];
-    $likeDateTime = isset($_POST['likeDateTime'])? $_POST['likeDateTime'] : "0000-00-00 00:00:00";
+    $actionDateTime = isset($_POST['actionDateTime'])? $_POST['actionDateTime'] : "0000-00-00 00:00:00";
 
     try{
 
@@ -37,16 +36,30 @@ if(isset($_SESSION['idUser']) && isset($_POST['actionType'])){
         $sql_all_like = "SELECT `idLikerFK` FROM `event_like` WHERE `idEventFK` =?";
         $stmt_all_like = $connection->prepare($sql_all_like);
 
-        if($actionType=="EVENT_LIKE"){
+        $sql_is_follower = "SELECT `idFollowerFK` FROM `user_follower` WHERE `idUserFK` =? AND `idFollowerFK` =?";
+        $stmt_is_follower = $connection->prepare($sql_is_follower);
+
+        $sql_set_follower = "INSERT INTO `user_follower`(`idUserFK`, `idFollowerFK`, `followDate`) VALUES(?,?,?)";
+        $stmt_set_follower = $connection->prepare($sql_set_follower);
+
+        $sql_remove_follower = "DELETE FROM `user_follower` WHERE `idUserFK` =? AND `idFollowerFK` =?";
+        $stmt_remove_follower = $connection->prepare($sql_remove_follower);
+
+        $sql_all_follower = "SELECT `idFollowerFK` FROM `user_follower` WHERE `idUserFK` =?";
+        $stmt_all_follower = $connection->prepare($sql_all_follower);
+
+
+        if($actionType=="EVENT_LIKE" && isset($_POST['eventID'])){
+            $eventID = $_POST['eventID'];
             //Handle like for event
             $actionResult['actionType'] = "EVENT_LIKE";
             //Test if user already like event
             $stmt_event_like->execute([$eventID, $_SESSION['idUser']]);
             if(!$stmt_event_like->rowCount()>0){
                 //User haven't liked event yet
-                $stmt_add_event_like->execute([$eventID, $_SESSION['idUser'], $likeDateTime]);
+                $stmt_add_event_like->execute([$eventID, $_SESSION['idUser'], $actionDateTime]);
                 $stmt_all_like->execute([$eventID]);
-                $actionResult['total_likes'] = $stmt_all_like->rowCount();
+                $actionResult['total'] = $stmt_all_like->rowCount();
                 $actionResult['status'] = 1;
             }
             else{
@@ -54,9 +67,32 @@ if(isset($_SESSION['idUser']) && isset($_POST['actionType'])){
                 //Automatically the unlike query will be executed
                 $stmt_remove_event_like->execute([$eventID, $_SESSION['idUser']]);
                 $stmt_all_like->execute([$eventID]);
-                $actionResult['total_likes'] = $stmt_all_like->rowCount();
+                $actionResult['total'] = $stmt_all_like->rowCount();
                 $actionResult['status'] = 2;
             }
+        }
+        elseif($actionType=="FOLLOW_UNFOLLOW" && isset($_POST['user_to_follow_unfollow'])){
+            //Handle follow or unfollow
+            $userCible = $_POST['user_to_follow_unfollow'];
+            $stmt_is_follower->execute([$userCible, $_SESSION['idUser']]);
+            if(!$stmt_is_follower->rowCount()>0){
+                //follow this user
+                $stmt_set_follower->execute([$userCible, $_SESSION['idUser'], $actionDateTime]);
+                $stmt_all_follower->execute([$userCible]);
+                $actionResult['total'] = $stmt_all_follower->rowCount();
+                $actionResult['actionType'] = "FOLLOW";
+                $actionResult['status'] = 1;
+            }
+            else{
+                //Unfollow user
+                $stmt_remove_follower->execute([$userCible, $_SESSION['idUser']]);
+                $stmt_all_follower->execute([$userCible]);
+                $actionResult['total'] = $stmt_all_follower->rowCount();
+                $actionResult['actionType'] = "UNFOLLOW";
+                $actionResult['status'] = 1;
+
+            }
+
         }
         else{
             //Action not handled

@@ -1,7 +1,7 @@
 /*REALISATION DATABASE FOR TICKETMARKETPLACE PROJECT*/
-DROP SCHEMA IF EXISTS `zimaware_zimatdb`;
-CREATE SCHEMA IF NOT EXISTS `zimaware_zimatdb` DEFAULT CHARACTER SET utf8 ;
-USE `zimaware_zimatdb` ;
+-- DROP SCHEMA IF EXISTS `zimaware_zimatdb`;
+-- CREATE SCHEMA IF NOT EXISTS `zimaware_zimatdb` DEFAULT CHARACTER SET utf8 ;
+-- USE `zimaware_zimatdb` ;
 
 -- -----------------------------------------------------
 -- Table `zimaware_zimatdb`.`user`
@@ -19,12 +19,12 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_profile` (
   `idUserFK` INT NOT NULL,
-  `avatar` VARCHAR(255) NULL DEFAULT("NONE"),
-  `firstName` VARCHAR(255) NULL DEFAULT("NONE"),
-  `lastName` VARCHAR(255) NULL DEFAULT("NONE"),
-  `address` VARCHAR(255) NULL DEFAULT("NONE"),
-  `bio` TEXT(300) NULL DEFAULT("NONE"),
-  `verification_email` BOOLEAN NOT NULL DEFAULT(0),
+  `avatar` VARCHAR(255) NULL DEFAULT "NONE",
+  `firstName` VARCHAR(255) NULL DEFAULT "NONE",
+  `lastName` VARCHAR(255) NULL DEFAULT "NONE",
+  `address` VARCHAR(255) NULL DEFAULT "NONE",
+  `bio` TEXT(300) NULL,
+  `verification_email` BOOLEAN NOT NULL DEFAULT 0,
   PRIMARY KEY (`idUserFK`),
   INDEX `fk_idUserFK_user_user_profile_index` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_user_user_profile`
@@ -39,10 +39,10 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_socials` (
   `idUserFK` INT NOT NULL,
-  `facebook` VARCHAR(255) NULL DEFAULT("NONE"),
-  `instagram` VARCHAR(255) NULL DEFAULT("NONE"),
-  `twitter` VARCHAR(255) NULL DEFAULT("NONE"),
-  `vk` VARCHAR(255) NULL DEFAULT("NONE"),
+  `facebook` VARCHAR(255) NULL DEFAULT "NONE",
+  `instagram` VARCHAR(255) NULL DEFAULT "NONE",
+  `twitter` VARCHAR(255) NULL DEFAULT "NONE",
+  `vk` VARCHAR(255) NULL DEFAULT "NONE",
   PRIMARY KEY (`idUserFK`),
   INDEX `fk_idUserFK_user_user_socials_index` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_user_user_socials`
@@ -96,7 +96,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_verified` (
   `idUserFK` INT NOT NULL auto_increment,
   `doc` VARCHAR(255) NULL,
-  `verified` BOOLEAN DEFAULT(0),
+  `verified` BOOLEAN DEFAULT 0,
   PRIMARY KEY (`idUserFK`),
    INDEX `index_user_verified_From_origin` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_idUser_user_verified`
@@ -150,10 +150,10 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_pricing` (
   `idPrice` INT NOT NULL auto_increment,
-  `price` DECIMAL(6,2) DEFAULT(0000.00),
+  `price` DECIMAL(6,2) DEFAULT 0000.00,
   `currency` VARCHAR(255) NULL,
-  `onlinePayment` BOOLEAN DEFAULT(0),
-  `offlinePayment` BOOLEAN DEFAULT(0),
+  `onlinePayment` BOOLEAN DEFAULT 0,
+  `offlinePayment` BOOLEAN DEFAULT 0,
   `latestUpdate` DATETIME NULL,
   `idEventFK` INT NOT NULL,
   PRIMARY KEY (`idPrice`),
@@ -192,8 +192,8 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_agent` (
   `idAgentFK` INT NOT NULL,
   `idEventFK` INT NOT NULL,
-  `sellingRight` BOOLEAN DEFAULT(0),
-  `scanningRight` BOOLEAN DEFAULT(0),
+  `sellingRight` BOOLEAN DEFAULT 0,
+  `scanningRight` BOOLEAN DEFAULT 0,
   `contact` VARCHAR(255) NULL,
   `location` VARCHAR(255) NULL,
   PRIMARY KEY (`idAgentFK`, `idEventFK`),
@@ -216,7 +216,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_ticket` (
   `idTicket` INT NOT NULL auto_increment,
   `ticketHash` VARCHAR(255) NULL,
-  `sold` BOOLEAN DEFAULT(0),
+  `sold` BOOLEAN DEFAULT 0,
   `idEventFK` INT NOT NULL,
   PRIMARY KEY (`idTicket`),
  INDEX `index_idTicket_From_origin` (`idTicket` ASC),
@@ -235,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`ticket_order` (
   `idCustomerFK` INT NOT NULL,
   `idPriceFK` INT NOT NULL,
   `orderDate` DATETIME,
-  `scanned` BOOLEAN DEFAULT(0),
+  `scanned` BOOLEAN DEFAULT 0,
   `idAgentFK` INT NULL,
   PRIMARY KEY (`idTicketFK`, `idCustomerFK`),
   INDEX `index_idTicketFK_From_idTicket` (`idTicketFK` ASC),
@@ -266,9 +266,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_ticket_counter` (
   `idEventFK` INT NOT NULL,
-  `totalTicket` INT NULL DEFAULT(0),
-  `qtSold` INT NULL DEFAULT(0),
-  `totalTicketOrigin` INT NULL DEFAULT(0),
+  `totalTicket` INT NULL DEFAULT 0,
+  `qtSold` INT NULL DEFAULT 0,
+  `totalTicketOrigin` INT NULL DEFAULT 0,
   PRIMARY KEY (`idEventFK`),
   INDEX `index_idEventFK_From_idEvent` (`idEventFK` ASC),
   CONSTRAINT `fk_idEventFK_idEvent_eventTicketCounter`

@@ -177,7 +177,7 @@ function verificationRequest(myFunc, inputField, value){
 function FRPSignup(res){
     if(res['db_connection'] =="SUCCEED" && res['query_error']=="NONE"){
         if(res['sign_up_success'] ==1){
-            let emailSend = 0;
+            let emailSend = -1;
 
             $("input").val("");
             emailVerified = false;

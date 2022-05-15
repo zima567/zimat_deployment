@@ -490,8 +490,8 @@ function usersRequestHandler(res){
     }
 
     //Handle return of users as suggestions
-    let arrUsersEL = res['arr_users_EL'];
-    let resultArrUsersEL = appendUserCard(arrUsersEL, "Liked your post");
+    //let arrUsersEL = res['arr_users_EL'];
+    //let resultArrUsersEL = appendUserCard(arrUsersEL, "Liked your post");
     //if(!resultArrUsersEL){alert("No user from which u like events");}
 
     let arrUsersFY = res['arr_users_FY'];
@@ -526,6 +526,11 @@ function usersRequestHandler(res){
 }
 
 function eventsRequestHandler(res){
+    //Show or Hide menu myEvents & myTickets depending on online status
+    let arrStatus = res['arr_status'];
+    if(arrStatus['user_online']==0){
+        $("#box-menu-events-tickets").css("display","none");
+    }
 
     //Handle return of events from user following
     let arrEventFollowing = res['arr_events_following'];
@@ -537,12 +542,13 @@ function eventsRequestHandler(res){
     //if(!resultEventDefault){alert("No events from Default");}
 
     if(!resultEventFollowing && !resultEventDefault){
-        let NoEventsTodisplay = '  <div class="no-event-ofyours">\
-            <img src="media/icons/event_icon.png"/>\
-            <p> No event for you,<br>\
-            follow other users to see what they are organizing<br>\
-            <a href="etc_create_event.html">Create your own event</a>. </p>\
-             </div>';
+        let NoEventsTodisplay = '<div class="no-event-ofyours" style="margin-top:40px">\
+            <img src="media/icons/nothing1.gif"/>\
+            <p> No suggestion for you,<br>\
+            Choose your categories of interest<br>\
+            Follow people to know what they are planning<br>\
+            </div>';
+
         $("#idCatalogue").append(NoEventsTodisplay);
     }
 
@@ -577,6 +583,16 @@ function myEventsRequestHandler(res){
     $("#catalogue-my-events-tickets").children().not(':first-child').remove();
     let resultMyEventArr = appendEventsToCatalogue(myEventArr, "catalogue-my-events-tickets");
 
+    if(!resultMyEventArr){
+        let NothingTodisplay = '<div class="no-event-ofyours">\
+            <img src="media/icons/nothing1.gif"/>\
+            <p> No event created yet,<br>\
+            Want to create an event? <a href="etc_create_event.html">Create a new event</a><br>\
+            </div>';
+
+        $("#catalogue-my-events-tickets").append(NothingTodisplay);
+    }
+
             //Lazy load handling
             let Lazyimages = [].slice.call($(".lazy"));
     
@@ -604,6 +620,14 @@ function myTicketsRequestHandler(res){
     //$("#catalogue-my-events-tickets").empty();
     $("#catalogue-my-events-tickets").children().not(':first-child').remove();
     let resultMyTicketArr = appendMyTickets(myTicketArr);
+    if(!resultMyTicketArr){
+        let NothingTodisplay = '<div class="no-event-ofyours">\
+            <img src="media/icons/nothing1.gif"/>\
+            <p> Your ticket wallet is empty<br>\
+            </div>';
+
+        $("#catalogue-my-events-tickets").append(NothingTodisplay);
+    }
 
             //Lazy load handling
             let Lazyimages = [].slice.call($(".lazy"));

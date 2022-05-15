@@ -57,6 +57,9 @@ try{
     $sql_get_poster = "SELECT `linkToPoster` FROM `event_poster` WHERE `idEventFK` =? ORDER BY `dateUploaded` DESC LIMIT 1";
     $stmt_get_poster = $connection->prepare($sql_get_poster);
 
+    $sql_select_price = "SELECT `price`, `currency`, `onlinePayment`, `offlinePayment` FROM `event_pricing` WHERE `idEventFK`=? ORDER BY `latestUpdate`";
+    $stmt_price = $connection->prepare($sql_select_price);
+
     //Algorithm
     //1-execute sql_user_info 2- execute user followers, 3- execute user following 4-select all event from user, count_rows
     //send back variable SELF/NOT_SELF 
@@ -97,18 +100,29 @@ try{
             $temp_user_events = array();
 
             while($row_user_events = $stmt_user_events->fetch()){
+                //Get event first poster
                 $stmt_get_poster->execute([$row_user_events['idEvent']]);
                 $event_poster_link = "NONE";
                 if($stmt_get_poster->rowCount()>0){
                     $row_e_link = $stmt_get_poster->fetch();
                     $event_poster_link = $row_e_link['linkToPoster'];
                 }
+
+                //Get event price
+                $stmt_price->execute([$row_user_events['idEvent']]);
+                $event_price = "NONE";
+                if($stmt_price->rowCount()>0){
+                    $row_price = $stmt_price->fetch();
+                    $event_price = $row_price['price']." ".$row_price['currency'];
+                }
+
                 array_push($temp_user_events, array("idEvent"=>$row_user_events['idEvent'],
                                                     "title"=>$row_user_events['title'],
                                                     "location"=>$row_user_events['location'],
                                                     "dateTime"=>$row_user_events['dateTime'],
                                                     "status"=>$row_user_events['status'],
                                                     "postDateTime"=>$row_user_events['postDateTime'],
+                                                    "price"=>$event_price,
                                                     "posterLink"=>$event_poster_link));
             }
             $temp_arr_info['arrEvent'] = $temp_user_events;

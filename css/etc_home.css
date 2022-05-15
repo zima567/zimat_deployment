@@ -91,13 +91,17 @@ body{
     width: 100%;
     justify-content: center;
     align-items: center;
+    padding:50px 8px;
+    border-radius: 18px;
+    background-color: white;
+    border: 2px solid #fafafa;
 }
 
 .no-event-ofyours p {
     text-align: center;
-    font: 200;
-    font-weight: 100;
-    font-family:Georgia, 'Times New Roman', Times, serif; 
+    font-size: 12px;
+    margin-top:12px;
+    color: rgba(0, 0, 0, 0.5)
 }
 
 /*POSTS*/
@@ -239,10 +243,18 @@ body{
 /*Status bar*/
 .main{
     width: 100%;
-    padding: 40px 0;
+    /*padding: 70px 0;*/
     display: flex;
     justify-content: center;
-    margin-top: 50px;
+    margin-top:14px;
+}
+
+.main-user-card{
+    margin-top: 70px;
+}
+
+.main-wrapper-catalogues{
+    padding-bottom: 80px;
 }
 
 .wrapper{
@@ -532,8 +544,11 @@ body{
 
   /*CSS MY CATALOGUE-MYEVENTS-TICKETS*/
   .button-mini-menu{
+    display: flex;
+    justify-content: center;
+    align-items: center; 
     background-color: white;
-    border-radius: 5px;   
+    border-radius: 15px;  
   }
 
  
@@ -553,7 +568,7 @@ body{
       box-shadow: 2px 12px 2px 1px rgba(0, 0, 255, .2);
       border-radius: 5px;
       max-height: 1200px;
-      padding: 12px;
+      padding: 26px 12px 40px;
       background-color: white;
       display: none;
       flex-direction: column;
@@ -562,9 +577,6 @@ body{
     
   }
 
-  .catalogue-my-events-tickets .post{
-      /*width: 50%;*/
-  }
 
   /*box-info & QRcode*/
   .post .section-info-qrcode{

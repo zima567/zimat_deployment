@@ -6,14 +6,14 @@ require ("connection.php");
 
 //api response
 //$APIResponse = array();
-$APIResponse = array("arr_status"=>array(), "arr_users_EL"=>array(), "arr_users_FY"=>array(), "arr_users_MTF"=>array());
+$APIResponse = array("arr_status"=>array(), "arr_users_FY"=>array(), "arr_users_MTF"=>array());
 //$APIResponse = array_merge($APIResponse, $con_status);
 //array_push($APIResponse, array()); // api_response[0] will contain status con, status query,
 
 //Utilities variables
 $queryError = array("query_error"=>"NONE", "user_online"=>0, "username"=>"NONE", "user_avatar"=>"NONE", "idUserOnline"=>0);
 //Array user you've like events of
-$arrUsersEL = array();
+//$arrUsersEL = array();
 //Array user who is following you
 $arrUsersFY = array();
 //Array user of platform
@@ -48,7 +48,7 @@ try{
         $queryError['user_avatar'] = $row_info_user['avatar'];
 
         //select user of which you like events
-        $stmt2->execute([$idUserOnline]);
+       /* $stmt2->execute([$idUserOnline]);
         if($stmt2->rowCount()>0){
             while($row_users_EL = $stmt2->fetch()){
                 $stmt_check_if_follow->execute([$row_users_EL['idUser'], $idUserOnline]);
@@ -59,7 +59,7 @@ try{
                                                   "avatar"=>$row_users_EL['avatar']));
                 }
             }
-        }
+        }*/
 
         //Select user who follows
         $stmt3->execute([$idUserOnline]);
@@ -108,7 +108,7 @@ try{
 $arr_status = array_merge($con_status, $queryError);
 //$APIResponse = array("arr_status"=>array(), "arr_events_following"=>array(), "arr_event_related_categ"=>array(), "arr_event_default"=>array());
 $APIResponse['arr_status'] = $arr_status;
-$APIResponse['arr_users_EL'] = $arrUsersEL;
+//$APIResponse['arr_users_EL'] = $arrUsersEL;
 $APIResponse['arr_users_FY'] = $arrUsersFY;
 $APIResponse['arr_users_MTF'] = $arrUsersMTF;
 

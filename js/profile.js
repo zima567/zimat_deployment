@@ -71,6 +71,13 @@ $(document).ready(function(){
 
     });
 
+    //Flip card event JS
+    
+    $("#container-events-flip-card").on("click", ".card-event", function(e){
+        e.preventDefault();
+        this.classList.toggle('is-flipped');
+    });
+
     //logout of the system
     $("#logout").on("click", function(){
         $.ajax({
@@ -269,6 +276,10 @@ function stdDisplayUserInfo(res){
             $("#button-action").append('<button id="btn-share-id-'+res['idUser']+'">SHARE</button>');
 
         }
+
+        //Append event card into corresponding catalogue
+        requestHandlerEventCard(res);
+
     }
     
 }
@@ -294,6 +305,71 @@ function standardFunctionRequest(destination, dataObj, helperFunc){
 
 function consoleDisplay(res){
     console.log(res);
+}
+
+function appendEventsCardTo(arr){
+    if(arr.length>0){
+        for(let i=0; i<arr.length;i++){
+            let unitEvent = arr[i];
+            let posterLink = unitEvent['posterLink'];
+            if(posterLink == "NONE"){
+                posterLink = "media/icons/cover 11.png";
+            }
+            let HTMLEventElement = '<div class="wrapper-flip-card">\
+            <div class="scene scene--card">\
+                <div class="card-event">\
+                  <div class="card__face card__face--front">\
+                      <img id="img-poster-flip" class="lazy" src="media/icons/loadingSpinner.gif" data-src="'+posterLink+'" data-srcset="'+posterLink+'" width="100%" height="100%"/>\
+                  </div>\
+                  <div class="card__face card__face--back" id="back-card-flip">\
+                    <span>'+unitEvent['title']+'</span>\
+                      <span><span><img src="media/icons/clock.png"/></span>'+unitEvent['dateTime']+'</span>\
+                      <span><span><img src="media/icons/location.png"/></span>'+unitEvent['location']+'</span>\
+                      <span><span><img src="media/icons/price.png"/></span>'+unitEvent['price']+'</span>\
+                  </div>\
+                </div>\
+            </div>\
+            <div class="container-btn">\
+                <a href="etc_display_event.html?e='+unitEvent['idEvent']+'"><button>View event</button></a>\
+            </div>\
+        </div>';
+
+        //Append event card to the catalogue
+        $("#container-events-flip-card").append(HTMLEventElement);
+
+        }
+        return 1;
+    }
+    return 0;
+}
+
+function requestHandlerEventCard(res){
+   if(res['actor']!="SELF"){
+        let arrEvent = res['arrEvent'];
+        let resultArrEvent = appendEventsCardTo(arrEvent);
+
+        //Lazy load handling
+        let Lazyimages = [].slice.call($(".lazy"));
+        
+        if("IntersectionObserver" in window){
+            let observer = new IntersectionObserver((entries, observer)=>{
+                entries.forEach(function(entry){
+                    if(entry.isIntersecting){
+                        let lazyimage = entry.target;
+                        lazyimage.src = lazyimage.dataset.src;
+                        lazyimage.srcset = lazyimage.dataset.srcset;
+                        lazyimage.classList.remove("lazy");
+                        observer.unobserve(lazyimage);
+                    }
+                })
+            });
+            //Loop through all images
+            Lazyimages.forEach((lazyimage)=>{
+                observer.observe(lazyimage);
+            })
+        }
+   }
+
 }
 
 

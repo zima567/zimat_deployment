@@ -147,7 +147,10 @@ $(document).ready(function(){
         $("#id-purchase-date").text(eventOrderDate); 
         
         //Generate the ticket
-        createQRcode(hashCode);
+        //Create URL + Hash
+        let urlHash = "localhost/zimat_deployment/webscanner.html?th="+ encodeURIComponent(hashCode);
+        console.log(urlHash);
+        createQRcode(urlHash);
 
     });
 

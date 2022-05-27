@@ -6,7 +6,7 @@ require ("connection.php");
 
 $APIResponse = array("arr_status"=>array());
 
-$arr_return_stat = array("scan_status"=>0, "isUserOnline"=>0);
+$arr_return_stat = array("scan_status"=>0, "isUserOnline"=>0, "idUserOnline"=>0);
 $arr_return_stat = array_merge($arr_return_stat, $con_status);
 $trueVar =1;
 $falseVar =0;
@@ -33,6 +33,7 @@ try{
     
     if(isset($_SESSION['idUser'])){
         //SET FALGS
+        $arr_return_stat['idUserOnline'] = $_SESSION['idUser'];
         $arr_return_stat['isUserOnline'] = 1;
 
         //GET POST VAR

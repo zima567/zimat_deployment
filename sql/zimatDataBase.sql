@@ -4,6 +4,50 @@ CREATE SCHEMA IF NOT EXISTS `zimaware_zimatdb` DEFAULT CHARACTER SET utf8 ;
 USE `zimaware_zimatdb` ;
 
 -- -----------------------------------------------------
+-- Table `zimaware_zimatdb`.`currency`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`currency` (
+  `idCurrency` INT NOT NULL auto_increment,
+  `currencyCode` VARCHAR(255) NOT NULL,
+  `currencyName` VARCHAR(255) NULL,
+  PRIMARY KEY (`idCurrency`))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `zimaware_zimatdb`.`country`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`country` (
+  `idCountry` INT NOT NULL auto_increment,
+  `name` VARCHAR(255),
+  `idCurrencyFK` INT NULL,
+  `language` VARCHAR(255),
+  `isFederation` BOOLEAN DEFAULT 0,
+  PRIMARY KEY (`idCountry`),
+   INDEX `country_From_origin` (`idCountry` ASC),
+  CONSTRAINT `fk_idCurrencyFK_idCurrency_country`
+    FOREIGN KEY (`idCurrencyFK`)
+    REFERENCES `zimaware_zimatdb`.`currency` (`idCurrency`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `zimaware_zimatdb`.`cities`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`cities` (
+  `idCity` INT NOT NULL auto_increment,
+  `name` VARCHAR(255),
+  `idCountryFK` INT NOT NULL,
+  PRIMARY KEY (`idCity`),
+   INDEX `cities_From_origin` (`idCity` ASC),
+  CONSTRAINT `fk_idCountryFK_idCountry_cities`
+    FOREIGN KEY (`idCountryFK`)
+    REFERENCES `zimaware_zimatdb`.`country` (`idCountry`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `zimaware_zimatdb`.`user`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user` (
@@ -19,18 +63,31 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_profile` (
   `idUserFK` INT NOT NULL,
-  `avatar` VARCHAR(255) NULL DEFAULT("NONE"),
-  `firstName` VARCHAR(255) NULL DEFAULT("NONE"),
-  `lastName` VARCHAR(255) NULL DEFAULT("NONE"),
-  `address` VARCHAR(255) NULL DEFAULT("NONE"),
-  `bio` TEXT(300) NULL DEFAULT("NONE"),
-  `verification_email` BOOLEAN NOT NULL DEFAULT(0),
+  `avatar` VARCHAR(255) NULL DEFAULT "NONE",
+  `firstName` VARCHAR(255) NULL DEFAULT "NONE",
+  `lastName` VARCHAR(255) NULL DEFAULT "NONE",
+  `location_country` INT NULL,
+  `location_city` INT NULL,
+  `address` VARCHAR(255) NULL DEFAULT "NONE",
+  `bio` TEXT(300) NULL,
+  `categ_profiling` TEXT(300) NULL,
+  `verification_email` BOOLEAN NOT NULL DEFAULT 0,
   PRIMARY KEY (`idUserFK`),
   INDEX `fk_idUserFK_user_user_profile_index` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_user_user_profile`
 	FOREIGN KEY (`idUserFK`)
     REFERENCES `zimaware_zimatdb`.`user` (`idUser`)
     ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+CONSTRAINT `fk_location_country_user_profile`
+	FOREIGN KEY (`location_country`)
+    REFERENCES `zimaware_zimatdb`.`country` (`idCountry`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+CONSTRAINT `fk_location_city_user_profile`
+	FOREIGN KEY (`location_city`)
+    REFERENCES `zimaware_zimatdb`.`cities` (`idCity`)
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -39,10 +96,10 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_socials` (
   `idUserFK` INT NOT NULL,
-  `facebook` VARCHAR(255) NULL DEFAULT("NONE"),
-  `instagram` VARCHAR(255) NULL DEFAULT("NONE"),
-  `twitter` VARCHAR(255) NULL DEFAULT("NONE"),
-  `vk` VARCHAR(255) NULL DEFAULT("NONE"),
+  `facebook` VARCHAR(255) NULL DEFAULT "NONE",
+  `instagram` VARCHAR(255) NULL DEFAULT "NONE",
+  `twitter` VARCHAR(255) NULL DEFAULT "NONE",
+  `vk` VARCHAR(255) NULL DEFAULT "NONE",
   PRIMARY KEY (`idUserFK`),
   INDEX `fk_idUserFK_user_user_socials_index` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_user_user_socials`
@@ -96,7 +153,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_verified` (
   `idUserFK` INT NOT NULL auto_increment,
   `doc` VARCHAR(255) NULL,
-  `verified` BOOLEAN DEFAULT(0),
+  `verified` BOOLEAN DEFAULT 0,
   PRIMARY KEY (`idUserFK`),
    INDEX `index_user_verified_From_origin` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_idUser_user_verified`
@@ -114,6 +171,8 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event` (
   `title` VARCHAR(255) NULL,
   `postMessage` VARCHAR(255),
   `description` TEXT(300) NULL,
+  `location_country` INT NOT NULL,
+  `location_city` INT NOT NULL,
   `location` VARCHAR(255),
   `dateTime` DATETIME NOT NULL,
   `status` VARCHAR(255) NULL, /*OUTDATED, SCHEDULED, POSPONED*/
@@ -124,6 +183,16 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event` (
   CONSTRAINT `fk_directorFK_idUser`
     FOREIGN KEY (`directorFK`)
     REFERENCES `zimaware_zimatdb`.`user` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+    CONSTRAINT `fk_location_country_idCountry`
+    FOREIGN KEY (`location_country`)
+    REFERENCES `zimaware_zimatdb`.`country` (`idCountry`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+    CONSTRAINT `fk_location_city_idCity`
+    FOREIGN KEY (`location_city`)
+    REFERENCES `zimaware_zimatdb`.`cities` (`idCity`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -150,10 +219,10 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_pricing` (
   `idPrice` INT NOT NULL auto_increment,
-  `price` DECIMAL(6,2) DEFAULT(0000.00),
+  `price` DECIMAL(6,2) DEFAULT 0000.00,
   `currency` VARCHAR(255) NULL,
-  `onlinePayment` BOOLEAN DEFAULT(0),
-  `offlinePayment` BOOLEAN DEFAULT(0),
+  `onlinePayment` BOOLEAN DEFAULT 0,
+  `offlinePayment` BOOLEAN DEFAULT 0,
   `latestUpdate` DATETIME NULL,
   `idEventFK` INT NOT NULL,
   PRIMARY KEY (`idPrice`),
@@ -192,8 +261,8 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_agent` (
   `idAgentFK` INT NOT NULL,
   `idEventFK` INT NOT NULL,
-  `sellingRight` BOOLEAN DEFAULT(0),
-  `scanningRight` BOOLEAN DEFAULT(0),
+  `sellingRight` BOOLEAN DEFAULT 0,
+  `scanningRight` BOOLEAN DEFAULT 0,
   `contact` VARCHAR(255) NULL,
   `location` VARCHAR(255) NULL,
   PRIMARY KEY (`idAgentFK`, `idEventFK`),
@@ -216,7 +285,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_ticket` (
   `idTicket` INT NOT NULL auto_increment,
   `ticketHash` VARCHAR(255) NULL,
-  `sold` BOOLEAN DEFAULT(0),
+  `sold` BOOLEAN DEFAULT 0,
   `idEventFK` INT NOT NULL,
   PRIMARY KEY (`idTicket`),
  INDEX `index_idTicket_From_origin` (`idTicket` ASC),
@@ -233,9 +302,12 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`ticket_order` (
   `idTicketFK` INT NOT NULL,
   `idCustomerFK` INT NOT NULL,
+  `securityCode` VARCHAR(255) NULL,
   `idPriceFK` INT NOT NULL,
   `orderDate` DATETIME,
-  `scanned` BOOLEAN DEFAULT(0),
+  `scanned` BOOLEAN DEFAULT 0,
+  `whoFK` INT NULL,
+  `when` DATETIME NULL,
   `idAgentFK` INT NULL,
   PRIMARY KEY (`idTicketFK`, `idCustomerFK`),
   INDEX `index_idTicketFK_From_idTicket` (`idTicketFK` ASC),
@@ -258,6 +330,11 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`ticket_order` (
     FOREIGN KEY (`idAgentFK`)
     REFERENCES `zimaware_zimatdb`.`event_agent` (`idAgentFK`)
     ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+    CONSTRAINT `fk_whoFK_idUser_TicketOrder`
+    FOREIGN KEY (`whoFK`)
+    REFERENCES `zimaware_zimatdb`.`event_agent` (`idAgentFK`)
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -266,9 +343,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_ticket_counter` (
   `idEventFK` INT NOT NULL,
-  `totalTicket` INT NULL DEFAULT(0),
-  `qtSold` INT NULL DEFAULT(0),
-  `totalTicketOrigin` INT NULL DEFAULT(0),
+  `totalTicket` INT NULL DEFAULT 0,
+  `qtSold` INT NULL DEFAULT 0,
+  `totalTicketOrigin` INT NULL DEFAULT 0,
   PRIMARY KEY (`idEventFK`),
   INDEX `index_idEventFK_From_idEvent` (`idEventFK` ASC),
   CONSTRAINT `fk_idEventFK_idEvent_eventTicketCounter`
@@ -319,3 +396,30 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_like` (
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+
+-- DEFAULT INSERT QUERIES INTO OUR DATABASE
+-- insert default categories
+INSERT INTO `zimaware_zimatdb`.`category` (`title`) VALUES
+("Education"),("Sport"),("Entertainment"),("Politics"),("Healthcare");
+
+-- insert default curencies
+INSERT INTO `zimaware_zimatdb`.`currency`(`currencyCode`, `currencyName`) VALUES
+("Rubles","Russian Rouble"),("Gourdes","Haitian Gourde"),("USD","Dollar americain");
+
+-- insert default countries
+INSERT INTO `zimaware_zimatdb`.`country` (`name`, `idCurrencyFK`, `language`, `isFederation`) VALUES
+("Haiti",(SELECT `currency`.`idCurrency` FROM `currency` WHERE `currency`.`currencyCode`="Gourdes"),"French", 0),
+("Russia",(SELECT `currency`.`idCurrency` FROM `currency` WHERE `currency`.`currencyCode`="Rubles"),"Russian", 1),
+("USA",(SELECT `currency`.`idCurrency` FROM `currency` WHERE `currency`.`currencyCode`="USD"),"English", 1);
+
+-- insert default cities
+INSERT INTO `zimaware_zimatdb`.`cities` (`name`, `idCountryFK`) VALUES
+("Cayes", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Haiti")),
+("Camp-Perrin", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Haiti")),
+("Port-au-Prince", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Haiti")),
+("Jacmel", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Haiti")),
+("Cap-Haitien", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Haiti")),
+("Jeremie", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Haiti")),
+("Oryol", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Russia")),
+("Moscow", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Russia"));

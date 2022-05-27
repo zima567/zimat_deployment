@@ -229,7 +229,7 @@ function stdDisplayUserInfo(res){
         $("#username").text(res['username']);
 
         //Display bio
-        bio = res['bio'];
+        bio = res['bio']==null? "NONE" : res['bio']; //Pay attention to what might return null to avoid bugs
         $("#user_bio_text").text(displayBio(bio));
 
         //Take care of total user events

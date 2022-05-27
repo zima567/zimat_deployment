@@ -29,6 +29,8 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
         $postMessage = isset($_POST['postMessage'])? $_POST['postMessage'] : ""; 
         $description = isset($_POST['description'])? $_POST['description'] : "";
         $location = $_POST['location'];
+        $location_country = $_POST['location_country'];
+        $location_city = $_POST['location_city'];
         $dateTime = $_POST['dateTime'];
         $arrCateg = isset($_POST['arrCateg'])? $_POST['arrCateg'] : array();
         //$arrCateg = array("Daniel", "wawa");
@@ -56,7 +58,7 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
                     // Check whether file type is valid 
                     $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION); 
                     if(in_array($fileType, $allowTypes)){ 
-                        if($_FILES["posters"]["size"][$key] <= 800000){
+                        if($_FILES["posters"]["size"][$key] <= 1572864){ //1.5MB
                                 // Upload file to server 
                             if(move_uploaded_file($_FILES["posters"]["tmp_name"][$key], $targetFilePath)){
                                 //Base on where this image will be use in folder structure we remove ../
@@ -93,8 +95,15 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
         try{
             //Queries
             //Think about adding a transaction for the queries*********
-            $sql_insert_event = "INSERT INTO `event` (`title`, `postMessage`, `description`, `location`, `dateTime`, `status`, `directorFK`,`postDateTime`) VALUES(?,?,?,?,?,?,?,?)";
+            $sql_insert_event = "INSERT INTO `event` (`title`, `postMessage`, `description`, `location_country`, `location_city`, `location`, `dateTime`, `status`, `directorFK`,`postDateTime`) VALUES(?,?,?,?,?,?,?,?,?,?)";
             $stmt1 = $connection->prepare($sql_insert_event);
+
+            //Get country and city ids of event
+            $sql_id_country = "SELECT `idCountry` FROM `country` WHERE `name` =?";
+            $stmt_id_country = $connection->prepare($sql_id_country);
+
+            $sql_id_city = "SELECT `idCity` FROM `cities` WHERE `name` =?";
+            $stmt_id_city = $connection->prepare($sql_id_city);
 
             $sql_insert_posters = "INSERT INTO `event_poster`(`linkToPoster`, `dateUploaded`, `idEventFK`) VALUES(?,?,?)";
             $stmt2 = $connection->prepare($sql_insert_posters);
@@ -120,7 +129,22 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
             //Start a transaction
             $connection->beginTransaction();
             //Insert event
-            $stmt1->execute([$title, $postMessage, $description, $location, $dateTime, $status, $userId, $postDateTime]);
+            //Get country and city ids
+            $stmt_id_country->execute([$location_country]);
+            $stmt_id_city->execute([$location_city]);
+            if($stmt_id_country->rowCount()>0 && $stmt_id_city->rowCount()>0){
+                $location_country_row = $stmt_id_country->fetch();
+                $location_country = $location_country_row['idCountry'];
+
+                $location_city_row = $stmt_id_city->fetch();
+                $location_city = $location_city_row['idCity'];
+            }
+            else{
+                //Throw error that city or country not supported
+                throw new PDOException("error: Country and/or city not supported"); 
+            }
+
+            $stmt1->execute([$title, $postMessage, $description, $location_country, $location_city, $location, $dateTime, $status, $userId, $postDateTime]);
             //Get last inserted event id
             $idInsertedEvent = $connection->lastInsertId();
 

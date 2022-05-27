@@ -10,7 +10,9 @@ $(document).ready(function(){
 
     });
     
-    let pastLimit = getPastdayDate();
+    let pastLimit = get2daysagoDate();
+    //alert(pastLimit);
+   // alert(currentDateAndTime());
     //Unfold events to catalogue //To be modified
     //************************************ */
     $.ajax({
@@ -50,6 +52,28 @@ $(document).ready(function(){
     });
 
      /**************USER SUGGESTION END************* */
+
+     /*EVENT SUGGESTION BASED ON CATEG OF PREFERENCE QUERIED BY CITY AND COUNTRY --- START */
+       //This code has successfully passed the tests now it's certified
+       let todayDate = currentDateAndTime();
+       $.ajax({
+           url: "api_php/api_etc_display.php",
+           data: {myCategEvents:"VAR_SET", pastLimit:todayDate},
+           type: "POST",
+           //dataType : "json",
+       })
+       .done(function( response ) {
+           suggestionEventHandler(response);
+           console.log(response);
+       })
+       .fail(function( xhr, status, errorThrown ) {
+           alert( "Sorry, there was a problem!" );
+           console.log( "Error: " + errorThrown );
+           console.log( "Status: " + status );
+           console.dir( xhr );
+       });
+
+       /*END */
 
      /*Dislay my Events into subCatalogue */
     $("#btn-my-events").on("click", function(){
@@ -99,7 +123,7 @@ $(document).ready(function(){
 
     });
 
-    $("#catalogue-my-events-tickets").on("click", ".main-action-btn", function(e){
+    $("#catalogue-my-events-tickets").on("click", ".generate-ticket-action-btn", function(e){
         e.preventDefault();
         let ticketID = e.target.id;
         let thisCard = $(this).closest(".ticketCard");
@@ -209,7 +233,7 @@ $(document).ready(function(){
 });
 
 
-function getPastdayDate() {
+function get2daysagoDate() {
 
     return new Date(new Date().getTime() - 2*(24*60*60*1000)).toUTCString();
   }
@@ -456,7 +480,7 @@ function appendMyTickets(arr){
                     <span style="margin: 4px;">Purchase date: <span class="this-event-orderDate">'+unitTicket['orderDate']+'</span></span>\
                 </div>\
                 <div class="comment-wrapper">\
-                <button class="main-action-btn" id="generate-ticket-id-'+unitTicket['idTicket']+'">Generate ticket</button>\
+                <button class="main-action-btn generate-ticket-action-btn" id="generate-ticket-id-'+unitTicket['idTicket']+'">Generate ticket</button>\
                 </div>\
                 </div>';
             
@@ -544,9 +568,8 @@ function eventsRequestHandler(res){
     if(!resultEventFollowing && !resultEventDefault){
         let NoEventsTodisplay = '<div class="no-event-ofyours" style="margin-top:40px">\
             <img src="media/icons/nothing1.gif"/>\
-            <p> No suggestion for you,<br>\
-            Choose your categories of interest<br>\
-            Follow people to know what they are planning<br>\
+            <p> Nothing from followings,<br>\
+            Make sure you follow people to know what they are planning<br>\
             </div>';
 
         $("#idCatalogue").append(NoEventsTodisplay);
@@ -628,6 +651,45 @@ function myTicketsRequestHandler(res){
 
         $("#catalogue-my-events-tickets").append(NothingTodisplay);
     }
+
+            //Lazy load handling
+            let Lazyimages = [].slice.call($(".lazy"));
+    
+            if("IntersectionObserver" in window){
+                let observer = new IntersectionObserver((entries, observer)=>{
+                    entries.forEach(function(entry){
+                        if(entry.isIntersecting){
+                            let lazyimage = entry.target;
+                            lazyimage.src = lazyimage.dataset.src;
+                            lazyimage.srcset = lazyimage.dataset.srcset;
+                            lazyimage.classList.remove("lazy");
+                            observer.unobserve(lazyimage);
+                        }
+                    })
+                });
+                //Loop through all images
+                Lazyimages.forEach((lazyimage)=>{
+                    observer.observe(lazyimage);
+                })
+            }
+}
+
+function suggestionEventHandler(res){
+    let block_arr_suggest_categ_city = res['arr_event_my_categ_city'];
+    let suggest_city = block_arr_suggest_categ_city[1];
+
+    if(suggest_city.length>0) $("#idCatalogue").append("<h1 class='suggestion-title'>Upcoming events in your city you may like</h1>");
+    let resultSuggestCity = appendEventsToCatalogue(suggest_city);
+
+    let suggest_country = res['arr_event_my_categ_country'];
+    if(suggest_country.length>0) $("#idCatalogue").append("<h1 class='suggestion-title'>Other upcoming events</h1>");
+    let resultSuggestCountry = appendEventsToCatalogue(suggest_country);
+
+    let arrUserCateg = block_arr_suggest_categ_city[0];
+    if(arrUserCateg.length<5){
+        alert("pop up to tell user to choose categ of interest to help us suggest him events he/she may like");
+    }
+    
 
             //Lazy load handling
             let Lazyimages = [].slice.call($(".lazy"));

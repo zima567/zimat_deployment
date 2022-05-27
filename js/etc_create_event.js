@@ -2,6 +2,10 @@ $(document).ready(function(){
     //array categ
     var arrCateg=[];
 
+    //Display Categories from DB
+    let dataObj ={family_suggest:"EVENT_CATEGORIES", query_data:""};
+    let destinationReq = "api_php/api_etc_suggestion_v2.php";
+    requestSender(destinationReq, dataObj, PRCategDisplay);
 
     //Get today date and set min-date
     console.log(currentDateAndTime());
@@ -50,6 +54,107 @@ $(document).ready(function(){
         imagesPreview(this, 'div.preview');
     });
 
+    //MANAGE COUNTRY CHOICE---START
+    $("#id-country").on("keyup", function(){
+        let resultDisplayDestination = "box-suggestion-countries";
+        if($("#"+resultDisplayDestination).css("display")!="flex"){
+            $("#"+resultDisplayDestination).css("display","flex");
+        }
+        if($("#id-city").val()!=""){
+            $("#id-city").val("");
+            $("#edit-city").css("display", "none");
+            $("#id-city").attr("readonly", false);
+
+        }
+        //Get data entered
+        let inputValueToQuery = $("#id-country").val();
+        //Function suggestion + request function
+        if(inputValueToQuery!=""){
+            let dataObj ={family_suggest:"COUNTRY_CITY", query_data:inputValueToQuery};
+            let destinationReq = "api_php/api_etc_suggestion_v2.php";
+            requestSender(destinationReq, dataObj, PRCCSuggestions);
+
+        }
+        else{
+            $("#box-suggestion-countries").empty();
+            $("#box-suggestion-countries").css("display", "none");
+        }
+
+    });
+    //On click on suggested element in box-suggestion
+    $("#box-suggestion-countries").on("click", "span", function(e){
+        e.preventDefault();
+        let choosenCountry = $(this).text();
+        $("#id-country").val(choosenCountry);
+        //Set input read only
+        //display edit button
+        $("#id-country").attr("readonly", true);
+        $("#box-suggestion-countries").css("display", "none");
+        $("#edit-country").css("display","block");
+
+        //Display appropriate currency order
+        let dataObj ={family_suggest:"TICKET_CURRENCY", query_data:"", countryName:$("#id-country").val().trim()};
+        let destinationReq = "api_php/api_etc_suggestion_v2.php";
+        requestSender(destinationReq, dataObj, PRCurrencyDisplay);
+    });
+    //On click on Edit country button
+    $("#edit-country").on("click", function(){
+        $("#id-country").attr("readonly", false); 
+        $("#id-country").val("");
+        $("#edit-country").css("display", "none");
+    });
+    //MANAGE COUNTRY CHOICE ---END
+
+    //MANAGE CITY CHOICE---START
+    $("#id-city").on("keyup", function(){
+        if($("#id-country").val()!=""){
+            let resultDisplayDestination = "box-suggestion-cities";
+            if($("#"+resultDisplayDestination).css("display")!="flex"){
+                $("#"+resultDisplayDestination).css("display","flex");
+            }
+
+            //Get data entered
+            let inputValueToQuery = $("#id-city").val();
+            let countryName = $("#id-country").val().trim();
+            //Function suggestion + request function
+            if(inputValueToQuery!=""){
+                let dataObj ={family_suggest: "COUNTRY_CITY", query_data: inputValueToQuery, countryName: countryName};
+                let destinationReq = "api_php/api_etc_suggestion_v2.php";
+                requestSender(destinationReq, dataObj, PRCCSuggestions);
+    
+            }
+            else{
+                $("#box-suggestion-cities").empty();
+                $("#box-suggestion-cities").css("display", "none");
+            }
+
+        }
+        else{
+            //choose country first
+            alert("Choose country first");
+        }
+
+    });
+    //On click on suggested element in box-suggestion
+    $("#box-suggestion-cities").on("click", "span", function(e){
+        e.preventDefault();
+        let choosenCities = $(this).text();
+        $("#id-city").val(choosenCities);
+        //Set input read only
+        //display edit button
+        $("#id-city").attr("readonly", true);
+        $("#box-suggestion-cities").css("display", "none");
+        $("#edit-city").css("display","block");
+
+    });
+    //On click on Edit country button
+    $("#edit-city").on("click", function(){
+        $("#id-city").attr("readonly", false); 
+        $("#id-city").val("");
+        $("#edit-city").css("display", "none");
+    });
+    //MANAGE CITY CHOICE ---END
+
     //Manage the choice of categories
     $("#idCategList").on("change", function(){
         //alert($("#idCategList").val());
@@ -84,6 +189,8 @@ $(document).ready(function(){
         let postMessage = $("#post-short-msg").val();
         let eventDescription = $("#id-description").val();
         let eventLocation = $("#id-location").val();
+        let eventLocation_country = $("#id-country").val();
+        let eventLocation_city = $("#id-city").val();
         let eventDateTime = $("#id-date-time").val();
         let eventArrCateg = arrCateg;
         let eventNbrTicket = $("#id-nbr-ticket").val();
@@ -116,6 +223,8 @@ $(document).ready(function(){
             formData.append('postMessage', postMessage)
             formData.append('description', eventDescription);
             formData.append('location', eventLocation);
+            formData.append('location_country', eventLocation_country);
+            formData.append('location_city', eventLocation_city);
             formData.append('dateTime', eventDateTime);
             formData.append('nbrTicket', eventNbrTicket);
             formData.append('ticketPrice', eventTicketPrice);
@@ -179,11 +288,118 @@ function currentDateAndTime(){
     return today;
 }
 
+function displaySuggestionsCountry(arr, desDis){
+    if(arr.length>0){
+        for(let i=0; i<arr.length; i++){
+            let unitSuggest = arr[i];
+            let HTMLUnitSuggest = ' <span class="content">'+unitSuggest['name']+'</span>';
+            $("#"+desDis).append(HTMLUnitSuggest);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+function displaySuggestionsCity(arr, desDis){
+    if(arr.length>1){
+        for(let i=1; i<arr.length; i++){
+            let unitSuggest = arr[i];
+            let HTMLUnitSuggest = '<span class="content">'+unitSuggest['name']+'</span>';
+            $("#"+desDis).append(HTMLUnitSuggest);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+function displayCategories(arr, desBis){
+    if(arr.length>0){
+        for(let i=0; i<arr.length;i++){
+            let unitCateg = arr[i];
+            let HTMLUnitCateg = ' <option value="'+unitCateg['title']+'">'+unitCateg['title']+'</option>';
+            $("#"+desBis).append(HTMLUnitCateg);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+//Display currencies
+function displayCurrencies(arr, desBis){
+    if(arr.length>0){
+        for(let i=0; i<arr.length;i++){
+            let unitCurrency = arr[i];
+            let HTMLUnitCurrency = '';
+            if(i==0){
+                HTMLUnitCurrency = '<option value="'+unitCurrency['currencyCode']+'">'+unitCurrency['currencyCode']+' <em> - national currency</em></option>';
+            }
+            HTMLUnitCurrency = ' <option value="'+unitCurrency['currencyCode']+'">'+unitCurrency['currencyCode']+'</option>';
+            $("#"+desBis).append(HTMLUnitCurrency);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+function requestSender(destinationToRequest, obj, processorFunc){
+    $.ajax({
+        url: destinationToRequest,
+        data: obj,
+        type: "POST",
+        dataType : "json",
+    })
+    .done(function( response ) {
+        console.log(response);
+        processorFunc(response)
+    })
+    .fail(function( xhr, status, errorThrown ) {
+        alert( "Sorry, there was a problem!" );
+        console.log( "Error: " + errorThrown );
+        console.log( "Status: " + status );
+        console.dir( xhr );
+    });
+}
+
+function PRCCSuggestions(res){
+    let arrCountries = res['arr_countries'];
+        $("#box-suggestion-countries").empty();
+        let resultArrCountries = displaySuggestionsCountry(arrCountries, "box-suggestion-countries");
+        if(!resultArrCountries){
+            $("#box-suggestion-countries").append("<strong class='content'>No country found</strong");
+        }
+
+    let arrCities = res['arr_cities'];
+        $("#box-suggestion-cities").empty();
+        let resultArrCities = displaySuggestionsCity(arrCities,"box-suggestion-cities");
+        if(!resultArrCities){
+            $("#box-suggestion-cities").append("<strong class='content'>No city found</strong");
+        }  
+
+}
+
+function PRCategDisplay(res){
+    let arrCateg = res['arr_categ'];
+    let resultArrCateg = displayCategories(arrCateg, "idCategList");
+    if(!resultArrCateg){
+        $("#idCategList").append('<option selected="true" disabled="disabled">Categories not found</option>'); 
+    }
+}
+
+function PRCurrencyDisplay(res){
+    $("#idCurrency").children().not(':first').remove();
+    let arrCurrencies = res['arr_currencies'];
+    let resultArrCurrencies = displayCurrencies(arrCurrencies, "idCurrency");
+    if(!resultArrCurrencies){
+        $("#idCurrency").append('<option selected="true" disabled="disabled">Currency not found</option>'); 
+    }
+}
+
 //display categories into box
 function displayCateg(categ, index){
     let addedCateg = "<span class='categ-unit'>"+categ+"<a class='x-delete' id='"+index+"'>X</a></span>";
     $("#event-categ").append(addedCateg);
 }
+
 
 //Function to process event creation return
 function RPEventCreation(res){

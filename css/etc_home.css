@@ -577,6 +577,15 @@ body{
     
   }
 
+  /*CSS Suggestion tilte*/
+  .suggestion-title{
+      margin-top: 50px;
+      padding: 4px;
+      font-weight:500;
+      font-size: 22px;
+     font-style: italic;
+  }
+
 
   /*box-info & QRcode*/
   .post .section-info-qrcode{

@@ -52,8 +52,11 @@ body{
 }
 
 .event-categories{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     border: 1px solid #9d9de9;
-    min-height: 50px;
+    height: auto;
     padding: 8px;
     border-radius: 5px;
 }
@@ -70,9 +73,41 @@ body{
     padding-left: 8px;
 }
 
-.loc-date-time{
+.loc-date-time-info{
     display: flex;
     flex-direction: column;
+}
+
+.box-suggestion-input-pair{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.btn-input-pair{
+    display: flex;
+    flex-direction: row;
+}
+
+.btn-input-pair button{
+    display: none;
+}
+
+.box-suggestion-input-pair .box-suggestion{
+    display: none; /*flex*/
+    flex-direction: column;
+    padding: 8px;
+    border: 2px solid #dfdfdf ;
+}
+
+.box-suggestion .content{
+    padding: 8px;
+    background-color: #fafafa;
+    color: black;
+    border-radius: 5px;
+    margin: 4px;
+    font-size: 14px;
+    font-style: italic;
 }
 
 .ticket-creation{

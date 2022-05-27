@@ -36,18 +36,41 @@
                 </textarea>
                 </div>
     
-                <label for="for-location">Location & date:</label>
-                <div class="loc-date-time">
-                    <input type="text" class="form-control" placeholder="Location" id="id-location"/>
+                <label for="for-country-city">Country & city:</label>
+                <div class="loc-date-time-info">
+                    <div class="box-suggestion-input-pair">
+                        <span class="btn-input-pair">
+                            <input type="text" class="form-control" placeholder="Country" id="id-country"/>
+                            <button class="btn btn-primary" id="edit-country">Edit</button>
+                        </span>
+                        <div class="box-suggestion" id="box-suggestion-countries">
+                           <!--Countries-->
+                        </div>
+                    </div>
+                    <div class="box-suggestion-input-pair">
+                        <span class="btn-input-pair">
+                            <input type="text" class="form-control" placeholder="City" id="id-city"/>
+                            <button class="btn btn-primary" id="edit-city">Edit</button>
+                        </span>
+                        <div class="box-suggestion" id="box-suggestion-cities">
+                           <!--Cities-->
+                        </div>
+                    </div>
+                </div>
+
+                <label for="for-location">Address & date:</label>
+                <div class="loc-date-time-info">
+                    <input type="text" class="form-control" placeholder="Address" id="id-location"/>
                     <input type="datetime-local" class="form-control" value="2021-08-14T00:00" id="id-date-time"/>
                 </div>
     
                 <label for="categories">Choose event categories:</label>
                 <select class="form-control" name="categList" id="idCategList">
-                    <option value="Education">Education</option>
+                    <option selected="true" disabled="disabled">Select categories</option>
+                    <!--option value="Education">Education</option>
                     <option value="Sport">Sport</option>
                     <option value="Loisirs">Loisirs</option>
-                    <option value="Politique">Politique</option>
+                    <option value="Politique">Politique</option-->
                 </select>
                 <div class="event-categories" id="event-categ">
                     
@@ -59,10 +82,11 @@
                     <span class="ticket-price">
                         <input type="text" placeholder="unit price" id="id-unit-price"/>
                         <select class="form-control" name="currency" id="idCurrency">
-                            <option value="usd">USD</option>
+                            <option selected="true" disabled="disabled">Choose currency</option>  
+                            <!--option value="usd">USD</option>
                             <option value="eu">EURO</option>
                             <option value="rbles">RUBLES</option>
-                            <option value="gdes">GOURDES</option>
+                            <option value="gdes">GOURDES</option-->
                         </select>
                     </span>
                 </div>

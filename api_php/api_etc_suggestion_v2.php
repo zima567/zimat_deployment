@@ -121,6 +121,26 @@ try{
             }
 
         }
+        elseif($_POST['family_suggest'] =="USER_CITY"){
+            $arrError['family_suggest_is_handled'] = 1;
+
+            $sql_range_cities = "SELECT `idCity`, `cities`.`name` AS `city_name`, `idCountry`, `country`.`name` AS `country_name` FROM `cities` INNER JOIN `country` ON `cities`.`idCountryFK` = `country`.`idCountry` WHERE `cities`.`name` LIKE ? OR `cities`.`name` LIKE ? OR `cities`.`name` LIKE ? LIMIT 100";
+            $stmt_range_cities = $connection->prepare($sql_range_cities);
+
+            $query1 = $_POST['query_data']."%";
+            $query2 = "%".$_POST['query_data'];
+            $query3 = "%".$_POST['query_data']."%";
+
+            $stmt_range_cities->execute([$query1, $query2, $query3]);
+            if($stmt_range_cities->rowCount()>0){
+                while($row_cities = $stmt_range_cities->fetch()){
+                    array_push($arrayCities, array("idCity"=>$row_cities['idCity'],
+                                                "city_name"=>$row_cities['city_name'],
+                                                "country_name"=>$row_cities['country_name']));
+                }
+            }
+
+        }
         else{
             $arrError['divers_error'] = "Family_suggest not handle"; 
         }
@@ -149,9 +169,13 @@ if($arrError['family_suggest_is_handled']){
         $temp_arr_API = array("arr_categ"=>$arrayCateg);
         $APIResponse = array_merge($APIResponse, $temp_arr_API);
     }
-    elseif($arrError['family_suggest']="TICKET_CURRENCY"){
+    elseif($arrError['family_suggest']=="TICKET_CURRENCY"){
         $temp_arr_API = array("arr_currencies"=>$arrayListCurrencies);
         $APIResponse = array_merge($APIResponse, $temp_arr_API);
+    }
+    elseif($arrError['family_suggest']=="USER_CITY"){
+        $temp_arr_API = array("arr_cities"=>$arrayCities);
+        $APIResponse = array_merge($APIResponse, $temp_arr_API); 
     }
 }
 

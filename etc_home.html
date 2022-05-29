@@ -164,14 +164,50 @@
     </div>
 </section>
 
-<!--POPUP INFORMATION BOX-->
-<div class="custom-model-main">
+<!--POPUP INFORMATION BOX1-->
+<div class="custom-model-main" id="pop-up-box1">
     <div class="custom-model-inner">        
     <div class="close-btn">×</div>
         <div class="custom-model-wrap">
             <div class="pop-up-content-wrap">
               <div id="id-content-popup">
                 
+              </div>
+            </div>
+        </div>  
+    </div>  
+    <div class="bg-overlay"></div>
+</div> 
+
+<!--POPUP INFORMATION BOX2-->
+<div class="custom-model-main" id="pop-up-box2">
+    <div class="custom-model-inner">        
+    <div class="close-btn">×</div>
+        <div class="custom-model-wrap">
+            <div class="pop-up-content-wrap">
+              <div id="id-content-popup">
+                <div class="location-categ-conf-wrapper">
+                    <div class="user-city-configuration" id="user-city-configuration">
+                        <label>Configure your location to see event in your area</label>
+                        <input type="text" placeholder="Type your city" id="user-city"/>
+                        <button id="edit-city-btn">Edit city</button>
+                        <div class="box-suggestion-city" id="box-suggestion-cities">
+                            <!--List appended cities-->
+                        </div>
+                    </div>
+                    <div class="user-categ-configuration">
+                        <label>Choose your categories of interest:</label>
+                        <div class="box-categories" id="box-categories">
+                            <!--list of categories-->
+                        </div>
+                    </div>
+                    <div class="action-btns-conf">
+                        <button id="save-changes">Save changes</button>
+                    </div>
+                    <div class="more-conf-options">
+                        <span class="conf-text">Want more configuration options? Go to <a href="#">Settings</a></span>
+                    </div>
+                </div>
               </div>
             </div>
         </div>  

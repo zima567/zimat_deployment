@@ -1,6 +1,8 @@
 
 $(document).ready(function(){
-    
+    //array categ
+    var arrUserCateg=[];
+
     //Bottom menu jquery
    $('.app-navigation-toggle').click(function() {
 
@@ -225,10 +227,101 @@ $(document).ready(function(){
 
     })
 
+    //Handling of city suggestion in pop-up configuration box
+    //MANAGE CITY CHOICE---START-----
+    $("#user-city").on("keyup", function(){
+        let resultDisplayDestination = "box-suggestion-cities";
+        if($("#"+resultDisplayDestination).css("display")!="flex"){
+            $("#"+resultDisplayDestination).css("display","flex");
+        }
+
+        //Get data entered
+        let inputValueToQuery = $("#user-city").val();
+        //Function suggestion + request function
+        if(inputValueToQuery!=""){
+            let dataObj ={family_suggest:"USER_CITY", query_data:inputValueToQuery};
+            let destinationReq = "api_php/api_etc_suggestion_v2.php";
+            requestSender(destinationReq, dataObj, PRCitySuggestions);
+    
+        }
+        else{
+            $("#box-suggestion-cities").empty();
+            $("#box-suggestion-cities").css("display", "none");
+        }
+    
+    });
+
+    //On click on suggested element in box-suggestion
+    $("#box-suggestion-cities").on("click", "span", function(e){
+        e.preventDefault();
+        let choosenCountry = $(this).find("strong").text();
+       
+        $("#user-city").val(choosenCountry);
+        //Set input read only
+        //display edit button
+        $("#user-city").attr("readonly", true);
+        $("#box-suggestion-cities").css("display", "none");
+        $("#edit-city-btn").css("display","block");
+    });
+
+    //On click on Edit country button
+    $("#edit-city-btn").on("click", function(){
+        $("#user-city").attr("readonly", false); 
+        $("#user-city").val("");
+        $("#edit-city-btn").css("display", "none");
+    });
+    //MANAGE CITY CHOICE---END----
+
+    //HANDLE CLICK ON CATEGORIES
+    $("#box-categories").on("click", "span", function(e){
+        e.preventDefault();
+
+        if($(this).hasClass('background-selected')){
+           $(this).removeClass('background-selected').addClass('categ-unit');
+        }
+        else{
+            $(this).removeClass('categ-unit').addClass('background-selected');
+        }
+        
+    });
+
+    //ON CLICK ON SAVE CHANGES
+    $("#save-changes").on("click", function(){
+        //Get selected categories
+        var userChosenCategs = $("#box-categories").find(".background-selected");
+        for(let i=0; i<userChosenCategs.length;i++){
+            //str+=$(userChosenCategs[i]).text();
+            arrUserCateg.push($(userChosenCategs[i]).text().trim());
+        }
+        //console.log(arrUserCateg);
+
+        //Get the city name
+        let cityName = $("#user-city").val().trim();
+        if(cityName!=""){
+            //Send request for configuration
+            let dataObj ={action_type:"T_UPDATE", config_type:"update_user_location", city_name:cityName};
+            let destinationReq = "api_php/api_configuration_module1.php";
+            requestSender(destinationReq, dataObj, voidHandler);
+        }
+
+        if(arrUserCateg.length>0){
+            //send request for configuration
+            let dataObj ={action_type:"T_UPDATE", config_type:"update_user_categories", arr_user_categs:arrUserCateg};
+            let destinationReq = "api_php/api_configuration_module1.php";
+            requestSender(destinationReq, dataObj, voidHandler);
+        }
+
+        if(arrUserCateg.length>0 || cityName!=""){
+            $("#pop-up-box2").removeClass('model-open');
+        }
+        
+    });
+
     //POPUP Handling 
     //$(".custom-model-main").addClass('model-open');
     $(".close-btn, .bg-overlay").click(function(){
-      $(".custom-model-main").removeClass('model-open');
+      $("#pop-up-box1").removeClass('model-open');
+      $("#pop-up-box2").removeClass('model-open');
     });
 
 
@@ -287,6 +380,55 @@ function currentDateAndTime(){
 
     return today;
 }
+
+function requestSender(destinationToRequest, obj, processorFunc){
+    $.ajax({
+        url: destinationToRequest,
+        data: obj,
+        type: "POST",
+        dataType : "json",
+    })
+    .done(function( response ) {
+        console.log(response);
+        processorFunc(response)
+    })
+    .fail(function( xhr, status, errorThrown ) {
+        alert( "Sorry, there was a problem!" );
+        console.log( "Error: " + errorThrown );
+        console.log( "Status: " + status );
+        console.dir( xhr );
+    });
+}
+
+/************* */
+//Simple function to display categories
+function displayCategs(res){
+    $("#box-categories").empty();
+    let arrCategs = res['arr_return'];
+
+    if(arrCategs.length>0){
+        for(let i=0; i<arrCategs.length;i++){
+            let unitCateg = arrCategs[i];
+            let HTMLElementCateg = '<span class="categ-unit">'+unitCateg['title']+'</span>';
+            $("#box-categories").append(HTMLElementCateg);
+        }
+    }
+    else{
+        let HTMLElementCateg = '<strong>No categories available</strong>';
+        $("#box-categories").append(HTMLElementCateg);
+    }
+}
+//Function to display categories when config pop-up appear to user
+function queryAndDisplayCategories(){
+    let dataObj ={action_type:"T_SELECT", config_type:"select_categ_not_of_users"};
+    let destinationReq = "api_php/api_configuration_module1.php";
+    requestSender(destinationReq, dataObj, displayCategs);
+}
+
+function voidHandler(res){
+    /*Empty function body */
+}
+/*************** */
 
 function createQRcode(codeTicket,logoLink="media/icons/user-temp.png"){
 
@@ -678,9 +820,8 @@ function myTicketsRequestHandler(res){
 }
 
 function suggestionEventHandler(res){
-    let block_arr_suggest_categ_city = res['arr_event_my_categ_city'];
-    let suggest_city = block_arr_suggest_categ_city[1];
 
+    let suggest_city = res['arr_event_my_categ_city'];
     if(suggest_city.length>0) $("#idCatalogue").append("<h1 class='suggestion-title'>Upcoming events in your city you may like</h1>");
     let resultSuggestCity = appendEventsToCatalogue(suggest_city);
 
@@ -688,9 +829,15 @@ function suggestionEventHandler(res){
     if(suggest_country.length>0) $("#idCatalogue").append("<h1 class='suggestion-title'>Other upcoming events</h1>");
     let resultSuggestCountry = appendEventsToCatalogue(suggest_country);
 
-    let arrUserCateg = block_arr_suggest_categ_city[0];
-    if(arrUserCateg.length<5){
-        alert("pop up to tell user to choose categ of interest to help us suggest him events he/she may like");
+    let arrUserCateg = res['arr_categ_user'];
+    let arrStatus = res['arr_status'];
+    if(!arrUserCateg.length>0 && arrStatus['user_online']==1){
+        $("#pop-up-box2").addClass('model-open');
+        queryAndDisplayCategories();
+    }
+
+    if(arrStatus['is_user_location_set']==1){
+        $("#user-city-configuration").css("display","none");
     }
     
 
@@ -714,6 +861,30 @@ function suggestionEventHandler(res){
                     observer.observe(lazyimage);
                 })
             }
+}
+
+//Display suggested cities function
+function displaySuggestionsCity(arr, desDis){
+    if(arr.length>0){
+        for(let i=0; i<arr.length; i++){
+            let unitSuggest = arr[i];
+            let HTMLUnitSuggest = '<span><strong>'+unitSuggest['city_name']+'</strong> ('+unitSuggest['country_name']+')</span>';
+            $("#"+desDis).append(HTMLUnitSuggest);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+//Function to handle city display in pop configuration box
+function PRCitySuggestions(res){
+    let arrCities = res['arr_cities'];
+        $("#box-suggestion-cities").empty();
+        let resultArrCities = displaySuggestionsCity(arrCities,"box-suggestion-cities");
+        if(!resultArrCities){
+            $("#box-suggestion-cities").append("<strong>No city found</strong");
+        }  
+
 }
 
 //Function to handle number of likes displayed
@@ -744,7 +915,7 @@ function likeActionHandler(res, eventID, element, imgLikeElement){
         //alert(res['action_error']+"\nETC...");
         let popHtmlContent = '<p>Sorry! You are not logged in.<br><br><a href="lsrs_login.html"><button class="main-action-btn">LOGIN NOW</button></a></p>';
         $("#id-content-popup").html(popHtmlContent);
-        $(".custom-model-main").addClass('model-open');
+        $("#pop-up-box1").addClass('model-open');
     }
 
 }

@@ -11,7 +11,7 @@ $APIResponse = array("arr_status"=>array(), "arr_events_following"=>array(), "ar
 //array_push($APIResponse, array()); // api_response[0] will contain status con, status query,
 
 //Utilities variables
-$queryError = array("query_error"=>"NONE", "user_online"=>0);
+$queryError = array("query_error"=>"NONE", "user_online"=>0, "is_user_location_set"=>0);
 
 $arrEventsFollowing = array();
 //array_push($arrEventsFollowing, array()); //[0] for return buffer
@@ -33,6 +33,7 @@ $arrDefaultEvents = array();
 
 $arrMyCategEvents_country = array();
 $arrMyCategEvents_city = array();
+$arrayCategUser= array("arr_categ_user"=>array());
 
 //POST variables
 $pastDateBorder = isset($_POST['pastLimit'])? $_POST['pastLimit']: ""; //Edit this line of code to make it better when u can
@@ -349,6 +350,7 @@ try{
     }
     elseif(isset($_SESSION['idUser']) && isset($_POST['myEvent'])){
         //Query event created by the user online
+        $queryError['user_online']=1;
         $idUserOnline = $_SESSION['idUser'];
         $stmt222->execute([$idUserOnline]);
         $arrMyEvent = getter_event_infos($stmt222,$stmt3, $stmt4, $stmt5, $arrMyEvent);
@@ -361,16 +363,23 @@ try{
 
     }
     elseif(isset($_SESSION['idUser']) && isset($_POST['myCategEvents'])){
+        $queryError['user_online']=1;
         //Select event base on user categ profiling
-        $sql_user_categ = "SELECT `categ_profiling` FROM `user_profile` WHERE `idUserFK` =? ";
+        $sql_user_categ = "SELECT `categ_profiling`, `location_country`, `location_city` FROM `user_profile` WHERE `idUserFK` =? ";
         $stmt_user_categ = $connection->prepare($sql_user_categ);
         $userArrCateg =array();
         $stmt_user_categ->execute([$_SESSION['idUser']]);
         if($stmt_user_categ->rowCount()>0){
             $stmt_row_categ = $stmt_user_categ->fetch();
-            $userArrCateg = explode(" ",$stmt_row_categ['categ_profiling']);
+            //Check if string is not empty
+            if(!empty(trim($stmt_row_categ['categ_profiling']))) $userArrCateg = explode(" ",$stmt_row_categ['categ_profiling']);
+            
+            //check if user_location is set
+            if($stmt_row_categ['location_country']!=NULL && $stmt_row_categ['location_city']!=NULL){
+                $queryError['is_user_location_set']=1;
+            }
         }
-        array_push($arrMyCategEvents_city, $userArrCateg);
+         $arrayCategUser['arr_categ_user'] = $userArrCateg;
         //get sql of ids of events of user's categories
         $sql_ids_events_categ_country = sql_eventsIDs_by_categs_country_city($userArrCateg, "COUNTRY");
 
@@ -415,7 +424,7 @@ try{
                    $userLocation_city ="7";
                    $stmt_ids_events->execute([$userLocation_country, $userLocation_city, $_SESSION['idUser'], $_SESSION['idUser'], $datePastLimitFormated]);
                }
-               array_push($arrMyCategEvents_city,listEventsFromArrIds($stmt_ids_events, $stmt_events_myCateg, $stmt3, $stmt4, $stmt5));
+               $arrMyCategEvents_city = listEventsFromArrIds($stmt_ids_events, $stmt_events_myCateg, $stmt3, $stmt4, $stmt5);
         }
 
     }
@@ -449,6 +458,7 @@ elseif(isset($_POST['myTicket'])){
 elseif(isset($_POST['myCategEvents'])){
     $APIResponse['arr_event_my_categ_country'] = $arrMyCategEvents_country;
     $APIResponse['arr_event_my_categ_city'] = $arrMyCategEvents_city;
+    $APIResponse = array_merge($APIResponse, $arrayCategUser);
 }
 else{
     $APIResponse['arr_events_following'] = $arrEventsFollowing;

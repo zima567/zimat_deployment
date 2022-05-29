@@ -1,3 +1,6 @@
+ //Var for side checks
+ var allCorrect=true;
+
 $(document).ready(function(){
     //array categ
     var arrCateg=[];
@@ -184,6 +187,8 @@ $(document).ready(function(){
 
     //Click on submit event
     $("#submit-event").on("click", function(){
+        //Reset var allCorrect to true
+        allCorrect = true;
         
         let eventTitle = $("#event-title").val();
         let postMessage = $("#post-short-msg").val();
@@ -199,7 +204,13 @@ $(document).ready(function(){
         let paymentMethod = $("input[name='payment-method']:checked").val();
         let postDateTime = currentDateAndTime();
 
-        if(eventTitle!="" && eventLocation!="" && eventDateTime!=""){
+        //Check if currency and price are set correcly
+        if(priceCurrency==null && eventTicketPrice!=""){
+            allCorrect = false;
+            alert("Price and currency are incorrectly configured");
+        }
+
+        if(eventTitle!="" && eventLocation!="" && eventDateTime!="" && allCorrect){
             //Form data for submission
             let formData = new FormData();
 
@@ -258,7 +269,10 @@ $(document).ready(function(){
             //alert("Empty required fields");
             let popHtmlContent = '<p>Oops! You have empty required field(s).<br><br>Please make sure everything is correct before submitting event</p>';
             $("#id-content-popup").html(popHtmlContent);
-            $(".custom-model-main").addClass('model-open');
+            if(allCorrect){
+                $(".custom-model-main").addClass('model-open');
+            }
+           
         }
     });
 

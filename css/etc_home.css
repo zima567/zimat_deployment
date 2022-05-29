@@ -542,6 +542,98 @@ body{
     color: #fff;
   }
 
+  /*CSS BOX FOR CITY AND CATEG CONFIGURATION*/
+  .location-categ-conf-wrapper .user-city-configuration{
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      margin-bottom: 12px;
+  }
+
+  .user-city-configuration label{
+      font-size: 11px;
+  }
+
+  .user-city-configuration input{
+      padding: 4px;
+  }
+
+  .user-city-configuration button{
+      display: none;
+      padding: 8px;
+      margin: 8px;
+      background-color: #292b2c;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      width: 30%;
+  }
+
+  .user-city-configuration .box-suggestion-city{
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      font-style: italic;
+      font-size: 14px;
+  }
+
+  .box-suggestion-city span{
+      padding: 8px;
+      border-radius: 5px;
+      background-color: #dfdfdf;
+      margin-bottom: 8px;
+  }
+
+  .user-categ-configuration{
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      margin-bottom: 12px;
+  }
+
+  .user-categ-configuration label{
+     font-size: 11px; 
+  }
+
+  .user-categ-configuration .box-categories{
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+  }
+
+  .box-categories .categ-unit{
+      padding: 8px;
+      border-radius: 5px;
+      margin: 4px;
+      color: white;
+      background-color: #847c7c;
+  }
+
+  .background-selected{
+    padding: 8px;
+    border-radius: 5px;
+    margin: 4px;
+    color: white;
+    background-color: #0275d8;
+  }
+
+  .location-categ-conf-wrapper .action-btns-conf{
+    display: flex;
+    justify-content: center;
+  }
+
+  .action-btns-conf button{
+      padding: 12px;
+      background-color: #5cb85c;
+      color: white;
+      border: none;
+      border-radius: 15px;
+  }
+
+  .more-conf-options .conf-text{
+      font-size: 11px;
+  }
+
   /*CSS MY CATALOGUE-MYEVENTS-TICKETS*/
   .button-mini-menu{
     display: flex;

@@ -60,7 +60,7 @@ try{
     $sql_select_my_events ="SELECT `idEvent`, `title`, `postMessage`, `location`, `dateTime`, `status`, `directorFK`, `postDateTime`, `username`, `idUser`,`avatar`, `address`, `verified` FROM (((`event`  INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `user_verified` ON `event`.`directorFK` = `user_verified`.`idUserFK`)  WHERE `event`.`directorFK`= ? ORDER BY `postDateTime` DESC" ;
     $stmt222 = $connection->prepare($sql_select_my_events);
 
-    $sql_select_my_tickets ="SELECT `idEvent`, `title`, `location`, `dateTime`, `status`, `directorFK`, `postDateTime`, `username`, `idUser`,`avatar`, `address`, `verified`, `idTicket`, `ticketHash`, `scanned`, `orderDate` FROM (((((`event`  INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `user_verified` ON `event`.`directorFK` = `user_verified`.`idUserFK`)INNER JOIN `event_ticket` ON `event`.`idEvent` = `event_ticket`.`idEventFK`) INNER JOIN `ticket_order` ON `event_ticket`.`idTicket` = `ticket_order`.`idTicketFK`)  WHERE `ticket_order`.`idCustomerFK`= ? ORDER BY `postDateTime` DESC" ;
+    $sql_select_my_tickets ="SELECT `idEvent`, `title`, `location`, `dateTime`, `status`, `directorFK`, `postDateTime`, `username`, `idUser`,`avatar`, `address`, `verified`, `idTicket`, `ticketHash`, `scanned`, `orderDate`, `securityCode` FROM (((((`event`  INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `user_verified` ON `event`.`directorFK` = `user_verified`.`idUserFK`)INNER JOIN `event_ticket` ON `event`.`idEvent` = `event_ticket`.`idEventFK`) INNER JOIN `ticket_order` ON `event_ticket`.`idTicket` = `ticket_order`.`idTicketFK`)  WHERE `ticket_order`.`idCustomerFK`= ? ORDER BY `postDateTime` DESC" ;
     $stmt2222 = $connection->prepare($sql_select_my_tickets);
 
     //I have stopped the series of 22222 to avoid confusion
@@ -177,6 +177,7 @@ try{
                                                       "ticketHash"=>$row2['ticketHash'],
                                                       "scanned"=>$row2['scanned'],
                                                       "orderDate"=>$row2['orderDate'],
+                                                      "securityCode"=>$row2['securityCode'],
                                                       "posters"=>array(),
                                                       "prices"=>array());
                 $stmt3->execute([$row2['idEvent']]);

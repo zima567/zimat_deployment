@@ -304,6 +304,7 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`ticket_order` (
   `idCustomerFK` INT NOT NULL,
   `securityCode` VARCHAR(255) NULL,
   `idPriceFK` INT NOT NULL,
+  `commission` DECIMAL(6,2) DEFAULT 0000.00,
   `orderDate` DATETIME,
   `scanned` BOOLEAN DEFAULT 0,
   `whoFK` INT NULL,

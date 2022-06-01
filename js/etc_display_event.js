@@ -11,6 +11,7 @@ var nbrOfTicket =1;
 var totprice =0;
 var eventID = null;
 var onlinePayment=1;
+var userAppendedUsername="";
 
 //Card details
 var cardNumber ="";
@@ -84,6 +85,49 @@ $(document).ready(function(){
 
     });
 
+    //Handling of user suggestion in pop-up user-appended box
+    //MANAGE USER APPEND---START-----
+    $("#ticket-user-appended").on("keyup", function(){
+        let resultDisplayDestination = "box-suggestion-users";
+        if($("#"+resultDisplayDestination).css("display")!="flex"){
+            $("#"+resultDisplayDestination).css("display","flex");
+        }
+
+        //Get data entered
+        let inputValueToQuery = $("#ticket-user-appended").val();
+        //Function suggestion + request function
+        if(inputValueToQuery!=""){
+            let dataObj ={family_suggest:"USERS_PLATFORM", query_data:inputValueToQuery};
+            let destinationReq = "api_php/api_etc_suggestion_v2.php";
+            requestSender(destinationReq, dataObj, PRUserSuggestions);
+    
+        }
+        else{
+            $("#box-suggestion-users").empty();
+            $("#box-suggestion-users").css("display", "none");
+        }
+    
+    });
+     //On click on suggested element in box-suggestion
+     $("#box-suggestion-users").on("click", "span", function(e){
+        e.preventDefault();
+        let choosenUser = $(this).find("strong").text();
+       
+        $("#ticket-user-appended").val(choosenUser);
+        //Set input read only
+        //display edit button
+        $("#ticket-user-appended").attr("readonly", true);
+        $("#box-suggestion-users").css("display", "none");
+        $("#edit-user-appended").css("display","block");
+    });
+    //On click on Edit user button
+    $("#edit-user-appended").on("click", function(){
+        $("#ticket-user-appended").attr("readonly", false); 
+        $("#ticket-user-appended").val("");
+        $("#edit-user-appended").css("display", "none");
+    });
+    //MANAGE User CHOICE---END----
+
 
     //Close modal
     $("#close-modal").on("click", function(){
@@ -97,7 +141,7 @@ $(document).ready(function(){
     //On click on checkout button
     $("#check-out-purchase").on("click", function(){
         if(nbrOfTicket!=0 && nbrOfTicket<=5 && eventID!=null){
-            var objRequest ={onlinePayment:onlinePayment, eventID:eventID, nbrTicket:nbrOfTicket, orderDateTime:currentDateAndTime()};
+            var objRequest ={onlinePayment:onlinePayment, eventID:eventID, nbrTicket:nbrOfTicket, orderDateTime:currentDateAndTime(), user_ticket_append:"NONE"};
             if(onlinePayment){
                 //Get card info
                 cardNumber = $("#card-number").val();
@@ -118,6 +162,14 @@ $(document).ready(function(){
             
             }
 
+            if(!onlinePayment){
+                //Check if ticket is appended to someone else than agent set it below
+                userAppendedUsername = $("#ticket-user-appended").val().trim();
+                if(userAppendedUsername!=""){
+                    objRequest.user_ticket_append = userAppendedUsername;
+                }
+            }
+
                 //Send the request
                 //A genius way to handle request is to create object data outside and returnProcessing func than pass them to one request function
                 //If it is online payment and card infos are correct proceed.(Condition to add)
@@ -125,10 +177,16 @@ $(document).ready(function(){
                     url: "api_php/api_etc_purchase.php",
                     data: objRequest,
                     type: "POST",
-                    //dataType : "json",
+                    dataType : "json",
+                    beforeSend: function(){
+                        $("#zima-loader").css("display","flex");
+                        $("#text-loading").text("Purchase processing...");
+                    }
                 })
                 .done(function( response ) {
+                    $("#zima-loader").css("display","none");
                     console.log(response);
+                    MPPurchaseResult(response);
                 
                 })
                 .fail(function( xhr, status, errorThrown ) {
@@ -144,6 +202,9 @@ $(document).ready(function(){
 
 
 });
+
+//TEST PURPOSE FUNCTION
+function voidFunction(res){}
 
 //Get parameters from URL
 function getParameter(p)
@@ -233,6 +294,26 @@ function showSlides(n) {
     slides[slideIndex-1].style.display = "block";
 }
 
+//Function for requests
+function requestSender(destinationToRequest, obj, processorFunc){
+    $.ajax({
+        url: destinationToRequest,
+        data: obj,
+        type: "POST",
+        dataType : "json",
+    })
+    .done(function( response ) {
+        console.log(response);
+        processorFunc(response)
+    })
+    .fail(function( xhr, status, errorThrown ) {
+        alert( "Sorry, there was a problem!" );
+        console.log( "Error: " + errorThrown );
+        console.log( "Status: " + status );
+        console.dir( xhr );
+    });
+}
+
 //Get current date and time
 function currentDateAndTime(){
     var today = new Date();
@@ -285,6 +366,9 @@ function MPREvent(res){
         let displayChars = 250;
         if(descrip.length>displayChars){//For the read more you need to delegate event click
             HTMLElement +=' <p>'+descrip.substring(0,displayChars)+'<span class="toggleLink" id="read-more">Read more...</span> <span class="elaboration" id="elaboration_1">'+descrip.substring(displayChars,descrip.length-1)+'</span>\</p>';
+        }
+        else{
+            HTMLElement+='<p>'+descrip+'</p>';
         }
         
         //Continue concatination
@@ -388,7 +472,7 @@ function MPREvent(res){
             $("#opt-bank-card").css("display", "none");
 
             $("#opt-offline-payment").css("display", "block");
-            $("#diff-offline-payments").css("display", "block");
+            $("#diff-offline-payments").css("display", "flex");
         }
         //Get event ID
         eventID = arrEvent['idEvent'];
@@ -398,6 +482,52 @@ function MPREvent(res){
     else{
         console.log(arrEvent);
     }
+}
+
+//Function to handle purchase response
+function MPPurchaseResult(res){
+    // Get the modal and hide it it
+    $("#myModal-payment-card").css("display","none");
+    //Reset user suggestion appended
+    $("#ticket-user-appended").attr("readonly", false); 
+    $("#ticket-user-appended").val("");
+    $("#edit-user-appended").css("display", "none");
+
+    if(res['status']==1){
+        alert("Congrats! Ticket has been sold.");
+    }
+    else{
+        if(res['error_msg'] == "SOLD_OUT"){
+            alert("Oops! Sorry, no more tickets, The event is sold out.");
+        }
+        else{
+            alert("Oops! something wrong happened. Ticket has failed to be sold");
+        }
+        
+    }
+}
+
+//Function to display users into box-suggestion-users
+function displaySuggestionsUser(arr, desDis){
+    if(arr.length>0){
+        for(let i=0; i<arr.length; i++){
+            let unitSuggest = arr[i];
+            let HTMLUnitSuggest = '<span>@<strong>'+unitSuggest['username']+'</strong></span>';
+            $("#"+desDis).append(HTMLUnitSuggest);
+        }
+        return 1;
+    }
+    return 0;
+}
+//Function to handle user display in pop-up suggestion box HTTP part
+function PRUserSuggestions(res){
+    let arrUsers = res['arr_users'];
+        $("#box-suggestion-users").empty();
+        let resultArrUsers = displaySuggestionsUser(arrUsers,"box-suggestion-users");
+        if(!resultArrUsers){
+            $("#box-suggestion-users").append("<strong>No user found</strong");
+        }  
+
 }
 
 function validateCardInfo(cardNumber, cardHolder, securityCode, expirationMoth, expirationYear){

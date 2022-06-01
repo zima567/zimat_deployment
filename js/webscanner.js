@@ -5,9 +5,12 @@ $(document).ready(function(){
 
    if(getUrlParameter('th')!==false){
         //Show pop up modal for security code
-        $(".custom-model-main").addClass('model-open');
+        //$(".custom-model-main").addClass('model-open');
             ticketHash = getUrlParameter('th');
             ticketHash = decodeURIComponent(ticketHash);
+            let dataObj ={hashcode:ticketHash};
+            let destinationReq = "api_php/api_webscanner.php";
+            requestSender(destinationReq, dataObj, HTTPHashVerification, "Ticket verification...");
    }
    else{
        alert("Hash code not set");
@@ -22,12 +25,16 @@ $(document).ready(function(){
 
             $.ajax({
                 url: "api_php/api_webscanner.php",
-                data: {hashcode:ticketHash, scan_date_time:currentDateAndTime(), security_code:securityCode},
+                data: {hashcode:ticketHash, scan_date_time:currentDateAndTime(), security_code:securityCode, scan_ticket:"SET"},
                 type: "POST",
-                //dataType : "json",
+                dataType : "json",
+                beforeSend:function(){
+                    $("#zima-loader").css("display","flex");
+                    $("#text-loading").text("Scanning ticket...");
+                }
             })
             .done(function( response ) {
-
+                $("#zima-loader").css("display","none");
                 //Unset security code and empty field
                 securityCode="";  $("#security-code").val(securityCode);
 
@@ -102,6 +109,30 @@ function currentDateAndTime(){
     return today;
 }
 
+function requestSender(destinationToRequest, obj, processorFunc, loadingMsg="Loading..."){
+    $.ajax({
+        url: destinationToRequest,
+        data: obj,
+        type: "POST",
+        dataType : "json",
+        beforeSend:function(){
+            $("#zima-loader").css("display","flex");
+            $("#text-loading").text(loadingMsg);
+        }
+    })
+    .done(function( response ) {
+        $("#zima-loader").css("display","none");
+        console.log(response);
+        processorFunc(response)
+    })
+    .fail(function( xhr, status, errorThrown ) {
+        alert( "Sorry, there was a problem!" );
+        console.log( "Error: " + errorThrown );
+        console.log( "Status: " + status );
+        console.dir( xhr );
+    });
+}
+
 function MPScanner(res){
     if(res['scan_status']==1){
         //scan successful
@@ -173,7 +204,62 @@ function MPScanner(res){
     }
 }
 
+function  VMPScanner(res){
+    if(res['isUserOnline']==1 && res['valid_hash_code']==1 && res['user_has_right']==1 && res['is_scanned']==0){
+        //Pop up security box to enter security code for scanning
+        $(".custom-model-main").addClass('model-open');
+    }
+    else{
+        
+        $("#response-illustration").attr("src", "media/icons/failure-scan.png");
+
+        if(res['error']=="NO_USER_ONLINE"){
+            let htmlNodeText = '<span>Log in first in order to successfully scan ticket</span>';
+            $("#box-text-explanation").html(htmlNodeText);
+
+            let htmlNodeBtns = '<a href="lsrs_login.html"><button>LOGIN NOW</button></a>';
+            $("#box-btn-actions").html(htmlNodeBtns);
+        }
+        else if(res['error']=="INVALID_HASHCODE"){
+            let htmlNodeText = '<span>Ticket code is not valid.</span>';
+            $("#box-text-explanation").html(htmlNodeText);
+
+            let htmlNodeBtns = '<a href="etc_home.html"><button>HOME PAGE</button></a>';
+            $("#box-btn-actions").html(htmlNodeBtns);
+        }
+        else if(res['error']=="ALREADY_SCANNED"){
+            let htmlNodeText = '<span>This ticket has been already scanned</span>';
+            $("#box-text-explanation").html(htmlNodeText);
+
+            let htmlNodeBtns = '<a href="etc_home.html"><button>HOME PAGE</button></a>';
+            $("#box-btn-actions").html(htmlNodeBtns);
+        }
+        else if(res['error']=="NO_SCANNING_RIGHTS"){
+            let htmlNodeText = '<span>You have no rights to scan this ticket</span>';
+            $("#box-text-explanation").html(htmlNodeText);
+
+            let htmlNodeBtns = '<a href="etc_home.html"><button>HOME PAGE</button></a>';
+            $("#box-btn-actions").html(htmlNodeBtns);
+        }
+        else{
+            let htmlNodeText = '<span>'+res['error']+'</span>\
+                                <span>You can copy this error message and send to our support team.</span>';
+            $("#box-text-explanation").html(htmlNodeText);
+
+            let htmlNodeBtns = '<a href="lsrs_support.html"><button>Request help</button></a>\
+                                <a href="etc_home.html"><button>HOME PAGE</button></a>';
+            $("#box-btn-actions").html(htmlNodeBtns);
+        }
+       
+    }
+}
+
 function HTTPResponseScanning(res){
     let arr_stat = res['arr_status'];
     MPScanner(arr_stat);
+}
+
+function HTTPHashVerification(res){
+    let arr_stat = res['arr_status'];
+    VMPScanner(arr_stat);
 }

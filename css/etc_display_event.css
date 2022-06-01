@@ -19,7 +19,51 @@ body {
     position: relative;
     font-family: 'roboto', sans-serif;
   }
-  
+
+/*CSS for My custom loader*/
+.bg-transpa{
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  z-index: 99;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 18px;
+  font-family: Verdana, sans-serif
+}
+
+.bg-transpa .loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+.bg-transpa .text-loading-container{
+    margin-top: 15px;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/*End of zima-loading css*/
+
   .wrapper {
     display: flex;
     flex-direction: column;
@@ -32,7 +76,7 @@ body {
   
   .product-img {
       width: 100%;
-      min-height: 420px;
+      /*min-height: 420px;*/
   }
   
   .product-img img {
@@ -40,14 +84,14 @@ body {
   }
   
   .product-info {
-    min-height: 420px;
+    /*min-height: 420px;*/
     width: 100%;
     border-radius: 0 7px 10px 7px;
     background-color: #ffffff;
   }
   
   .product-text {
-    min-height: 300px;
+    /*min-height: 300px;*/
     width: 100%;
   }
 
@@ -247,7 +291,6 @@ body {
   background-color: #fefefe;
   margin: 15% auto; /* 15% from the top and centered */
   padding: 14px;
-  border: 1px solid red;
   width: 90%; /* Could be more or less, depending on screen size */
 }
 
@@ -267,12 +310,10 @@ body {
 }
 
 .box-payment{
-  border: 1px solid yellow;
   padding: 8px;
 }
 
 .box-payment .summary-box{
-  border: 1px solid blue;
   margin-top: 16px;
   display: flex;
   flex-direction: row;
@@ -289,11 +330,9 @@ body {
   width: 50px;
   height: 50px;
   border-radius: 5px;
-  border: 1px solid red;
 }
 
 .small-header-unit .incrementer-lil-box{
-  border: 1px solid pink;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -313,20 +352,52 @@ body {
 }
 
 .box-payment .payment-option{
-  border: 1px solid green;
   padding: 8px;
 }
 
 .box-payment .diff-offline-payments{
   display: none;
+  flex-direction: column;
 }
+
+.diff-offline-payments input{
+ padding: 4px;
+}
+
+.diff-offline-payments button{
+  width: 50%;
+  padding: 8px;
+  margin: 4px;
+  background-color: #292b2c;
+  /*background-color: #5cb85c;*/
+  color: white;
+  border: none;
+  border-radius: 15px;
+  display: none;
+}
+.box-suggestion-users{
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.box-suggestion-users span{
+  margin: 4px;
+  padding: 8px;
+  background-color: #F7F7F7;
+  border-radius: 15px;
+  font-style: italic;
+}
+
 
 .box-payment .opt-offline-payment{
   display: none;
+  font-style: italic;
+  font-size: 12px;
 }
 
 .box-payment .box-payment-option-display{
-  border: 1px solid purple;
   padding: 8px;
 }
 
@@ -336,13 +407,23 @@ body {
 }
 
 .box-payment .box-btn-checkout{
-  border: 1px solid red;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 4px;
+  padding: 8px;
+}
+
+.box-btn-checkout button{
+  width: 50%;
+  padding: 8px;
+  margin: 4px;
+  background-color: #5cb85c;
+  color: white;
+  border: none;
+  border-radius: 15px;
 }
 /*END of modal of card details*/
+
 
 /*CSS for agent box*/
 .wrapper-agents{
@@ -385,22 +466,22 @@ body {
   }
   
   .product-img {
-    min-height: 420px;
+    /*min-height: 100px;*/
     float: left;
-    height: 420px;
+    /*height: 420px;*/
     width: 327px;
   }
   
   .product-info {
     float: left;
-    min-height: 500px;
+    /*min-height: 500px;*/
     width: 327px;
     border-radius: 0 7px 10px 7px;
     background-color: #ffffff;
   }
   
   .product-text {
-    min-height: 300px;
+    /*min-height: 300px;*/
     width: 327px;
     background-color: #ffffff;
   }

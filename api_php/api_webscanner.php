@@ -6,7 +6,7 @@ require ("connection.php");
 
 $APIResponse = array("arr_status"=>array());
 
-$arr_return_stat = array("scan_status"=>0, "isUserOnline"=>0, "idUserOnline"=>0);
+$arr_return_stat = array("scan_status"=>0, "isUserOnline"=>0, "idUserOnline"=>0, "valid_hash_code"=>0, "user_has_right"=>0, "is_scanned"=>1);
 $arr_return_stat = array_merge($arr_return_stat, $con_status);
 $trueVar =1;
 $falseVar =0;
@@ -65,39 +65,46 @@ try{
        $stmt_event_hashcode->execute([$hashCode]);
        if($stmt_event_hashcode->rowCount()>0){
            //valid hashcode
+           $arr_return_stat['valid_hash_code'] = 1;
            $row_event_hashcode = $stmt_event_hashcode->fetch();
            //Verify if ticket has been already scanned
            if($row_event_hashcode['scanned'] ==0){
                //not yet scanned
+               $arr_return_stat['is_scanned'] = 0;
                //verify scanning rights
                $stmt_get_rights->execute([$_SESSION['idUser'], $row_event_hashcode['idEvent'], $trueVar]);
                if($stmt_get_rights->rowCount()>0){
-                    //user is agent of this event and have right to scann
-                    //Security code match
-                    $security_match = false;
-                 
-                    //security code correspond to user password
-                    if($row_event_hashcode['securityCode']!=NULL && $row_event_hashcode['securityCode']==$_POST['security_code']){
-                        $security_match = true;
-                    }
-                    else{
-                        $stmt_user_pwd->execute([$row_event_hashcode['idCustomerFK']]);
-                        if($stmt_user_pwd->rowCount()>0){
-                            $row_user_pwd = $stmt_user_pwd->fetch();
-                            if(password_verify($_POST['security_code'], $row_user_pwd['password'])){$security_match =true;} else{$errHandler['error'] ="SECURITY_CODE_UNMATCHED";}
+                    //user is agent of this event and have right to scan
+                    $arr_return_stat['user_has_right'] = 1;
+                    if(isset($_POST['scan_ticket'])){
+
+                        //Security code match
+                        $security_match = false;
+                        
+                        //security code correspond to user password
+                        if($row_event_hashcode['securityCode']!=NULL && $row_event_hashcode['securityCode']==$_POST['security_code']){
+                            $security_match = true;
                         }
                         else{
-                            $errHandler['error'] ="ID_CUSTOMER_NOT_FOUND";
+                            $stmt_user_pwd->execute([$row_event_hashcode['idCustomerFK']]);
+                            if($stmt_user_pwd->rowCount()>0){
+                                $row_user_pwd = $stmt_user_pwd->fetch();
+                                if(password_verify($_POST['security_code'], $row_user_pwd['password'])){$security_match =true;} else{$errHandler['error'] ="SECURITY_CODE_UNMATCHED";}
+                            }
+                            else{
+                                $errHandler['error'] ="ID_CUSTOMER_NOT_FOUND";
+                            }
                         }
-                    }
 
-                   if($security_match){
-                       //If security match scan ticket
-                        if($stmt_update_ticket->execute([$trueVar, $_SESSION['idUser'], $scanDateTime, $row_event_hashcode['idTicket']])){
-                            //Ticket scanned successfully
-                            $arr_return_stat['scan_status'] = 1;
+                        if($security_match){
+                        //If security match scan ticket
+                            if($stmt_update_ticket->execute([$trueVar, $_SESSION['idUser'], $scanDateTime, $row_event_hashcode['idTicket']])){
+                                //Ticket scanned successfully
+                                $arr_return_stat['scan_status'] = 1;
+                            }
                         }
-                   }
+                    
+                    }
                }
                else{
                    //user doesn't have the right to scan this event

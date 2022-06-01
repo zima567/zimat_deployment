@@ -11,6 +11,12 @@
 </head>
 <body>
 
+    <!--Creating loading custom spinning loader-->
+    <div class="bg-transpa" id="zima-loader">
+        <div class="loader"></div>
+        <div class="text-loading-container" id="text-loading"></div>
+    </div>
+  
   <div class="wrapper-event-to-display" id="wrapper-event-to-display">
       <!--Place to display the event-->
       
@@ -62,7 +68,14 @@
                 <option>Bank card</option>
                 <option>MonCash</option>
             </select>
-            <div id="diff-offline-payments" class="diff-offline-payments">Ticket selling</div>
+            <div id="diff-offline-payments" class="diff-offline-payments">
+              <label>Add username to receive ticket (Optional)</label>
+              <input type="text" placeholder="username" id="ticket-user-appended"/>
+              <button id="edit-user-appended">Edit user</button>
+              <div class="box-suggestion-users" id="box-suggestion-users">
+                <!--List of suggested users-->
+              </div>
+            </div>
         </div>
         <div class="box-payment-option-display">
 

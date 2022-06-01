@@ -13,10 +13,16 @@
 </head>
 <body>
 
+    <!--Creating loading custom spinning loader-->
+    <div class="bg-transpa" id="zima-loader">
+        <div class="loader"></div>
+        <div class="text-loading-container" id="text-loading"></div>
+    </div>
+
    <nav class="navbar">
         <div class="nav-wrapper">
             <img src="media/icons/zimaccess.png" class="brand-img" alt="">
-            <input type="text" class="search-box" placeholder="search">
+            <!--input type="text" class="search-box" placeholder="search"-->
             <div class="nav-items">
                 <!--img src="media/icons/home.PNG" class="icon" alt="">
                 <img src="media/icons/like.PNG" class="icon" alt=""-->
@@ -61,31 +67,35 @@
                 
                  <!--Wrapper myEvents and myTickets-->
                 <div class="catalogue-my-events-tickets" id="catalogue-my-events-tickets">
-
-                    <div class="post ticketCard" id="ticketCard-template" style="display: none;">
-                        <div class="info">
-                            <h1 id="id-title-event"></h1>
-                        </div>
-                        <img src="" class="post-image" alt="" id="id-img-poster">
-                        <div class="section-info-qrcode">
-                            
-                            <div class="main-info description">
-                                <span><img src="media/icons/location.png"/><span id="id-address-event"></span></span>
-                                <span><img src="media/icons/clock.png"/><span id="id-date-time-event"></span></span>
-                                <span><img src="media/icons/price.png"/><span id="id-price"></span></span>
+                   <div>
+                        <!--Text loader if internet is slow-->
+                        <p id="mini-text-loader" class="mini-text-loader">Loading...</p>
+                        
+                        <div class="post ticketCard" id="ticketCard-template" style="display: none;">
+                            <div class="info">
+                                <h1 id="id-title-event"></h1>
                             </div>
-                            <div class="qrcode" id="qrcode-template">
+                            <img src="" class="post-image" alt="" id="id-img-poster">
+                            <div class="section-info-qrcode">
+                                
+                                <div class="main-info description">
+                                    <span><img src="media/icons/location.png"/><span id="id-address-event"></span></span>
+                                    <span><img src="media/icons/clock.png"/><span id="id-date-time-event"></span></span>
+                                    <span><img src="media/icons/price.png"/><span id="id-price"></span></span>
+                                </div>
+                                <div class="qrcode" id="qrcode-template">
+                                    
+                                </div>
                                 
                             </div>
-                            
-                        </div>
-                        <div class="main-info" style="font-style: italic; font-size: 11px; padding: 4px;">
-                                <span style="margin: 4px;">Creator: <span id="id-creator"></span></span>
-                                <!--span style="margin: 4px;">Seller: <span>@zima</span></span-->
-                                <span style="margin: 4px;">Purchase date: <span id="id-purchase-date"></span></span>
-                        </div>
+                            <div class="main-info" style="font-style: italic; font-size: 11px; padding: 4px;">
+                                    <span style="margin: 4px;">Creator: <span id="id-creator"></span></span>
+                                    <!--span style="margin: 4px;">Seller: <span>@zima</span></span-->
+                                    <span style="margin: 4px;">Purchase date: <span id="id-purchase-date"></span></span>
+                            </div>
 
-                    </div>
+                        </div>
+                   </div>
 
                     <!--div class="post">
                         <div class="info">

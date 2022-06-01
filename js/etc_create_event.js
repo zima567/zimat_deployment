@@ -190,16 +190,16 @@ $(document).ready(function(){
         //Reset var allCorrect to true
         allCorrect = true;
         
-        let eventTitle = $("#event-title").val();
-        let postMessage = $("#post-short-msg").val();
-        let eventDescription = $("#id-description").val();
+        let eventTitle = $("#event-title").val().trim();
+        let postMessage = $("#post-short-msg").val().trim();
+        let eventDescription = $("#id-description").val().trim();
         let eventLocation = $("#id-location").val();
         let eventLocation_country = $("#id-country").val();
         let eventLocation_city = $("#id-city").val();
         let eventDateTime = $("#id-date-time").val();
         let eventArrCateg = arrCateg;
         let eventNbrTicket = $("#id-nbr-ticket").val();
-        let eventTicketPrice = $("#id-unit-price").val();
+        let eventTicketPrice = $("#id-unit-price").val().trim();
         let priceCurrency = $("#idCurrency").val();
         let paymentMethod = $("input[name='payment-method']:checked").val();
         let postDateTime = currentDateAndTime();
@@ -252,11 +252,12 @@ $(document).ready(function(){
                 cache: false,
                 processData: false,
                 beforeSend:function(){
-                    console.log("Sending to server...");
+                    $("#zima-loader").css("display","flex");
+                    $("#text-loading").text("Creating your event...");
                 },   
                 success:function(data)
                 {
-                    console.log("success response...");
+                    $("#zima-loader").css("display","none");
                     console.log(data);
                     RPEventCreation(data);
 
@@ -420,7 +421,7 @@ function RPEventCreation(res){
     if(res['db_connection']=="SUCCEED"){
         //Connection to DB succeed
         if(res['status']==1){
-            //event creation succed
+            //event creation succeeded
             $("#operation-status-text").text("Your event has been successfully created");
             $("#see-event-iacc-link").attr("href", "profile.html?e="+res['idCreator']);
             //Hide event creation wrapper

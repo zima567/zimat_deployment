@@ -11,7 +11,8 @@ $APIResponse = array_merge($APIResponse, $con_status);
 
 //Utilities variables
 $queryError = array("query_error"=>"NONE");
-$purchaseResult = array("status"=>0, "error_msg"=>"NONE");
+$purchaseResult = array("status"=>0, "error_msg"=>"NONE", "purchaseType"=>"NONE", "appended_user_found"=>0);
+$commissionPercentage = 0.03;
 $trueVAr = 1;
 $falseVar =0;
 
@@ -44,7 +45,7 @@ if(isset($_SESSION['idUser']) && isset($_POST['eventID'])){
         $sql_update_sold_col = "UPDATE `event_ticket` SET `sold` =? WHERE `idTicket` =?";
         $stmt_update_sold_col = $connection->prepare($sql_update_sold_col);
 
-        $sql_insert_t_order = "INSERT INTO `ticket_order` (`idTicketFK`, `idCustomerFK`, `idPriceFK`, `orderDate`, `idAgentFK`) VALUES(?,?,?,?,?)";
+        $sql_insert_t_order = "INSERT INTO `ticket_order` (`idTicketFK`, `idCustomerFK`, `securityCode`, `idPriceFK`, `commission`, `orderDate`, `idAgentFK`) VALUES(?,?,?,?,?,?,?)";
         $stmt_insert_t_order = $connection->prepare($sql_insert_t_order);
 
         $sql_verify_agent = "SELECT `idAgentFK` FROM `event_agent` WHERE `idAgentFK` =? AND `idEventFK` =? AND `sellingRight` =?";
@@ -62,9 +63,21 @@ if(isset($_SESSION['idUser']) && isset($_POST['eventID'])){
             $stmt_payment_info->execute([$eventID]);
             if($stmt_payment_info->rowCount()>0){
                 //There is available price for this event and all infos as payment method is avai...
+                //Function to generate security code
+                function generateRandomString($length = 10) {
+                    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    $charactersLength = strlen($characters);
+                    $randomString = '';
+                    for ($i = 0; $i < $length; $i++) {
+                        $randomString .= $characters[rand(0, $charactersLength - 1)];
+                    }
+                    return $randomString;
+                }
+                
                 $row_payment_info = $stmt_payment_info->fetch();
                 if($row_payment_info['onlinePayment']==1){
                     //Online payment
+                    $purchaseResult['purchaseType'] = "ONLINE";
                     //Get event directorFK
                     $stmt_event_creator->execute([$eventID]);
                     $row_director_event = $stmt_event_creator->fetch();
@@ -72,8 +85,12 @@ if(isset($_SESSION['idUser']) && isset($_POST['eventID'])){
                     //Start a transaction
                     $connection->beginTransaction();
                     while(($row_t_no_sold = $stmt_t_no_sold->fetch()) && $nbrTicket>0){
+                        
+                        //Get commission per ticket
+                        $commissionFee = number_format($row_payment_info['price'], 2,".","") * $commissionPercentage;
+                        $securityCode = generateRandomString(5);
                         $stmt_update_sold_col->execute([$trueVAr, $row_t_no_sold['idTicket']]);
-                        $stmt_insert_t_order->execute([$row_t_no_sold['idTicket'], $_SESSION['idUser'], $row_payment_info['idPrice'], $orderDateTime, $row_director_event['directorFK']]);
+                        $stmt_insert_t_order->execute([$row_t_no_sold['idTicket'], $_SESSION['idUser'], $securityCode, $row_payment_info['idPrice'], $commissionFee, $orderDateTime, $row_director_event['directorFK']]);
                         --$nbrTicket;
                     }
                     
@@ -94,6 +111,7 @@ if(isset($_SESSION['idUser']) && isset($_POST['eventID'])){
                 }
                 else{
                     //Offline payment
+                    $purchaseResult['purchaseType'] = "OFFLINE";
                     $stmt_verify_agent->execute([$_SESSION['idUser'], $eventID, $trueVAr]);
                     if($stmt_verify_agent->rowCount()>0){
                         //User online is an agent with selling right
@@ -101,8 +119,34 @@ if(isset($_SESSION['idUser']) && isset($_POST['eventID'])){
                         $connection->beginTransaction();
                         $saveNbrTicket = $nbrTicket;
                         while(($row_t_no_sold = $stmt_t_no_sold->fetch()) && $nbrTicket>0){
-                            $stmt_update_sold_col->execute([$trueVAr, $row_t_no_sold['idTicket']]);
+                            /*$stmt_update_sold_col->execute([$trueVAr, $row_t_no_sold['idTicket']]);
                             $stmt_insert_t_order->execute([$row_t_no_sold['idTicket'], $_SESSION['idUser'], $row_payment_info['idPrice'], $orderDateTime, $_SESSION['idUser']]);
+                            --$nbrTicket;*/
+                            //Defauld user ticket append/ user online/ agent
+                            $idUserAppended = $_SESSION['idUser'];
+                            //Check if ticket has been append to a specific user
+                            if(isset($_POST['user_ticket_append']) && $_POST['user_ticket_append']!="NONE"){
+                                $sql_check_appended_user = "SELECT `idUser` FROM `user` WHERE `username` =?";
+                                $stmt_appended_user = $connection->prepare($sql_check_appended_user);
+                                $stmt_appended_user->execute([$_POST['user_ticket_append']]);
+                                if($stmt_appended_user->rowCount()>0){
+                                    //user exist
+                                    $purchaseResult['appended_user_found'] = 1;
+                                    $row_appended_user = $stmt_appended_user->fetch();
+                                    $idUserAppended = $row_appended_user['idUser'];
+                                }
+    
+                            }
+                            else{
+                                //Appended user is intentionnally set to default
+                                $purchaseResult['appended_user_found'] = 2;
+                            }
+
+                            //Get commission per ticket
+                            $commissionFee = number_format($row_payment_info['price'], 2,".","") * $commissionPercentage;
+                            $securityCode = generateRandomString(5);
+                            $stmt_update_sold_col->execute([$trueVAr, $row_t_no_sold['idTicket']]);
+                            $stmt_insert_t_order->execute([$row_t_no_sold['idTicket'], $idUserAppended, $securityCode, $row_payment_info['idPrice'], $commissionFee, $orderDateTime, $_SESSION['idUser']]);
                             --$nbrTicket;
                         }
 

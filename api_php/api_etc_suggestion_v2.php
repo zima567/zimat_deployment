@@ -12,6 +12,7 @@ $arrayCountries = array();
 $arrayCities = array();
 $arrayCateg = array();
 $arrayListCurrencies = array();
+$arrayUsers = array();
 
 try{
     if(isset($_POST['family_suggest']) && isset($_POST['query_data'])){
@@ -141,6 +142,24 @@ try{
             }
 
         }
+        elseif($_POST['family_suggest'] =="USERS_PLATFORM"){
+            $arrError['family_suggest_is_handled'] = 1;
+
+            $sql_range_users = "SELECT `idUser`, `username` FROM `user`  WHERE `username` LIKE ? OR `username` LIKE ? OR `username` LIKE ? LIMIT 100";
+            $stmt_range_users = $connection->prepare($sql_range_users);
+
+            $query1 = $_POST['query_data']."%";
+            $query2 = "%".$_POST['query_data'];
+            $query3 = "%".$_POST['query_data']."%";
+
+            $stmt_range_users->execute([$query1, $query2, $query3]);
+            if($stmt_range_users->rowCount()>0){
+                while($row_users = $stmt_range_users->fetch()){
+                    array_push($arrayUsers, array("idUser"=>$row_users['idUser'],
+                                                  "username"=>$row_users['username']));
+                }
+            }
+        }
         else{
             $arrError['divers_error'] = "Family_suggest not handle"; 
         }
@@ -175,6 +194,10 @@ if($arrError['family_suggest_is_handled']){
     }
     elseif($arrError['family_suggest']=="USER_CITY"){
         $temp_arr_API = array("arr_cities"=>$arrayCities);
+        $APIResponse = array_merge($APIResponse, $temp_arr_API); 
+    }
+    elseif($arrError['family_suggest']=="USERS_PLATFORM"){
+        $temp_arr_API = array("arr_users"=>$arrayUsers);
         $APIResponse = array_merge($APIResponse, $temp_arr_API); 
     }
 }

@@ -81,6 +81,8 @@ $(document).ready(function(){
     $("#btn-my-events").on("click", function(){
         //Show sub-catalogue
         $("#catalogue-my-events-tickets").css("display","flex");
+        //Launch small-text loader
+        $("#mini-text-loader").css("display", "block");
 
         $.ajax({
             url: "api_php/api_etc_display.php",
@@ -89,6 +91,7 @@ $(document).ready(function(){
             //dataType : "json",
         })
         .done(function( response ) {
+            $("#mini-text-loader").css("display", "none");
             console.log(response);
             myEventsRequestHandler(response);
         })
@@ -105,6 +108,8 @@ $(document).ready(function(){
     $("#btn-my-tickets").on("click", function(){
        //Show sub-catalogue
         $("#catalogue-my-events-tickets").css("display","flex");
+        //Display small text-loader
+        $("#mini-text-loader").css("display", "block");
         
         $.ajax({
             url: "api_php/api_etc_display.php",
@@ -112,7 +117,8 @@ $(document).ready(function(){
             type: "POST",
             //dataType : "json",
         })
-        .done(function( response ) {
+        .done(function( response ){
+            $("#mini-text-loader").css("display", "none");
             console.log(response);
             myTicketsRequestHandler(response);
         })
@@ -127,10 +133,13 @@ $(document).ready(function(){
 
     $("#catalogue-my-events-tickets").on("click", ".generate-ticket-action-btn", function(e){
         e.preventDefault();
+        //Launch  custom zima loader
+        $("#zima-loader").css("display","flex");
+        $("#text-loading").text("Generating ticket...");
         let ticketID = e.target.id;
         let thisCard = $(this).closest(".ticketCard");
         let idCard = $(thisCard).prop("id");
-        let eventTitle = $("#"+idCard).find(".info").find("h1").text();
+        let eventTitle = $("#"+idCard).find(".info-ticket").find("h1").text();
         let postImgLink = $("#"+idCard).find(".post-image").attr("src");
         let eventLocation = $("#"+idCard).find(".this-event-location").text();
         let eventDateTime = $("#"+idCard).find(".this-event-dateTime").text();
@@ -153,12 +162,15 @@ $(document).ready(function(){
         let urlHash = "localhost/zimat_deployment/webscanner.html?th="+ encodeURIComponent(hashCode);
         console.log(urlHash);
         createQRcode(urlHash);
+        //Hide loader after the end of the process
 
     });
 
     $("#bottom-show-hide").on("click", function(){
         if($("#catalogue-my-events-tickets").css("display") =="flex"){
             $("#catalogue-my-events-tickets").css("display","none");
+            //Click box-my-event-my-ticket
+            $("#catalogue-my-events-tickets").children().not(':first-child').remove();
         } 
     });
 
@@ -169,8 +181,14 @@ $(document).ready(function(){
             data: {},
             type: "POST",
             dataType : "json",
+            beforeSend:function(){
+                //Launch  custom zima loader
+                $("#zima-loader").css("display","flex");
+                $("#text-loading").text("Logging out...");
+            }
         })
         .done(function( response ) {
+            $("#zima-loader").css("display","none");
             console.log(response);
             logoutHelper(response);
         })
@@ -456,19 +474,17 @@ function createQRcode(codeTicket,logoLink="media/icons/user-temp.png"){
         }).then(function (canvas) {
             var anchorTag = document.createElement("a");
             document.body.appendChild(anchorTag);
-            //document.getElementById("previewImg").appendChild(canvas);	
             anchorTag.download = "filename.jpg";
             anchorTag.href = canvas.toDataURL();
             anchorTag.target = '_blank';
+            $("#zima-loader").css("display","none"); //Close the loading circle to save ticket generated
             anchorTag.click();
         });
 
         //clear
         qrcode.clear();
         $("#ticketCard-template").css("display","none");
-        //$("#ticket-preview").hide();
-        //$("#myModal").css("display","none");
-
+       
     });
 
 }
@@ -599,8 +615,9 @@ function appendMyTickets(arr){
         for(let i=0;i<arr.length;i++){
             let unitTicket = arr[i];
             let HTMLTicketCard = '<div class="post ticketCard" id="ticketCard-id-'+unitTicket['idTicket']+'" >\
-            <div class="info">\
+            <div class="info-ticket">\
                 <h1>'+unitTicket['title']+'</h1>\
+                <span>Ticket No '+(i+1)+'</span>\
             </div>';
 
             //Take care of poster image
@@ -623,6 +640,7 @@ function appendMyTickets(arr){
                     <span style="margin: 4px;">Creator: <span class="this-event-creator">@'+unitTicket['username']+'</span></span>\
                     <!--span style="margin: 4px;">Seller: <span>@zima</span></span-->\
                     <span style="margin: 4px;">Purchase date: <span class="this-event-orderDate">'+unitTicket['orderDate']+'</span></span>\
+                    <span style="margin: 4px;">Security code: <span class="this-event-secureCode">'+unitTicket['securityCode']+'</span></span>\
                 </div>\
                 <div class="comment-wrapper">\
                 <button class="main-action-btn generate-ticket-action-btn" id="generate-ticket-id-'+unitTicket['idTicket']+'">Generate ticket</button>\

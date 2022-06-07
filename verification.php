@@ -38,14 +38,12 @@ if(isset($_GET['z']) && isset($_GET['i'])){
                 //This user is unverified thus can be verified
                 $stmt3->execute([$verifiedVar, $row_user_info['idUser']]);
                 $vs ="VERIFIED";
-                echo $vs;
                 header("Location:verification.html?m=".$vs);
                 die(); 
             }
             else{
                 //this user is already verified
                 $vs ="ALREADY_VERIFIED";
-                echo $vs;
                 header("Location:verification.html?m=".$vs);
                 die(); 
             }
@@ -54,7 +52,6 @@ if(isset($_GET['z']) && isset($_GET['i'])){
         else{
             //something went wrong, this user details are incoherent
             $em = "VARS_UNMATCHED_OR_NOT_EXIST";
-            echo $em;
             header("Location:verification.html?er=".$em);
             die(); 
         }
@@ -62,7 +59,6 @@ if(isset($_GET['z']) && isset($_GET['i'])){
 
     }catch(PDOException $e){
         $em = $e->getMessage();
-        echo $em;
         header("Location:verification.html?er=".$em);
         die(); 
     }
@@ -70,7 +66,6 @@ if(isset($_GET['z']) && isset($_GET['i'])){
 else{
     //Needed variables don't exist
     $em ="GET_VARS_NOT_FOUND";
-    echo $em;
     header("Location:verification.html?er=".$em);
     die(); 
 }

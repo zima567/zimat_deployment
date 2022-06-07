@@ -506,10 +506,10 @@ function appendEventsToCatalogue(arrEventSelection, catalogue="idCatalogue"){
             //Take care of profile picture
              //Take care of profile picture
              if(arrEF['avatar']!="NONE"){
-                event_unit+=' <div class="profile-pic"><a href="profile.html?e='+arrEF['idUser']+'"><img src="'+arrEF['avatar']+'" alt=""></a></div>';
+                event_unit+=' <div class="profile-pic"><a href="profile.html?e='+arrEF['idUser']+'"><img src="'+arrEF['avatar']+'" alt=""/></a></div>';
             }
             else{
-                event_unit+=' <div class="profile-pic"><a href="profile.html?e='+arrEF['idUser']+'"><img src="media/icons/user-icon.png" alt=""></a></div>';
+                event_unit+=' <div class="profile-pic"><a href="profile.html?e='+arrEF['idUser']+'"><img src="media/icons/user-icon.png" alt=""/></a></div>';
             }
 
             //continue concatination
@@ -521,15 +521,15 @@ function appendEventsToCatalogue(arrEventSelection, catalogue="idCatalogue"){
             }
 
             //continue concatination
-            event_unit+='</div><img src="media/icons/option.PNG" class="options" alt=""></div>';
+            event_unit+='</div><img src="media/icons/option.PNG" class="options" alt=""/></div>';
             
             //Add post image post
             let arrPosters = arrEF['posters'];
             if(arrPosters.length>0){
-                event_unit+='<img src="media/icons/loadingSpinner.gif" class="lazy post-image" alt="" data-src="'+arrPosters[0]+'" data-srcset="'+arrPosters[0]+'" ></img>';
+                event_unit+='<img src="media/icons/loadingSpinner.gif" class="lazy post-image" alt="" data-src="'+arrPosters[0]+'" data-srcset="'+arrPosters[0]+'" >';
             }
             else{
-                event_unit+='<img src="media/posters/belPrestans.jpg" class="lazy post-image" alt="" data-src="'+arrPosters[0]+'" data-srcset="'+arrPosters[0]+'"></img>';
+                event_unit+='<img src="media/icons/loadingSpinner.gif" class="lazy post-image" alt="" data-src="media/icons/no-bg-post.jpg" data-srcset="media/icons/no-bg-post.jpg">';
             }
                 
             
@@ -540,8 +540,8 @@ function appendEventsToCatalogue(arrEventSelection, catalogue="idCatalogue"){
             }
             event_unit+='<div class="post-content" id="id-post-content-'+arrEF['idEvent']+'">\
             <div class="reaction-wrapper">\
-                <img src="'+imgLink+'" class="heart-icon icon" id="event-like-btn-'+arrEF['idEvent']+'" alt="">\
-                <img src="media/icons/report.png" class="report icon" alt="">\
+                <img src="'+imgLink+'" class="heart-icon icon" id="event-like-btn-'+arrEF['idEvent']+'" alt=""/>\
+                <img src="media/icons/report.png" class="report icon" alt=""/>\
             </div>';
             
             //Add the number of likes
@@ -622,7 +622,13 @@ function appendMyTickets(arr){
 
             //Take care of poster image
             let arrPosters = unitTicket['posters'];
-            HTMLTicketCard+='<img src="media/icons/loadingSpinner.gif" class="lazy post-image" alt="" data-src="'+arrPosters[0]+'" data-srcset="'+arrPosters[0]+'">';
+            if(arrPosters.length>0){
+                HTMLTicketCard+='<img src="media/icons/loadingSpinner.gif" class="lazy post-image" alt="" data-src="'+arrPosters[0]+'" data-srcset="'+arrPosters[0]+'"/>';
+            }
+            else{
+                HTMLTicketCard+='<img src="media/icons/loadingSpinner.gif" class="lazy post-image" alt="" data-src="media/icons/no-bg-ticket.jpg" data-srcset="media/icons/no-bg-ticket.jpg"/>'; 
+            }
+            
             //Continue concatination
             HTMLTicketCard+='<div class="section-info-qrcode">\
             <div class="main-info description">\

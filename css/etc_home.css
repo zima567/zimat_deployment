@@ -175,7 +175,7 @@ body{
 /*Small CSS for ticket head To differenciate them*/
 .info-ticket{
     width: 100%;
-    height: 60px;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -230,6 +230,12 @@ body{
     flex-direction: row;
     flex-wrap: wrap;
 }
+
+/*Small line of code to style expired price*/
+.main-info .expired-price{
+    text-decoration-line: line-through;
+}
+
 .description{
     margin: 10px 0;
     font-size: 14px;
@@ -758,6 +764,11 @@ body{
     width: 100px;
     height: 100px;
     background-color: azure;
+  }
+
+  /*Small code to style the security code*/
+  .main-info .this-event-secureCode{
+      font-family: 'Times New Roman', Times, serif;
   }
 
 .catalogue-my-events-tickets .ticketCard .comment-wrapper{

@@ -44,6 +44,29 @@
         </div>
     </div>
 
+    <div class="wrapper-settings-options">
+        <div class="unit-option">
+            <img src="media/icons/wallet.png" alt="wallet"/>
+            <span>Wallet</span>
+        </div>
+
+        <div class="unit-option" id="manage-event">
+            <img src="media/icons/manage_event.png" alt="events"/>
+            <span>Manage event</span>
+        </div>
+
+        <div class="unit-option">
+            <img src="media/icons/perso_settings.png" alt="settings"/>
+            <span>Personnal settings</span>
+        </div>
+
+        <div class="unit-option">
+            <img src="media/icons/agents.png" alt="agents"/>
+            <span>Manage agent</span>
+        </div>
+
+    </div>
+
     <div class="container container-events-flip-card" id="container-events-flip-card">
         
         <!--div class="wrapper-flip-card">
@@ -64,8 +87,136 @@
             </div>
         </div-->
 
+        <!--div class="post">
+            <h3 class="info">Title of event</h3>
+            <img class="post-image" src="media/icons/cover 11.png"/>
+            <div class="btns-container-prof">
+                <a href="#"><button class="main-action-btn-profile">View event</button></a>
+            </div>
+        </div-->
+
     </div>
 
+    <div class="configuration-modal" id="modal-manage-event">
+        <div class="configuration-modal-content">
+            <div class="wrapper-search-event-to-edit">
+                <span class="pair-input-edit"><input type="search" placeholder="search for event by title" id="id-search-event" /><button id="change-event">Change</button></span>
+                <div class="box-suggestion-events" id="box-suggestion-events">
+                    <!--List of event suggested-->
+                </div>
+            </div>
+            <div class="wrapper-fields-to-edit" id="wrapper-fields-to-edit">
+
+                <span class="simple-input-unit">
+                    <label>Event title</label>
+                    <input class="field-has-changed" type="text" id="field-event-title"/>
+                </span>
+
+                <span class="simple-input-unit">
+                    <label>Post message</label>
+                    <input class="field-has-changed" type="text" id="field-event-post-msg"/>
+                </span>
+
+                <span class="simple-text-area-unit">
+                    <label>Event description</label>
+                    <textarea class="field-has-changed" type="text" id="field-event-description" rows="4"></textarea>
+                </span>
+
+               <div class="container-posters-btn">
+                    <div class="container-posters">
+                        <div class="ancient-posters" id="ancient-posters">
+
+                            <!--span class="unit-ancient-poster">
+                                <span class="remove-poster">No poster(s)</span>
+                                <img src="media/icons/nothing1.gif"/>
+                            </span-->
+                            
+                        </div>
+                        <div class="new-posters" id="new-posters">
+
+                            <!--span class="unit-new-poster">
+                                <span>Upload New</span>
+                                <img src="media/posters/post1.jpg"/>
+                            </span-->
+
+                        </div>
+
+                    </div>
+                    <div class="btn-up-new-posters">
+                        <input class="field-has-changed" type="file" name='files[]' multiple id="new-event-pictures" accept="image/png, image/gif, image/jpeg" style="display: none;">
+                        <button id="upload-new-posters">Uplaod new posters</button>
+                    </div>
+               </div>
+
+               <span class="simple-input-unit">
+                    <label>Event Country</label>
+                    <input type="text" id="event-country" readonly/>
+               </span>
+
+               <div class="box-country-city">
+                   <label>Event city</label>
+                    <div class="box-suggestion-input-pair">
+                        <span class="btn-input-pair">
+                            <input class="field-has-changed form-control" type="text" placeholder="City" id="id-city" readonly/>
+                            <button class="btn btn-primary" id="edit-city">Edit</button>
+                        </span>
+                        <div class="box-suggestion" id="box-suggestion-cities">
+                        <!--Cities-->
+                        </div>
+                    </div>
+               </div>
+
+               <span class="simple-input-unit">
+                    <label>Address</label>
+                    <input class="field-has-changed" type="text" id="field-event-address"/>
+               </span>
+
+               <span class="simple-input-unit">
+                    <label>Event date</label>
+                    <input class="field-has-changed" type="datetime-local"  id="id-date-time"/>
+               </span>
+
+               <div class="section-choose-categ">
+                    <label for="categories">Choose event categories:</label>
+                    <select class="field-has-changed drop-down-categ" name="categList" id="idCategList">
+                        <option selected="true" disabled="disabled">Select categories</option>
+                        <!--option value="Education">Education</option>
+                        <option value="Sport">Sport</option>
+                        <option value="Loisirs">Loisirs</option>
+                        <option value="Politique">Politique</option-->
+                    </select>
+                    <div class="event-categories" id="event-categ">
+                        
+                    </div>
+               </div>
+
+               <span class="simple-input-unit-price">
+                    <label>Event price</label>
+                    <span class="pair-price-currency"><input class="field-has-changed" type="text" id="field-event-price"/><button id="price-currency">USD</button></span>
+               </span>
+                
+            </div>
+
+            <div class="illustration-modify-event" id="illustration-modify-event">
+                <div class="img-and-legend">
+                    <img src="media/icons/editing-event.png" alt="illustration" width="50%"/>
+                    <span>Event editing</span>
+                </div>
+            </div>
+
+            <div class="illustration-editing-result" id="illustration-editing-result">
+                <img src="media/icons/success.gif" alt="illustration" width="50%"/>
+                <div class="editing-infos" id="editing-infos">
+                    <!--List of editing status-->
+                </div>
+            </div>
+            
+        </div>
+        <div class="configuration-modal-btns">
+            <button id="cancel-modal-manage-event">Cancel</button>
+            <button id="btn-save-changes">Save changes</button>
+        </div>
+    </div>
     <!--Bottom nav bar-->
     <!--nav class="container-fluid bottom-menu">
             <li><a href="#"><i class="bi bi-house-door-fill"></i></a><span>Home</span></li>
@@ -129,7 +280,7 @@
 
                 <div class="app-navigation-container-icon">
 
-                    <a href="" id="logout">
+                    <a id="logout">
 
                         <i class="bi bi-box-arrow-left"></i>
 

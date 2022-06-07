@@ -22,37 +22,6 @@ $(document).ready(function(){
        $("#event-pictures").val(null);
     });
 
-    //Upload images show preview and save them in array to be sent
-    var imagesPreview = function(input, placeToInsertImagePreview) {
-
-        if (input.files) {
-            var filesAmount = input.files.length;
-            if(filesAmount<=3){
-                for (i = 0; i < filesAmount; i++) {
-                    var reader = new FileReader();
-    
-                    reader.onload = function(event) {
-                        $($.parseHTML('<img class="images">')).attr('src', event.target.result).appendTo(placeToInsertImagePreview);
-                    }
-    
-                    reader.readAsDataURL(input.files[i]);
-                }
-            }
-            else{
-                //alert("You cannot add more than 3 pictures: "+input.files.length);
-                let popHtmlContent = '<p>Oops! You have selected '+input.files.length+'pictures files.<br><br>You can select maximun 3 pictures files</p>';
-                $("#id-content-popup").html(popHtmlContent);
-
-                //Empty files iput
-                $("#event-pictures").val(null);
-                //Show popup
-                $(".custom-model-main").addClass('model-open');
-                
-            }
-        }
-
-    };
-
     $('#event-pictures').on('change', function() {
         imagesPreview(this, 'div.preview');
     });
@@ -285,6 +254,38 @@ $(document).ready(function(){
 
 
 });
+
+//Function to uplad pictures
+//Upload images show preview and save them in array to be sent
+var imagesPreview = function(input, placeToInsertImagePreview) {
+
+    if (input.files) {
+        var filesAmount = input.files.length;
+        if(filesAmount<=3){
+            for (i = 0; i < filesAmount; i++) {
+                var reader = new FileReader();
+
+                reader.onload = function(event) {
+                    $($.parseHTML('<img class="images">')).attr('src', event.target.result).appendTo(placeToInsertImagePreview);
+                }
+
+                reader.readAsDataURL(input.files[i]);
+            }
+        }
+        else{
+            //alert("You cannot add more than 3 pictures: "+input.files.length);
+            let popHtmlContent = '<p>Oops! You have selected '+input.files.length+'pictures files.<br><br>You can select maximun 3 pictures files</p>';
+            $("#id-content-popup").html(popHtmlContent);
+
+            //Empty files iput
+            $("#event-pictures").val(null);
+            //Show popup
+            $(".custom-model-main").addClass('model-open');
+            
+        }
+    }
+
+};
 
 //Get current date and time
 function currentDateAndTime(){

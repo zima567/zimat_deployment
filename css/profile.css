@@ -228,85 +228,398 @@
     align-items: center;
 }
 
-/*Card flip events CSS*/
-
-.container-events-flip-card{
+/*CSS settings options*/
+.wrapper-settings-options{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-top: 25px;
 }
 
-.wrapper-flip-card{
-    display: flex;
-    flex-direction: column;
-     margin: 40px 0;
+.wrapper-settings-options .unit-option{
+    width: 40%;
 }
 
-.wrapper-flip-card .container-btn{
-    display: flex;
-    justify-content: center;
+.unit-option{
+    border: 1px solid red;
+    border-radius: 5px;
+    margin: 8px;
     padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.container-btn button{
+/*NEW CSS FOR EVENT DISPLAY*/
+.post{
+    width: 100%;
+    height: auto;
+    background: #fff;
+    border: 1px solid #dfdfdf;
+    margin-top: 40px;
+}
+
+.info{
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.post-image{
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+}
+
+.btns-container-prof{
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    width: 100%;
+    justify-content: center; 
+    align-items: center;   
+}
+
+.btns-container-prof a{
+    width: 60%;
+}
+.main-action-btn-profile{
     border: none;
     border-radius: 15px;
     padding: 8px;
-    margin-left: 4px;
+    width: 100%;
     background-color:rgb(0, 162, 255);
     color: white;
     cursor: pointer;
 }
 
-.scene{
-    display: inline-block;
-    width: 95%;
-    height: 350px;
-    perspective: 600px;
-    border-radius: 5px;
-  }
-  
-  .card-event {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-    transform-style: preserve-3d;
-    transform-origin: center right;
-    transition: transform 1s;
-  }
-  
-  .card-event.is-flipped {
-    transform: translateX(-100%) rotateY(-180deg);
-  }
-  
-  .card__face {
+
+
+/*CSS pop-up modal*/
+/*Modal modify event*/
+.configuration-modal{
     position: absolute;
+    top: 0;
+    display: none;
+    flex-direction: column;
     width: 100%;
-    height: 100%;
-    line-height: 8px;
-    color: black;
-    text-align: center;
-    font-weight: bold;
-    font-size: 14px;
-    backface-visibility: hidden;
-  }
-  
-  .card__face--front {
-    background: crimson;
-  }
-  
-  .card__face--back {
-    background: #E7E6E6;
-    transform: rotateY(180deg);
+    height: 100vh;
+    background-color: #f1f1f1;
+    z-index: 999;
+}
+
+.configuration-modal .configuration-modal-content{
+    width: 100%;
+    height: 90vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 70px;
+}
+
+.configuration-modal .configuration-modal-btns{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 8px;
+}
+
+.configuration-modal-btns button{
+    margin: 4px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 15px;
+    background-color:rgb(0, 162, 255);
+    color: white;
+}
+
+.wrapper-search-event-to-edit{
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+}
+
+.wrapper-search-event-to-edit .pair-input-edit{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.pair-input-edit input{
+    width: 80%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid white;
+}
+
+.pair-input-edit button{
+    display: none;
+    width: 20%;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    background-color:rgb(0, 162, 255);
+    color: white;
+}
+
+.box-suggestion-events{
+    display: none;
+    display: flex;
+    flex-direction: column;
+    margin: 8px;
+}
+
+.box-suggestion-events span{
+    margin: 4px;
+    border-bottom: 1px solid white;
+}
+
+.illustration-modify-event{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-  }
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
 
-  .card__face--back span{
-      margin-bottom: 8px;
-  }
+.illustration-modify-event .img-and-legend{
+    width: 50%;
+    border-radius: 50%;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+/*Css for editing result box*/
+.illustration-editing-result{
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+}
+
+.illustration-editing-result img{
+    width: 100px;
+    height: 100px;
+    border-radius: 100px;
+}
+
+.illustration-editing-result .editing-infos{
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.wrapper-fields-to-edit, #btn-save-changes{
+    display: none;
+}
+
+.simple-input-unit{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    margin: 4px;
+}
+
+.simple-input-unit input{
+    width: 98%;
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+}
+
+.simple-text-area-unit{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    margin: 4px;
+}
+
+.simple-text-area-unit textarea{
+    width: 98%;
+    border-radius: 10px;
+    padding: 8px;
+    border: none;
+}
+
+.container-posters-btn{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-up-new-posters{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    padding: 4px;
+}
+
+.btn-up-new-posters button{
+    padding: 8px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    background-color:rgb(0, 162, 255);
+    color: white;
+}
+
+.container-posters{
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #aaa9a9;
+    width: 98%;
+    border-radius: 10px;
+}
+
+.ancient-posters, .new-posters{
+    border-bottom: 2px solid #dad5d5;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 8px;
+}
+
+.ancient-posters{
+    justify-content: space-around;
+    align-items: center;
+}
+
+.new-posters{
+    justify-content: center;
+    align-items: center;
+}
+
+.ancient-posters .unit-ancient-poster, .new-posters .unit-new-poster{
+    display: flex;
+    flex-direction: column;
+    background-color: #fff7f7;
+    border-radius: 10px;
+    margin: 4px;
+    width: 35%;
+}
+
+.unit-ancient-poster span{
+    text-align: center;
+    color: red;
+    font-weight: bold;
+}
+
+.unit-new-poster span{
+    text-align: right;
+    color:  green;
+    font-style: italic;
+}
+
+
+.box-suggestion-input-pair{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.btn-input-pair{
+    display: flex;
+    flex-direction: row;
+}
+
+.btn-input-pair button{
+    display: block;
+}
+
+.box-country-city{
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+}
+.box-suggestion-input-pair .box-suggestion{
+    display: none; /*flex*/
+    flex-direction: column;
+    padding: 8px;
+    border: 2px solid #dfdfdf ;
+}
+
+.section-choose-categ{
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+}
+
+.drop-down-categ{
+    padding: 8px;
+    border: 10px;
+    border: none;
+}
+
+.event-categories{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border: 1px solid #9d9de9;
+    height: auto;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+.categ-unit{
+    border: 1px solid burlywood;
+    padding: 4px;
+    margin: 4px;
+    border-radius: 5px;
+}
+
+.x-delete{
+    font-size: 11px;
+    padding-left: 8px;
+}
+
+.simple-input-unit-price{
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.simple-input-unit-price .pair-price-currency{
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+}
+
+.pair-price-currency input{
+    padding: 8px;
+    width: 80%;
+    border-radius: 10px 0px 0px 10px;
+    border: none;
+}
+
+.pair-price-currency button{
+    padding: 8px;
+    width: 20%;
+    border-radius:0px 10px 10px 0px ;
+    border: none;
+    background-color: #626262;
+    color: white;
+}
+
 
 
 /*CSS Bottom navigation*/

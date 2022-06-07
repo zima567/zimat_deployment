@@ -13,6 +13,7 @@ $arrayCities = array();
 $arrayCateg = array();
 $arrayListCurrencies = array();
 $arrayUsers = array();
+$arrayMyEvents = array();
 
 try{
     if(isset($_POST['family_suggest']) && isset($_POST['query_data'])){
@@ -160,6 +161,33 @@ try{
                 }
             }
         }
+        elseif($_POST['family_suggest'] =="USER_EVENTS"){
+            $arrError['family_suggest_is_handled'] = 1;
+
+            $sql_event_basic_info = "SELECT `idEvent`, `title` FROM `event` WHERE `directorFK` =? AND ( `title` LIKE ? OR `title` LIKE ? OR `title` LIKE ? )";
+            $stmt0 = $connection->prepare($sql_event_basic_info);
+
+            if(isset($_SESSION['idUser'])){
+                //Build query variables
+                $query1 = $_POST['query_data']."%";
+                $query2 = "%".$_POST['query_data'];
+                $query3 = "%".$_POST['query_data']."%";
+                $stmt0->execute([$_SESSION['idUser'], $query1, $query2, $query3]);
+                if($stmt0->rowCount()>0){
+                    $temp_arr_basic_info = array();
+                    while($row_basic_info = $stmt0->fetch()){
+                        array_push($temp_arr_basic_info, array("idEvent"=>$row_basic_info['idEvent'],
+                                                                "title"=>$row_basic_info['title']));
+                    }
+                    $arrayMyEvents = $temp_arr_basic_info;
+                }   
+                
+            }
+            else{
+                $arrError['divers_error'] = "USER_OFFLINE";
+            }
+
+        }
         else{
             $arrError['divers_error'] = "Family_suggest not handle"; 
         }
@@ -198,6 +226,10 @@ if($arrError['family_suggest_is_handled']){
     }
     elseif($arrError['family_suggest']=="USERS_PLATFORM"){
         $temp_arr_API = array("arr_users"=>$arrayUsers);
+        $APIResponse = array_merge($APIResponse, $temp_arr_API); 
+    }
+    elseif($arrError['family_suggest']=="USER_EVENTS"){
+        $temp_arr_API = array("arr_my_events"=>$arrayMyEvents);
         $APIResponse = array_merge($APIResponse, $temp_arr_API); 
     }
 }

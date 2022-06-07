@@ -52,8 +52,9 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
 
                 foreach($_FILES['posters']['name'] as $key=>$val){ 
                     // File upload path 
-                    $fileName = basename($_FILES['posters']['name'][$key]); 
-                    $targetFilePath = $targetDir . $fileName; 
+                    $fileName = basename($_FILES['posters']['name'][$key]);
+                    $randomNumIdStr = mt_rand()."_".$_SESSION['idUser'];
+                    $targetFilePath = $targetDir.$randomNumIdStr.$fileName; //We add the user id and random to make sure each file has diff names then avoid deleting posters issues
                      
                     // Check whether file type is valid 
                     $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION); 

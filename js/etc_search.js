@@ -124,7 +124,7 @@ function appendCards(arr, type){
                 let eventPoster = eventUnit['poster'];
 
                 if(eventUnit['poster']=="NONE"){
-                    eventPoster = "media/icons/cover2.png";
+                    eventPoster = "media/icons/no-bg-post.jpg";
                 }
                 let HTMLEventUnit = '<div class="card event-card">\
                     <div class="body">\

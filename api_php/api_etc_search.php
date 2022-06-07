@@ -27,7 +27,7 @@ try{
     $sql_select_Poster = "SELECT `linkToPoster` FROM `event_poster` WHERE `idEventFK` =?";
     $stmt3 = $connection->prepare($sql_select_Poster);
 
-    $sql_select_price = "SELECT `price`, `currency`, `onlinePayment`, `offlinePayment` FROM `event_pricing` WHERE `idEventFK`=? ORDER BY `latestUpdate`";
+    $sql_select_price = "SELECT `price`, `currency`, `onlinePayment`, `offlinePayment` FROM `event_pricing` WHERE `idEventFK`=? ORDER BY `latestUpdate` DESC";
     $stmt4 = $connection->prepare($sql_select_price);
 
     if($typeSearch =="USER" || $typeSearch =="DEFAULT"){

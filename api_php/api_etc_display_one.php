@@ -18,7 +18,7 @@ $falseVar = 0;
 $eventID = $_POST['idEvent'];
 
 try{
-    $sql_select_event = "SELECT `idEvent`, `title`, `description`, `location`, `dateTime`, `status`, `directorFK`, `username`, `avatar`, `firstName`, `lastName`, `address`, `bio` FROM ((`event` INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) WHERE `event`.`idEvent`=?";
+    $sql_select_event = "SELECT `idEvent`, `title`, `postMessage`, `description`, `location`, `country`.`name` AS `location_country`, `cities`.`name` AS `location_city`, `dateTime`, `status`, `directorFK`, `username`, `avatar`, `firstName`, `lastName`, `address`, `bio` FROM ((((`event` INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `country` ON `event`.`location_country` = `country`.`idCountry`) INNER JOIN `cities` ON `event`.`location_city` = `cities`.`idCity`) WHERE `event`.`idEvent`=?";
     $stmt1 = $connection->prepare($sql_select_event);
 
     $sql_select_posters = "SELECT `linkToPoster` FROM `event_poster` WHERE `idEventFK`=?"; //many records
@@ -46,8 +46,11 @@ try{
         $row_event_info = $stmt1->fetch();
         $temp_arr_event = array("idEvent"=>$row_event_info['idEvent'],
                                             "title"=>$row_event_info['title'],
+                                            "postMessage"=>$row_event_info['postMessage'],
                                             "description"=>$row_event_info['description'],
                                             "location"=>$row_event_info['location'],
+                                            "location_country"=>$row_event_info['location_country'],
+                                            "location_city"=>$row_event_info['location_city'],
                                             "dateTime"=>$row_event_info['dateTime'],
                                             "status"=>$row_event_info['status'],
                                             "directorFK"=>$row_event_info['directorFK'],

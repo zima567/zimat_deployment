@@ -13,68 +13,27 @@ $(document).ready(function(){
     });
     
     let pastLimit = get2daysagoDate();
-    //alert(pastLimit);
-   // alert(currentDateAndTime());
+    
     //Unfold events to catalogue //To be modified
     //************************************ */
-    $.ajax({
-        url: "api_php/api_etc_display.php",
-        data: {pastLimit: pastLimit},
-        type: "POST",
-        //dataType : "json",
-    })
-    .done(function( response ) {
-        console.log(response);
-        eventsRequestHandler(response);
-    })
-    .fail(function( xhr, status, errorThrown ) {
-        alert( "Sorry, there was a problem!" );
-        console.log( "Error: " + errorThrown );
-        console.log( "Status: " + status );
-        console.dir( xhr );
-    });
+    let dataObj_uetc ={pastLimit: pastLimit};
+    let destinationReq_uetc = "api_php/api_etc_display.php";
+    requestSender(destinationReq_uetc, dataObj_uetc, eventsRequestHandler);
+
     /************************************** */
 
     /**************USER SUGGESTION START************* */
-    $.ajax({
-        url: "api_php/api_etc_suggestion.php",
-        data: {},
-        type: "POST",
-        //dataType : "json",
-    })
-    .done(function( response ) {
-        console.log(response);
-        usersRequestHandler(response);
-    })
-    .fail(function( xhr, status, errorThrown ) {
-        alert( "Sorry, there was a problem!" );
-        console.log( "Error: " + errorThrown );
-        console.log( "Status: " + status );
-        console.dir( xhr );
-    });
-
+    let dataObj_us ={};
+    let destinationReq_us = "api_php/api_etc_suggestion.php";
+    requestSender(destinationReq_us, dataObj_us, usersRequestHandler);
      /**************USER SUGGESTION END************* */
 
      /*EVENT SUGGESTION BASED ON CATEG OF PREFERENCE QUERIED BY CITY AND COUNTRY --- START */
        //This code has successfully passed the tests now it's certified
        let todayDate = currentDateAndTime();
-       $.ajax({
-           url: "api_php/api_etc_display.php",
-           data: {myCategEvents:"VAR_SET", pastLimit:todayDate},
-           type: "POST",
-           //dataType : "json",
-       })
-       .done(function( response ) {
-           suggestionEventHandler(response);
-           console.log(response);
-       })
-       .fail(function( xhr, status, errorThrown ) {
-           alert( "Sorry, there was a problem!" );
-           console.log( "Error: " + errorThrown );
-           console.log( "Status: " + status );
-           console.dir( xhr );
-       });
-
+       let dataObj_eboc ={myCategEvents:"VAR_SET", pastLimit:todayDate};
+       let destinationReq_eboc = "api_php/api_etc_display.php";
+       requestSender(destinationReq_eboc, dataObj_eboc, suggestionEventHandler);
        /*END */
 
      /*Dislay my Events into subCatalogue */
@@ -88,7 +47,7 @@ $(document).ready(function(){
             url: "api_php/api_etc_display.php",
             data: {myEvent:"VAR_SET"},
             type: "POST",
-            //dataType : "json",
+            dataType : "json",
         })
         .done(function( response ) {
             $("#mini-text-loader").css("display", "none");
@@ -115,7 +74,7 @@ $(document).ready(function(){
             url: "api_php/api_etc_display.php",
             data: {myTicket:"VAR_SET"},
             type: "POST",
-            //dataType : "json",
+            dataType : "json",
         })
         .done(function( response ){
             $("#mini-text-loader").css("display", "none");
@@ -129,6 +88,20 @@ $(document).ready(function(){
             console.dir( xhr );
         });
 
+    });
+
+    //Handle options (three dots) event (Not yet implemented)
+    $("#idCatalogue").on("click", ".options", function(event){
+        event.preventDefault();
+        //let eventID = event.target.id;
+        alert("Sorry! That functionality is not yet completely implemented.");  
+    });
+
+    //Handle report event (Not yet implemented)
+    $("#idCatalogue").on("click", ".report", function(event){
+        event.preventDefault();
+        //let eventID = event.target.id;
+        alert("Sorry! That functionality is not yet completely implemented.");  
     });
 
     $("#catalogue-my-events-tickets").on("click", ".generate-ticket-action-btn", function(e){
@@ -174,30 +147,28 @@ $(document).ready(function(){
         } 
     });
 
+    //Handle share button functionality
+    $("#idCatalogue").on("click", ".btn-share", function(event){
+        let idEToShare = event.target.id;
+        idEToShare = idEToShare.replace("id-share-","");
+        let linkToShare = "https://www.zimaccess.com/etc_display_event.html?e="+idEToShare;
+        $("#event-link-val").val(linkToShare);
+        $("#pop-up-box3").addClass('model-open');
+        
+    });
+
+    //Handle the copy of the link once click on the copy link btn
+    $("#id-content-popup3").on("click", "#btn-cpy-link", function(event){
+        event.preventDefault();
+        CopyToClipboard($("#event-link-val").val(), true, "link copied");
+        $("#pop-up-box3").removeClass('model-open');
+    });
+
     //logout of the system
     $("#logout").on("click", function(){
-        $.ajax({
-            url: "api_php/api_lsrs_logout.php",
-            data: {},
-            type: "POST",
-            dataType : "json",
-            beforeSend:function(){
-                //Launch  custom zima loader
-                $("#zima-loader").css("display","flex");
-                $("#text-loading").text("Logging out...");
-            }
-        })
-        .done(function( response ) {
-            $("#zima-loader").css("display","none");
-            console.log(response);
-            logoutHelper(response);
-        })
-        .fail(function( xhr, status, errorThrown ) {
-            alert( "Sorry, there was a problem!" );
-            console.log( "Error: " + errorThrown );
-            console.log( "Status: " + status );
-            console.dir( xhr );
-        });
+        let dataObj ={};
+        let destinationReq = "api_php/api_lsrs_logout.php";
+        requestSender(destinationReq, dataObj, logoutHelper,"Logging out...");
     });
 
     //Create event on the platform
@@ -308,10 +279,8 @@ $(document).ready(function(){
         //Get selected categories
         var userChosenCategs = $("#box-categories").find(".background-selected");
         for(let i=0; i<userChosenCategs.length;i++){
-            //str+=$(userChosenCategs[i]).text();
             arrUserCateg.push($(userChosenCategs[i]).text().trim());
         }
-        //console.log(arrUserCateg);
 
         //Get the city name
         let cityName = $("#user-city").val().trim();
@@ -336,10 +305,10 @@ $(document).ready(function(){
     });
 
     //POPUP Handling 
-    //$(".custom-model-main").addClass('model-open');
     $(".close-btn, .bg-overlay").click(function(){
       $("#pop-up-box1").removeClass('model-open');
       $("#pop-up-box2").removeClass('model-open');
+      $("#pop-up-box3").removeClass('model-open');
     });
 
 
@@ -348,7 +317,6 @@ $(document).ready(function(){
 
 
 function get2daysagoDate() {
-
     return new Date(new Date().getTime() - 2*(24*60*60*1000)).toUTCString();
   }
 
@@ -399,18 +367,27 @@ function currentDateAndTime(){
     return today;
 }
 
-function requestSender(destinationToRequest, obj, processorFunc){
+function requestSender(destinationToRequest, obj, processorFunc, msgLoader="NONE"){
     $.ajax({
         url: destinationToRequest,
         data: obj,
         type: "POST",
         dataType : "json",
+        beforeSend:function(){
+            //Launch  custom zima loader
+            if(msgLoader!="NONE"){
+                $("#zima-loader").css("display","flex");
+                $("#text-loading").text(msgLoader);
+            }
+        }
     })
     .done(function( response ) {
+        $("#zima-loader").css("display","none");
         console.log(response);
         processorFunc(response)
     })
     .fail(function( xhr, status, errorThrown ) {
+        $("#zima-loader").css("display","none");
         alert( "Sorry, there was a problem!" );
         console.log( "Error: " + errorThrown );
         console.log( "Status: " + status );
@@ -418,11 +395,41 @@ function requestSender(destinationToRequest, obj, processorFunc){
     });
 }
 
+/*Function to copy to clipboard */
+function CopyToClipboard(value, showNotification, notificationText) {
+    var $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val(value).select();
+    document.execCommand("copy");
+    $temp.remove();
+
+    if (typeof showNotification === 'undefined') {
+        showNotification = true;
+    }
+    if (typeof notificationText === 'undefined') {
+        notificationText = "Copied to clipboard";
+    }
+
+    var notificationTag = $("div.copy-notification");
+    if (showNotification && notificationTag.length == 0) {
+        notificationTag = $("<div/>", { "class": "copy-notification", text: notificationText });
+        $("body").append(notificationTag);
+
+        notificationTag.fadeIn("slow", function () {
+            setTimeout(function () {
+                notificationTag.fadeOut("slow", function () {
+                    notificationTag.remove();
+                });
+            }, 1000);
+        });
+    }
+}
+
 /************* */
 //Simple function to display categories
 function displayCategs(res){
     $("#box-categories").empty();
-    let arrCategs = res['arr_return'];
+    let arrCategs = res['arr_return'].arr_all_categ;
 
     if(arrCategs.length>0){
         for(let i=0; i<arrCategs.length;i++){
@@ -438,7 +445,7 @@ function displayCategs(res){
 }
 //Function to display categories when config pop-up appear to user
 function queryAndDisplayCategories(){
-    let dataObj ={action_type:"T_SELECT", config_type:"select_categ_not_of_users"};
+    let dataObj ={action_type:"T_SELECT", config_type:"select_categ_of_users"};
     let destinationReq = "api_php/api_configuration_module1.php";
     requestSender(destinationReq, dataObj, displayCategs);
 }
@@ -452,8 +459,7 @@ function createQRcode(codeTicket,logoLink="media/icons/user-temp.png"){
 
     //TEST QRCODE
     $.getScript("easyqrcodejs/src/easy.qrcode.js", function() {
-        //Show to allow screenshot
-        //$("#ticket-preview").show();
+        //show template of ticket
         $("#ticketCard-template").css("display","block");
 
         var qrcode = new QRCode(document.getElementById("qrcode-template"), {
@@ -491,6 +497,12 @@ function createQRcode(codeTicket,logoLink="media/icons/user-temp.png"){
 
 function logoutHelper(res){
     if(res['succ_logout']==1){
+        //Remove tokens
+        if (typeof(Storage) !== "undefined") {
+            // Code for localStorage
+            localStorage.removeItem("tokenHash");
+            localStorage.removeItem("username");
+        } 
         window.location.replace("lsrs_login.html");
     }
 }
@@ -570,7 +582,7 @@ function appendEventsToCatalogue(arrEventSelection, catalogue="idCatalogue"){
                 </div>\
                 <div class="comment-wrapper">\
                 <button class="main-action-btn btn-get-your-ticket" id="id-main-action-btn-'+arrEF['idEvent']+'">Get your ticket</button>\
-                <button class="comment-btn" id="id-share-btn">share</button>\
+                <button class="btn-share comment-btn" id="id-share-'+arrEF['idEvent']+'">share</button>\
                 </div>\
                 </div>';
     
@@ -681,11 +693,6 @@ function usersRequestHandler(res){
         //For bottom menu
         $("#profile-link2").attr("href", "lsrs_login.html");
     }
-
-    //Handle return of users as suggestions
-    //let arrUsersEL = res['arr_users_EL'];
-    //let resultArrUsersEL = appendUserCard(arrUsersEL, "Liked your post");
-    //if(!resultArrUsersEL){alert("No user from which u like events");}
 
     let arrUsersFY = res['arr_users_FY'];
     let resultArrUsersFY = appendUserCard(arrUsersFY, "Follows you");
@@ -938,7 +945,7 @@ function likeActionHandler(res, eventID, element, imgLikeElement){
         //something prevent action to work fine
         //alert(res['action_error']+"\nETC...");
         let popHtmlContent = '<p>Sorry! You are not logged in.<br><br><a href="lsrs_login.html"><button class="main-action-btn">LOGIN NOW</button></a></p>';
-        $("#id-content-popup").html(popHtmlContent);
+        $("#id-content-popup1").html(popHtmlContent);
         $("#pop-up-box1").addClass('model-open');
     }
 

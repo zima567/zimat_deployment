@@ -7,7 +7,7 @@ $(document).ready(function(){
         //Show pop up modal for security code
         //$(".custom-model-main").addClass('model-open');
             ticketHash = getUrlParameter('th');
-            ticketHash = decodeURIComponent(ticketHash);
+            //ticketHash = decodeURIComponent(ticketHash);    
             let dataObj ={hashcode:ticketHash};
             let destinationReq = "api_php/api_webscanner.php";
             requestSender(destinationReq, dataObj, HTTPHashVerification, "Ticket verification...");
@@ -154,7 +154,7 @@ function MPScanner(res){
             let htmlNodeText = '<span>Log in first in order to successfully scan ticket</span>';
             $("#box-text-explanation").html(htmlNodeText);
 
-            let htmlNodeBtns = '<a href="lsrs_login.html"><button>LOGIN NOW</button></a>';
+            let htmlNodeBtns = '<a href="lsrs_login.html?lr=SET&or=webscanner.html&keyvar=th&ad='+encodeURIComponent(ticketHash)+'"><button>LOGIN NOW</button></a>';
             $("#box-btn-actions").html(htmlNodeBtns);
         }
         else if(res['error']=="INVALID_HASHCODE"){
@@ -217,7 +217,7 @@ function  VMPScanner(res){
             let htmlNodeText = '<span>Log in first in order to successfully scan ticket</span>';
             $("#box-text-explanation").html(htmlNodeText);
 
-            let htmlNodeBtns = '<a href="lsrs_login.html"><button>LOGIN NOW</button></a>';
+            let htmlNodeBtns = '<a href="lsrs_login.html?lr=SET&or=webscanner.html&keyvar=th&ad='+encodeURIComponent(ticketHash)+'"><button>LOGIN NOW</button></a>';
             $("#box-btn-actions").html(htmlNodeBtns);
         }
         else if(res['error']=="INVALID_HASHCODE"){

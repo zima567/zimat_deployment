@@ -40,7 +40,7 @@ try{
             while($row_user = $stmt1->fetch()){
                 array_push($temp_user_arr, array("idUser"=>$row_user['idUser'],
                                                  "username"=>$row_user['username'],
-                                                 "avatar"=>$row_user['address'],
+                                                 "avatar"=>$row_user['avatar'],
                                                  "firstName"=>$row_user['firstName'],
                                                  "lastName"=>$row_user['lastName'],
                                                  "verified"=>$row_user['verified']));

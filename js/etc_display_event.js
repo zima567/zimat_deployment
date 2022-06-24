@@ -1,6 +1,3 @@
-//New technique is to build one request function
-//Args: file destination, object data, processing function
-//Declare variable globally to handle data from the html page(user side)
 //Be careful with get id data direct to the database.
 //Detect mobile browser or not
 
@@ -33,7 +30,7 @@ $(document).ready(function(){
         url: "api_php/api_etc_display_one.php",
         data: {"idEvent":eventID},
         type: "POST",
-        //dataType : "json",
+        dataType : "json",
     })
     .done(function( response ) {
         console.log(response);
@@ -58,7 +55,6 @@ $(document).ready(function(){
     //Take care of showing and hiding text
     $("#wrapper-event-to-display").on("click", "#read-more", function(){
         let elementDetailedText = $("#wrapper-event-to-display").find("#elaboration_1");
-        //console.log($(elementDetailedText).attr("id"));
         toggleDisplay(elementDetailedText,this);
     });
 
@@ -71,17 +67,6 @@ $(document).ready(function(){
          document.getElementById('inc-dec-nbr-ticket').stepUp();
          //Calculate total price
          calculatePrice();
-
-
-        // Get the <span> element that closes the modal
-        //var span = document.getElementsByClassName("close")[0];
-
-        // When the user clicks anywhere outside of the modal, close it
-       /* window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-        }*/
 
     });
 
@@ -408,25 +393,25 @@ function MPREvent(res){
                         var agentUnit = ' <div class="agent-unit">\
                                            <div class="info-unit">\
                                             <span>'+element['username']+'</span>\
-                                            <span>'+element['location']+'</span>\
+                                            <span>Authorized agent</span>\
                                             </div>\
                                             <div class="link-unit">\
-                                            <a href="#"><img src="media/icons/facebook.png"/></a>\
-                                            <a href="#"><img src="media/icons/instagram.png"/></a>';
+                                            <a href="'+element['facebook']+'"><i class="bi bi-facebook"></i></a>\
+                                            <a href="'+element['instagram']+'"><i class="bi bi-instagram"></i></a>';
                         //Take care of the whatsapp link
                         //Detect if user is using phone or laptop
                             //Detect if user is using phone or laptop
                             if(mobileCheck()){
                                 //whatsappPrefix="https//wa.me/phone=";
-                                let preMsg = "I want to buy this ticket";
+                                let preMsg = "I want to buy this ticket https://www.zimaware.com/zimat_deployment/etc_display_event.html?e="+res.arr_event.idEvent;
                                 //href="https://wa.me/79961604211?text=Hi%27,%20like%20to%20chat%20with%20you"
-                                let whatsappLink ="https://wa.me/79961604211?text="+encodeURIComponent(preMsg);
-                                agentUnit+='<a href="'+whatsappLink+'"><img src="media/icons/whatsapp.png"/></a>';
+                                let whatsappLink ="https://wa.me/"+element['whatsApp']+"?text="+encodeURIComponent(preMsg);
+                                agentUnit+='<a href="'+whatsappLink+'"><i class="bi bi-whatsapp"></i></a>';
                             }
                             else{
-                                let preMsg = "I want to buy this ticket";
+                                let preMsg = "I want to buy this ticket https://www.zimaware.com/zimat_deployment/etc_display_event.html?e="+res.arr_event.idEvent;
                                 let whatsappLink ="https://wa.me/79961604211?text="+encodeURIComponent(preMsg);
-                                agentUnit+='<a href="'+whatsappLink+'"><img src="media/icons/whatsapp.png"/></a>';
+                                agentUnit+='<a href="'+whatsappLink+'"><i class="bi bi-whatsapp"></i></a>';
                             }
                             
                             //Finish concatination
@@ -438,13 +423,11 @@ function MPREvent(res){
                 else{
                     var agentUnitNone = ' <div class="agent-unit">\
                                            <div class="info-unit">\
-                                            <span>NONE</span>\
-                                            <span>NONE</span>\
+                                            <span>You are offline</span>\
                                             </div>\
                                             <div class="link-unit">\
-                                            <a href="#"><img src="media/icons/facebook.png"/></a>\
-                                            <a href="#"><img src="media/icons/instagram.png"/></a>\
-                                            <a href="#"><img src="media/icons/whatsapp.png"/></a>\
+                                            <a href="lsrs_login.html">Log in</a>\
+                                            <a href="lsrs_signup.html">Create account</a>\
                                             </div>';
                         $("#wrapper-agents").append(agentUnitNone);
                 }

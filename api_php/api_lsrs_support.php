@@ -19,11 +19,6 @@ function isValidEmail($email){
     return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 }
 
-//POST variables
-//$support_type = $_POST['support_type']; //required
-//$email = $_POST['email']; //required //required
-//$support_msg = $_POST['support_msg']; 
-
 if(isset($_POST['email']) && isValidEmail($_POST['email']) && isset($_POST['support_msg']) && isset($_POST['support_type']) ){
  //everything is set and correct to proceed
     try{

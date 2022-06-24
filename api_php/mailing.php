@@ -11,7 +11,7 @@ use PHPMailer\PHPMailer\Exception;
 //Load Composer's autoloader
 require '../phpmailer/autoload.php';
 
-function sendSimpleMail($sender, $senderTitle, $receiver, $receiverTitle, $subject, $body, $altBody, $replyTo=""){
+function sendSimpleMail($sender, $senderTitle, $receiver, $receiverTitle, $subject, $body, $altBody, $replyTo="", $attachmentFile=""){
     //Array answer
     $returnArr = array("status"=>0, "error"=>"NONE");
 
@@ -34,6 +34,10 @@ function sendSimpleMail($sender, $senderTitle, $receiver, $receiverTitle, $subje
         $mail->addAddress($receiver, $receiverTitle);     //Add a recipient
         if($replyTo!=""){
             $mail->addReplyTo($replyTo, 'ZIMAT-TEAM');
+        }
+
+        if($attachmentFile!=""){
+            $mail->addAttachment($attachmentFile);         //Add attachments
         }
         //Content
         $mail->isHTML(true);                                  //Set email format to HTML

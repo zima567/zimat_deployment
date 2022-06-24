@@ -6,6 +6,263 @@ var quotaPosters = 3;
 
 $(document).ready(function(){
 
+    //TEST PERSONNAL SETTINGS API
+    //show modal personnal settings api
+    $("#personnal-settings").on("click", function(){
+        $("#modal-personnal-settings").css("display", "flex");
+    });
+
+    //handle click on config-titles --config-location
+    $("#config-location-title").on("click", function(){
+        if($("#config-location-box").css("display")=="flex"){
+            $("#config-location-box").css("display", "none");
+        }
+        else{
+            $("#config-location-box").css("display", "flex"); 
+            //fetch informations to input fields
+            let dataObj ={action_type:"T_SELECT", config_type:"select_complete_location_of_user"};
+            let destinationReq = "api_php/api_configuration_module1.php";
+            requestSender(destinationReq, dataObj, fullUserLocToInput);
+        }
+
+    });
+
+   
+     //MANAGE COUNTRY CHOICE---START
+     $("#config-country").on("keyup", function(){
+        let resultDisplayDestination = "box-suggestion-countries-config";
+        if($("#"+resultDisplayDestination).css("display")!="flex"){
+            $("#"+resultDisplayDestination).css("display","flex");
+        }
+        if($("#config-city").val()!=""){
+            $("#config-city").val("");
+        }
+        //Get data entered
+        let inputValueToQuery = $("#config-country").val();
+        //Function suggestion + request function
+        if(inputValueToQuery!=""){
+            let dataObj ={family_suggest:"COUNTRY_CITY", query_data:inputValueToQuery};
+            let destinationReq = "api_php/api_etc_suggestion_v2.php";
+            requestSender(destinationReq, dataObj, displaySuggestionsCountryConfig);
+
+        }
+        else{
+            $("#box-suggestion-countries-config").empty();
+            $("#box-suggestion-countries-config").css("display", "none");
+        }
+
+    });
+    //On click on suggested element in box-suggestion
+    $("#box-suggestion-countries-config").on("click", "span", function(e){
+        e.preventDefault();
+        let choosenCountry = $(this).text();
+        $("#config-country").val(choosenCountry);
+
+        $("#box-suggestion-countries-config").css("display", "none");
+    });
+    //MANAGE COUNTRY CHOICE ---END
+
+    //MANAGE CITY CHOICE---START
+    $("#config-city").on("keyup", function(){
+        if($("#config-country").val()!=""){
+            let resultDisplayDestination = "box-suggestion-cities-config";
+            if($("#"+resultDisplayDestination).css("display")!="flex"){
+                $("#"+resultDisplayDestination).css("display","flex");
+            }
+
+            //Get data entered
+            let inputValueToQuery = $("#config-city").val();
+            let countryName = $("#config-country").val().trim();
+            //Function suggestion + request function
+            if(inputValueToQuery!=""){
+                let dataObj ={family_suggest: "COUNTRY_CITY", query_data: inputValueToQuery, countryName: countryName};
+                let destinationReq = "api_php/api_etc_suggestion_v2.php";
+                requestSender(destinationReq, dataObj, displaySuggestionsCityConfig);
+    
+            }
+            else{
+                $("#box-suggestion-cities-config").empty();
+                $("#box-suggestion-cities-config").css("display", "none");
+            }
+
+        }
+        else{
+            //choose country first
+            alert("Choose country first");
+        }
+
+    });
+    //On click on suggested element in box-suggestion
+    $("#box-suggestion-cities-config").on("click", "span", function(e){
+        e.preventDefault();
+        let choosenCities = $(this).text();
+        $("#config-city").val(choosenCities);
+        $("#btn-save-location-config").css("display", "block");
+        
+        $("#box-suggestion-cities-config").css("display", "none");
+    });
+    //MANAGE CITY CHOICE ---END
+
+    //MANAGE ON CLICK ON SAVE CHANGES FOR COUNTRY AND CITY CONFIG
+    $("#btn-save-location-config").on("click", function(){
+        if($("#config-country").val().trim()!="" && $("#config-city").val().trim()!=""){
+            //Update country and city of user
+            let dataObj ={action_type:"T_UPDATE", config_type:"update_user_location", city_name:$("#config-city").val().trim()};
+            let destinationReq = "api_php/api_configuration_module1.php";
+            requestSender(destinationReq, dataObj, RSCUserLocation);
+            $("#btn-save-location-config").css("display","none");
+        }
+        else{
+            alert("Empty fields: Country and city fields are required");
+        }
+    });
+
+    //handle click on config-titles --config-preferences
+    $("#config-preferences-title").on("click", function(){
+        if($("#config-preferences-box").css("display")=="flex"){
+            $("#config-preferences-box").css("display", "none");
+        }
+        else{
+            $("#config-preferences-box").css("display", "flex");
+            let dataObj ={action_type:"T_SELECT", config_type:"select_categ_of_users"};
+            let destinationReq = "api_php/api_configuration_module1.php";
+            requestSender(destinationReq, dataObj, displayCategsConfig);
+        }
+
+    });
+
+    //Handle click on categ unit inside box
+    $("#categs-config-box").on("click", "span", function(event){
+        event.preventDefault();
+        if($(this).hasClass("background-selected")){
+            $(this).removeClass("background-selected");
+            $(this).addClass("background-not-selected");
+        }
+        else{
+            $(this).removeClass("background-not-selected");
+            $(this).addClass("background-selected");
+        }
+
+        //Display save button
+        if($("#btn-save-preferences-config").css("display")=="none")
+            $("#btn-save-preferences-config").css("display", "block");
+       
+    });
+
+    //Handle click on Button save preferences
+    $("#btn-save-preferences-config").on("click", function(){
+        let arr_element_selected = $("#categs-config-box").find(".background-selected");
+        let arr_categ_titles =[];
+        for(let i=0; i<arr_element_selected.length;i++){
+            arr_categ_titles.push($(arr_element_selected[i]).text().trim());
+        }
+
+        if(arr_categ_titles.length>0){
+            //Update country and city of user
+            let dataObj ={action_type:"T_UPDATE", config_type:"update_user_categories", arr_user_categs:arr_categ_titles};
+            let destinationReq = "api_php/api_configuration_module1.php";
+            requestSender(destinationReq, dataObj, RSCUserPreferences);
+            $("#btn-save-preferences-config").css("display","none");
+        }
+        else{
+            alert("No categories selected");
+        }
+    });
+
+    //Handle click on social link configuration
+    $("#config-social-links-title").on("click", function(){
+        if($("#config-social-links-box").css("display")=="flex"){
+            $("#config-social-links-box").css("display", "none");
+        }
+        else{
+            $("#config-social-links-box").css("display", "flex");
+            let dataObj ={action_type:"T_SELECT", config_type:"select_user_socials"};
+            let destinationReq = "api_php/api_configuration_module1.php";
+            requestSender(destinationReq, dataObj, displaySocials); 
+        }
+
+    });
+
+    //Handle display of button save changes for social link config
+    $("#fb-link, #ig-link, #wsapp-tel").on("change", function(){
+        $("#btn-save-user-socials-config").css("display", "block")
+    });
+
+    //Handle click on btn save for social links config
+    $("#btn-save-user-socials-config").on("click", function(){
+        let fbLink = $("#fb-link").val().trim();
+        let igLink = $("#ig-link").val().trim();
+        let wspTel = $("#wsapp-tel").val().trim();
+
+        if(fbLink!="" && igLink!="" && wspTel!=""){
+            let dataObj ={action_type:"T_UPDATE", config_type:"update_user_socials", fbLink:fbLink, igLink:igLink, wspTel:wspTel};
+            let destinationReq = "api_php/api_configuration_module1.php";
+            requestSender(destinationReq, dataObj, RSCUserSocials);
+        }
+        else{
+            alert("You have empty fields!");
+        }
+    });
+
+    //handle click on config-titles --config-acc-verification
+    $("#config-acc-verification-title").on("click", function(){
+        if($("#config-acc-verification-box").css("display")=="flex"){
+            $("#config-acc-verification-box").css("display", "none");
+        }
+        else{
+            //$("#config-acc-verification-box").css("display", "flex");
+            $("#config-msg-user-acc-verification").text("");
+            let dataObj ={action_type:"T_SELECT", config_type:"select_user_acc_verification_info"};
+            let destinationReq = "api_php/api_configuration_module1.php";
+            requestSender(destinationReq, dataObj, RCOConfigAcc); 
+        }
+
+    });
+
+    //Handle button display for document submission
+    $("#file-acc-verification").on("change", function(){
+        $("#btn-save-user-acc-verification").css("display","block");
+    });
+
+    //Handle click on submit button
+    $("#btn-save-user-acc-verification").on("click", function(){
+       
+        let formData = new FormData();
+        //Append the mendatory post variables
+        formData.append("action_type", "T_UPDATE");
+        formData.append("config_type", "update_doc_acc_verification");
+        formData.append("doc_file", $('#file-acc-verification').get(0).files[0]);
+
+        let destinationReq = "api_php/api_configuration_module1.php";
+        requestSenderFormData(destinationReq, formData, RAVRequest);
+
+        //Hide button
+        $("#btn-save-user-acc-verification").css("display","none");
+
+    });
+
+
+    //Close modal personnal settings api
+    $("#close-modal-perso-settings").on("click", function(){
+        $("#modal-personnal-settings").css("display", "none");
+        $(".section-config span button").css("display", "none");
+        $(".section-config .result-config-msg").text("");
+    });
+
+    //TEST WALLET FUNCTIONALITY API
+    $("#myWallet").on("click", function(){
+        $("#modal-user-wallet").css("display", "flex");
+
+        let destination = "api_php/api_stat_display.php";
+        let obj ={stat_type:"WALLET"};
+        requestSender(destination, obj, displayEventWallet);
+    });
+
+    $("#close-modal-user-wallet").on("click", function(){
+        $("#modal-user-wallet").css("display","none");
+        $("#inner-wrapper-wallet").empty();
+    });
+
     //Display categories From db But this request should be done on click on manage event button 
     //Also in the categories box should be displayed the event already set categories and then added global categArr
     //Variables acting like triggers
@@ -20,6 +277,208 @@ $(document).ready(function(){
     let eventDate_modified = false;
     let eventCateg_modified = false;
     let eventPrice_modified = false;
+
+    //Variables acting like triggers for user profile
+    let lastNameModified = false;
+    let firstNameModified = false;
+    let aboutModified = false;
+    let profilePicModified = false;
+
+    //Event right access variable
+    let idEventRightAccess ="";
+    let arrUsers =[];
+    let sellingRight = 0;
+    let scanningRight = 0;
+
+    //Query profile info of user
+    //api destination file
+    let destination = "api_php/api_profile.php";
+     //Get the user ID from the URL
+     let userID = getParameter("e");
+    
+     let obj ={idUser:userID};
+    //let obj ={idUser:2};
+    requestSender(destination, obj, stdDisplayUserInfo);
+    //standardFunctionRequest(destination, obj, stdDisplayUserInfo);
+
+    //Onclick on see-more
+    $("#see-more").on("click", function(){
+        let bioReprocessed = displayFullBio(bio);
+        $("#user_bio_text").text(bioReprocessed);
+    });
+
+    //OnClick on see-less
+    $("#see-less").on("click", function(){
+        let bioReprocessed = displayBio(bio);
+        $("#user_bio_text").text(bioReprocessed);
+    });
+
+    //To show fullscreen profile picture
+    $("#user_main_avatar").on("click", function(){
+        let linkImgProfile = $("#user_main_avatar_img").attr('src');
+        $("#fullPageDisplay-img").attr("src",linkImgProfile);
+        $("#fullPageDisplay").css("display", "flex");
+        $("#fullPageDisplay").fadeIn();
+    });
+
+    //To hide fullscreen profile picture
+    $("#close-full-screen").on("click", function(){
+        
+       $("#fullPageDisplay").fadeOut();
+    });
+
+    //HANDLE BUTTONS ACTIONS CLICKS
+    $("#button-action").on("click", ".follow_unfollow", function(e){
+        e.preventDefault();
+        let userID = e.target.id;
+        userID = userID.replace("btn-un-follow-id-","");
+        let actionType = "FOLLOW_UNFOLLOW";
+
+        $.ajax({
+            url: "api_php/api_btn_action.php",
+            data: {actionType: actionType, user_to_follow_unfollow: userID, actionDateTime: currentDateAndTime()},
+            type: "POST",
+            dataType : "json",
+        })
+        .done(function( response ) {
+            console.log(response);
+            MPBtnFollowUnfollow(response);
+        })
+        .fail(function( xhr, status, errorThrown ) {
+            alert( "Sorry, there was a problem!" );
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+            console.dir( xhr );
+        });
+
+    });
+    //End of query profile info of user
+
+    //On click on edit profile button
+    $("#button-action").on("click", "#btn-edit", function(event){
+        event.preventDefault();
+        $("#popup-profile-config").addClass("model-open");
+
+    });
+
+    //Block js for profile pop up box
+    $(".modified-prof-input").on("keypress change", function(){
+        $("#id-save").css("display", "block");
+    });
+
+    $("#id-fn").on("change", function(){
+        firstNameModified = true;
+    });
+
+    
+    $("#id-ln").on("change", function(){
+        lastNameModified = true;
+    });
+
+    $("#id-about").on("change", function(){
+        aboutModified = true;
+    });
+
+    $("#id-profile-picture").on("change", function(){
+        profilePicModified = true;
+    });
+
+
+    $("#id-save").on("click", function(){
+        //Send request for editing
+        //Form data for submission 
+        //We are using formData submission because of the need to upload images
+        let formData = new FormData();
+        //Append the mendatory post variables
+        formData.append("action_type", "T_UPDATE");
+        formData.append("config_type", "update_user_profile_details");
+
+        if(firstNameModified && $("#id-fn").val().trim()!=""){
+            formData.append("fname", $("#id-fn").val().trim());
+        }
+
+        if(lastNameModified && $("#id-ln").val().trim()!=""){
+            formData.append("lname", $("#id-ln").val().trim());
+        }
+
+        if(aboutModified && $("#id-about").val().trim()!=""){
+            formData.append("about", $("#id-about").val().trim());
+        }
+
+        if(profilePicModified){
+            let profilePic = $('#id-profile-picture')[0].files[0];
+            formData.append("profile-avatar", profilePic);
+        }
+
+        let destinationReq = "api_php/api_configuration_module1.php";
+        requestSenderFormData(destinationReq, formData, MPRProfileUpdate);
+    });
+
+    //HANDLE CLOSING OF POPUP BOX TO MODIFY PROFILE DETAILS
+    $("#close-popup-edit-profile").on("click", function(){
+        $("#popup-profile-config").removeClass("model-open");
+    });
+    
+
+    //SEARCH FOR EVENT TO BE MODIFED
+    //HANDLE EVENT SUGGESTION MODIFY EVENT
+    $("#id-search-event").on("keyup", function(){
+        let resultDisplayDestination = "box-suggestion-events";
+        if($("#"+resultDisplayDestination).css("display")!="flex"){
+            $("#"+resultDisplayDestination).css("display","flex");
+        }
+
+        //Get data entered
+        let inputValueToQuery = $("#id-search-event").val();
+        //Function suggestion + request function
+        if(inputValueToQuery!=""){
+            let dataObj ={family_suggest:"USER_EVENTS", query_data:inputValueToQuery};
+            let destinationReq = "api_php/api_etc_suggestion_v2.php";
+            requestSender(destinationReq, dataObj, PREventSuggestions);
+    
+        }
+        else{
+            $("#box-suggestion-events").empty();
+            $("#box-suggestion-events").css("display", "none");
+        }
+    
+    });
+    //On click on suggested element in box-suggestion
+    $("#box-suggestion-events").on("click", "span", function(e){
+        e.preventDefault();
+        let choosenEvent = $(this).find("strong").text();
+        let idChosenEvent = $(this).find("em").text();
+        //Global idEventToBeModified
+        idEventToBeModified = idChosenEvent;
+       
+        $("#id-search-event").val(choosenEvent);
+        //Set input read only
+        //display edit button
+        $("#id-search-event").attr("readonly", true);
+        $("#box-suggestion-events").css("display", "none");
+        $("#change-event").css("display","block");
+
+        //Reset variables in case they have been set already
+        resetGlobalsEditing();
+
+        //Show fields of information
+        $("#wrapper-fields-to-edit").css("display", "block");
+        $("#illustration-modify-event").css("display", "none");
+
+        //Display event to be edited
+        let dataObj = {idEvent:idChosenEvent};
+        let destinationReq = "api_php/api_etc_display_one.php";
+        requestSender(destinationReq, dataObj, PREventDisplayToEdit2);
+
+    });
+     //On click on change event button
+     $("#change-event").on("click", function(){
+        $("#id-search-event").attr("readonly", false); 
+        $("#id-search-event").val("");
+        $("#change-event").css("display", "none");
+    });
+    //HANDLE EVENT SUGGESTION---END---
+
 
     $(".field-has-changed").on("keypress change", function(){
         //Display save change button
@@ -205,67 +664,6 @@ $(document).ready(function(){
 
     });
 
-    //api destination file
-    let destination = "api_php/api_profile.php";
-     //Get the user ID from the URL
-     let userID = getParameter("e");
-     let obj ={idUser:userID};
-    //let obj ={idUser:2};
-    requestSender(destination, obj, stdDisplayUserInfo);
-    //standardFunctionRequest(destination, obj, stdDisplayUserInfo);
-
-    //Onclick on see-more
-    $("#see-more").on("click", function(){
-        let bioReprocessed = displayFullBio(bio);
-        $("#user_bio_text").text(bioReprocessed);
-    });
-
-    //OnClick on see-less
-    $("#see-less").on("click", function(){
-        let bioReprocessed = displayBio(bio);
-        $("#user_bio_text").text(bioReprocessed);
-    });
-
-    //To show fullscreen profile picture
-    $("#user_main_avatar").on("click", function(){
-        let linkImgProfile = $("#user_main_avatar_img").attr('src');
-        $("#fullPageDisplay-img").attr("src",linkImgProfile);
-        $("#fullPageDisplay").css("display", "flex");
-        $("#fullPageDisplay").fadeIn();
-    });
-
-    //To hide fullscreen profile picture
-    $("#close-full-screen").on("click", function(){
-        
-       $("#fullPageDisplay").fadeOut();
-    });
-
-    //HANDLE BUTTONS ACTIONS CLICKS
-    $("#button-action").on("click", ".follow_unfollow", function(e){
-        e.preventDefault();
-        let userID = e.target.id;
-        userID = userID.replace("btn-un-follow-id-","");
-        let actionType = "FOLLOW_UNFOLLOW";
-
-        $.ajax({
-            url: "api_php/api_btn_action.php",
-            data: {actionType: actionType, user_to_follow_unfollow: userID, actionDateTime: currentDateAndTime()},
-            type: "POST",
-            dataType : "json",
-        })
-        .done(function( response ) {
-            console.log(response);
-            MPBtnFollowUnfollow(response);
-        })
-        .fail(function( xhr, status, errorThrown ) {
-            alert( "Sorry, there was a problem!" );
-            console.log( "Error: " + errorThrown );
-            console.log( "Status: " + status );
-            console.dir( xhr );
-        });
-
-    });
-
     //HANDLE EVENT-MANAGE BUTTON CLICK
     $("#manage-event").on("click", function(){
         //Display modal manage event
@@ -281,63 +679,15 @@ $(document).ready(function(){
 
     });
 
-    //HANDLE EVENT SUGGESTION
-    $("#id-search-event").on("keyup", function(){
-        let resultDisplayDestination = "box-suggestion-events";
-        if($("#"+resultDisplayDestination).css("display")!="flex"){
-            $("#"+resultDisplayDestination).css("display","flex");
-        }
-
-        //Get data entered
-        let inputValueToQuery = $("#id-search-event").val();
-        //Function suggestion + request function
-        if(inputValueToQuery!=""){
-            let dataObj ={family_suggest:"USER_EVENTS", query_data:inputValueToQuery};
-            let destinationReq = "api_php/api_etc_suggestion_v2.php";
-            requestSender(destinationReq, dataObj, PREventSuggestions);
-    
-        }
-        else{
-            $("#box-suggestion-events").empty();
-            $("#box-suggestion-events").css("display", "none");
-        }
-    
+    //MANAGE EVENT-AGENTS BUTTON CLICK
+    $("#manage-agent").on("click", function(){
+        //Display modal manage agent
+        $("#modal-manage-agent").css("display", "flex");
+        //Hide event display template
+        $("#wrapper-fields-to-edit-2").css("display", "none");
+         //Hide the editing status modal
+         $("#illustration-agent-config-result").css("display", "none");
     });
-    //On click on suggested element in box-suggestion
-    $("#box-suggestion-events").on("click", "span", function(e){
-        e.preventDefault();
-        let choosenEvent = $(this).find("strong").text();
-        let idChosenEvent = $(this).find("em").text();
-        //Global idEventToBeModified
-        idEventToBeModified = idChosenEvent;
-       
-        $("#id-search-event").val(choosenEvent);
-        //Set input read only
-        //display edit button
-        $("#id-search-event").attr("readonly", true);
-        $("#box-suggestion-events").css("display", "none");
-        $("#change-event").css("display","block");
-
-        //Reset variables in case they have been set already
-        resetGlobalsEditing();
-
-        //Show fields of information
-        $("#wrapper-fields-to-edit").css("display", "block");
-        $("#illustration-modify-event").css("display", "none");
-
-        //Display event to be edited
-        let dataObj = {idEvent:idChosenEvent};
-        let destinationReq = "api_php/api_etc_display_one.php";
-        requestSender(destinationReq, dataObj, PREventDisplayToEdit2);
-
-    });
-     //On click on change event button
-     $("#change-event").on("click", function(){
-        $("#id-search-event").attr("readonly", false); 
-        $("#id-search-event").val("");
-        $("#change-event").css("display", "none");
-    });
-    //HANDLE EVENT SUGGESTION---END---
 
     //MANAGE PICTURE UPLOAD
     //Control click on button to upload images
@@ -447,6 +797,164 @@ $(document).ready(function(){
     });
      //MANAGE THE CHOICE OF CATEG--END
 
+     //MANAGE CHOICE OF EVENT TO BE ASSIGN AGENT TO
+     //SEARCH FOR EVENT TO BE ASSIGN AGENT TO
+    $("#id-search-event-2").on("keyup", function(){
+        let resultDisplayDestination = "box-suggestion-events-2";
+        if($("#"+resultDisplayDestination).css("display")!="flex"){
+            $("#"+resultDisplayDestination).css("display","flex");
+        }
+
+        //Get data entered
+        let inputValueToQuery = $("#id-search-event-2").val();
+        //Function suggestion + request function
+        if(inputValueToQuery!=""){
+            let dataObj ={family_suggest:"USER_EVENTS", query_data:inputValueToQuery};
+            let destinationReq = "api_php/api_etc_suggestion_v2.php";
+            requestSender(destinationReq, dataObj, PREventSuggestions2);
+    
+        }
+        else{
+            $("#box-suggestion-events-2").empty();
+            $("#box-suggestion-events-2").css("display", "none");
+        }
+    
+    });
+    //On click on suggested element in box-suggestion
+    $("#box-suggestion-events-2").on("click", "span", function(e){
+        e.preventDefault();
+        let choosenEvent = $(this).find("strong").text();
+        let idChosenEvent = $(this).find("em").text();
+        //Global idEventToBeModified
+        idEventRightAccess = idChosenEvent;
+       
+        $("#id-search-event-2").val(choosenEvent);
+        //Set input read only
+        //display edit button
+        $("#id-search-event-2").attr("readonly", true);
+        $("#box-suggestion-events-2").css("display", "none");
+        $("#change-event-2").css("display","block");
+
+        //Reset variables in case they have been set already
+        //resetGlobalsEditing();
+
+        //Show fields of information
+        $("#wrapper-fields-to-edit-2").css("display", "block");
+        $("#illustration-agent-event").css("display", "none");
+        //$("#illustration-modify-event").css("display", "none");
+
+        //Display event to be edited
+        let dataObj = {idEvent:idChosenEvent};
+        let destinationReq = "api_php/api_etc_display_one.php";
+        requestSender(destinationReq, dataObj, PREventDisplayConfigRights);
+
+        //Show save changes button for event-agent-rights
+        $("#btn-save-changes-agent").css("display","block");
+
+    });
+     //On click on change event button
+     $("#change-event-2").on("click", function(){
+        $("#id-search-event-2").attr("readonly", false); 
+        $("#id-search-event-2").val("");
+        $("#change-event-2").css("display", "none");
+    });
+    //HANDLE EVENT SUGGESTION---END---ASSIGN AGENT
+
+
+    //MANAGE USER APPEND---START-----AGENT
+    $("#field-agent-username").on("keyup", function(){
+        let resultDisplayDestination = "box-suggestion-users";
+        if($("#"+resultDisplayDestination).css("display")!="flex"){
+            $("#"+resultDisplayDestination).css("display","flex");
+        }
+
+        //Get data entered
+        let inputValueToQuery = $("#field-agent-username").val();
+        //Function suggestion + request function
+        if(inputValueToQuery!=""){
+            let dataObj ={family_suggest:"USERS_PLATFORM", query_data:inputValueToQuery};
+            let destinationReq = "api_php/api_etc_suggestion_v2.php";
+            requestSender(destinationReq, dataObj, PRUserSuggestions);
+    
+        }
+        else{
+            $("#box-suggestion-users").empty();
+            $("#box-suggestion-users").css("display", "none");
+        }
+    
+    });
+     //On click on suggested element in box-suggestion
+    $("#box-suggestion-users").on("click", "span", function(e){
+        e.preventDefault();
+        let choosenUser = $(this).find("strong").text().trim();
+        $("#box-suggestion-users").css("display", "none");
+        $("#field-agent-username").val("");
+
+        let userAlreadyChoosen = false;
+        for(let i=0; i<arrUsers.length;i++){
+            if(arrUsers[i]==choosenUser){
+                userAlreadyChoosen=true;
+            }
+        }
+
+        if(!userAlreadyChoosen){
+            arrUsers.push(choosenUser);
+        }
+
+        //Re-render users into the user box
+        $("#event-potential-agent").empty();
+        for(let i=0; i<arrUsers.length;i++){
+            displayUsers(arrUsers[i],i);
+        }
+        
+    });
+
+
+    //Delete a USER from chosen list
+    $("#event-potential-agent").on("click", "a", function(event){
+        event.preventDefault();
+        let removeIndex = event.target.id.replace("user-","");
+        arrUsers.splice(removeIndex, 1);
+        $("#event-potential-agent").empty();
+        if(arrUsers.length>0){
+            arrUsers.forEach(displayUsers);
+        }
+        else{
+            $("#event-potential-agent").append("<b>No user selected</b>");
+        }
+        
+    });
+    //MANAGE User CHOICE---END----AGENT
+
+    //ON CLICK ON SAVE CHANGES FOR EVENT-AGENT-CONFIG
+    $("#btn-save-changes-agent").on("click", function(){
+        //Get the checkbox values
+        if($('#rights-to-sell').is(':checked')){
+            sellingRight = 1;
+        }
+
+        if($('#rights-to-scan').is(':checked')){
+            scanningRight = 1;
+        }
+
+        if(arrUsers.length>0 && idEventRightAccess!=""){
+            let dataObj ={action_type:"T_UPDATE", config_type:"config_event_agents", idEvent:idEventRightAccess, arr_agents:arrUsers, sellingRight:sellingRight, scanningRight:scanningRight};
+            let destinationReq = "api_php/api_configuration_module1.php";
+            requestSender(destinationReq, dataObj, MPRRAgentManagement);
+            //Reset global variables related to right access assignments
+            idEventRightAccess ="";
+            arrUsers =[];
+            sellingRight = 0;
+            scanningRight = 0;
+        
+        }
+        else{
+            alert("Please select user(s) you want to give rights to your event");
+        }
+
+    });
+
+
     //Handle cancel button of configuration-modal-manage-event
     $("#cancel-modal-manage-event").on("click", function(){
         $("#modal-manage-event").css("display", "none");
@@ -461,6 +969,20 @@ $(document).ready(function(){
         //Reset variables
         resetGlobalsEditing();
         
+    });
+
+    $("#cancel-modal-manage-agent").on("click", function(){
+        $("#modal-manage-agent").css("display", "none");
+        $("#wrapper-fields-to-edit-2").css("display", "none");
+        $("#illustration-agent-event").css("display", "flex");
+
+        //empy the search event bar
+        $("#id-search-event-2").attr("readonly", false); 
+        $("#id-search-event-2").val("");
+        $("#change-event-2").css("display", "none");
+
+        //Reset variables
+       // resetGlobalsEditing();
     });
 
     //logout of the system
@@ -486,7 +1008,275 @@ $(document).ready(function(){
 });
 
 function voidFunction(res){
+    $("#popup-profile-config").removeClass("model-open");
+}
 
+//Function to handle return of docs submission for acc-verification
+function RAVRequest(res){
+    if(res.arr_status.action_status == 1){
+        if(res.arr_return.doc_saved_to_db == 1 && res.arr_return.doc_send_via_email == 1){
+            $("#config-acc-verification-box").css("display","none");
+            $("#config-msg-user-acc-verification").css("color","black");
+            $("#config-msg-user-acc-verification").text("Our team is considering your request for account verification.");
+        }
+        else{
+            $("#config-acc-verification-box").css("display","none");
+            $("#config-msg-user-acc-verification").css("color","red");
+            $("#config-msg-user-acc-verification").text("Request for account verification failed."); 
+        }
+         
+    }
+    else{
+        $("#config-acc-verification-box").css("display","none");
+        $("#config-msg-user-acc-verification").css("color","red");
+        $("#config-msg-user-acc-verification").text("Request for account verification failed. Reasons: ..."); 
+    }
+}
+
+//Fucntion to handle return on click on config-account title
+function RCOConfigAcc(res){
+    if(res.arr_status.action_status ==1){
+        //Action succeed process the return
+        if(res.arr_return.is_account_verified==0){
+            if(res.arr_return.is_email_verified==1){
+                $("#config-acc-verification-box").css("display", "flex");
+                $("#acc-email").text(res.arr_return.email);
+            }
+            else{
+                $("#config-msg-user-acc-verification").css("color","black");
+                $("#config-msg-user-acc-verification").text("Oops! You cannot request for account verification if you have not confirm your email address on signing up on our platform. Please make sure you verify your email address via the email we sent to you the first time you sign up on our plateform. Or request for email verification right below:");
+                $("#config-msg-user-acc-verification").append("<br/><a href='#'>Request email verification</a>")
+            }
+
+        }
+        else if(res.arr_return.is_account_verified==1){
+            $("#config-msg-user-acc-verification").css("color","green");
+            $("#config-msg-user-acc-verification").text("Your account have been successfully verified");
+        }
+        else if(res.arr_return.is_account_verified==2){
+            $("#config-msg-user-acc-verification").css("color","black");
+            $("#config-msg-user-acc-verification").text("Our team is considering your request for account verification.");
+        }
+       
+    }
+    else{
+        //Action failed
+        $("#config-acc-verification-box").css("display","none");
+        $("#config-msg-user-acc-verification").css("color","black");
+        $("#config-msg-user-acc-verification").text("Oops! Something went wrong. Make sure you are logged in <br\> If this problem persist logout and login and try the account verification again. <br> If the previous solution does not work, maybe your account has been compromised. Reach for help from our support team.");
+    }
+}
+
+//Function request return of save-changes user socials
+function RSCUserSocials(res){
+    if(res.arr_status.action_status ==1){
+        $("#config-msg-user-socials").css("color","#47d447");
+        $("#config-msg-user-socials").text("Modification saved!");
+        $("#config-social-links-box").css("display","none");
+    }
+    else{
+        $("#config-msg-user-socials").css("color","red");
+        $("#config-msg-user-socials").text("Modification failed to be saved! Make sure your inputs are correct."); 
+    }
+}
+
+//Function to display socials to their inputs
+function displaySocials(res){
+    if(res.arr_status.action_status == 1){
+        $("#fb-link").val(res.arr_return.facebook);
+        $("#ig-link").val(res.arr_return.instagram);
+        $("#wsapp-tel").val(res.arr_return.whatsApp);
+    }
+    else{
+        alert("Oops! Something went wrong. Cannot get user social links");
+    }
+}
+//Function request return of save-changes user preferences
+function RSCUserPreferences(res){
+    if(res.arr_status.action_status ==1){
+        $("#config-msg-user-preferences").css("color","#47d447");
+        $("#config-msg-user-preferences").text("Modification saved!");
+        $("#config-preferences-box").css("display","none");
+    }
+    else{
+        $("#config-msg-user-preferences").css("color","red");
+        $("#config-msg-user-preferences").text("Modification failed to be saved! Make sure your inputs are correct."); 
+    }
+}
+
+//Handle return of categ array for user in personnal settings
+function displayCategsConfig(res){
+    $("#categs-config-box").empty();
+    let arrCategs = res['arr_return'].arr_all_categ;
+
+    if(res['arr_return'].arr_all_categ.length>0){
+        for(let i=0; i<res['arr_return'].arr_all_categ.length;i++){
+            let HTMLElementCateg = '<span class="categ-unit background-not-selected">'+res['arr_return'].arr_all_categ[i].title+'</span>';
+            for(let j=0; j<res['arr_return'].arr_user_categ.length; j++){
+                if(res['arr_return'].arr_user_categ[j] == res['arr_return'].arr_all_categ[i].title){
+                    HTMLElementCateg = '<span class="categ-unit background-selected">'+res['arr_return'].arr_all_categ[i].title+'</span>';
+                }
+            }
+            $("#categs-config-box").append(HTMLElementCateg);
+        }
+    }
+    else{
+        let HTMLElementCateg = '<strong>No categories available</strong>';
+        $("#box-categories").append(HTMLElementCateg);
+    }
+}
+
+//Handle request return of save-changes location config
+function RSCUserLocation(res){
+    if(res.arr_status.action_status ==1){
+        $("#config-msg-user-location").css("color","#47d447");
+        $("#config-msg-user-location").text("Modification saved!");
+        $("#config-location-box").css("display","none");
+    }
+    else{
+        $("#config-msg-user-location").css("color","red");
+        $("#config-msg-user-location").text("Modification failed to be saved! Make sure your inputs are correct."); 
+    }
+}
+//Function to display of countries and cities in the personnal settings
+function displaySuggestionsCityConfig(res){
+    if(res['arr_cities'].length>1){
+        $("#box-suggestion-cities-config").empty();
+        for(let i=1; i<res['arr_cities'].length; i++){
+            $("#box-suggestion-cities-config").append('<span class="content">'+res.arr_cities[i].name+'</span>');
+        }
+    }
+    else{
+        $("#box-suggestion-cities-config").empty();
+        $("#box-suggestion-cities-config").append("<b>City not found</b>");
+    }
+    
+}
+
+//Function to display of countries and cities in the personnal settings
+function displaySuggestionsCountryConfig(res){
+    if(res['arr_countries'].length>0){
+        $("#box-suggestion-countries-config").empty();
+        for(let i=0; i<res['arr_countries'].length; i++){
+            $("#box-suggestion-countries-config").append('<span class="content">'+res.arr_countries[i].name+'</span>');
+        }
+    }
+    else{
+        $("#box-suggestion-countries-config").empty();
+        $("#box-suggestion-countries-config").append("<b>Country not supported</b>");
+    }
+    
+}
+
+//FUNCTIONS TO HANDLE PERSONNAL SETTINGS
+//CONFIG-LOCATION
+function fullUserLocToInput(res){
+    if(res['arr_status'].action_status == 1){
+        $("#config-country").val(res['arr_return'].location_country);
+        $("#config-city").val(res['arr_return'].location_city);
+    }
+}
+
+function displayEventWallet(res){
+   if(res['arr_status'].is_user_online == 1){
+        if(res['api_return'].length>0){
+            $("#inner-wrapper-wallet").empty();
+            let api_return = res['api_return'];
+            for(let i=0; i<api_return.length;i++){
+                let walletUnit = ' <div class="wallet-event-unit">\
+                    <div class="info-wallet-header">\
+                    <span class="title-header">'+api_return[i].title+'</span>\
+                    <span class="other-header-info">\
+                        <span><b>Date & time</b><br/>'+api_return[i].dateTime+'</span>\
+                        <span><b>Address</b><br/>'+api_return[i].location+'</span>\
+                        <span><b>Location</b><br/>'+api_return[i].location_country+', '+api_return[i].location_city+'</span>\
+                    </span></div>\
+                    <div class="info-wallet-body">\
+                    <div class="info-block">\
+                        <span class="title-block"><span class="title">TICKETS -></span> <span class="number">'+api_return[i].total_ticket+'</span></span>\
+                        <span class="box-block">\
+                            <span>Sold: '+api_return[i].total_sold+'</span>\
+                            <span>Scanned: '+api_return[i].total_scanned+'</span>\
+                        </span>\
+                    </div>\
+                    <div class="info-block">\
+                        <span class="title-block"><span class="title">PRICES -></span> <span class="number">'+(api_return[i].revenue!=null? api_return[i].revenue:0)+' '+api_return[i].prices[0].currency+'</span></span>\
+                        <span class="box-block">';
+                for(let j=0; j<api_return[i].prices.length;j++){
+                    walletUnit+='<span>Price: '+api_return[i].prices[j].price+' '+api_return[i].prices[j].currency+' ('+api_return[i].prices[j].qt_ticket_sold+')</span>';
+                }
+
+                walletUnit+='</span></div>\
+                    <div class="info-block">\
+                        <span class="title-block"><span class="title">AGENT(S) -></span> <span class="number">'+api_return[i].agents.length+'</span></span>\
+                        <span class="box-block">\
+                            <table>\
+                                <tr><th>Username</th><th>Sell-Right</th><th>Scan-Right</th><th>Sold</th><th>Scan</th></tr>';
+                for(let j=0; j<api_return[i].agents.length;j++){
+                    walletUnit+='<tr><td>'+api_return[i].agents[j].username+'</td><td>'+(api_return[i].agents[j].sellingRight==1? "YES":"NO")+'</td><td>'+(api_return[i].agents[j].scanningRight==1? "YES":"NO")+'</td><td>'+api_return[i].agents[j].total_sold+'</td><td>'+api_return[i].agents[j].total_scanned+'</td></tr>';
+                }
+
+                walletUnit+='</table></span></div>\
+                    <div class="info-block">\
+                        <span class="title-block"><span class="title">SERVICE FEE -></span> <span class="number">'+(api_return[i].total_commission!=null? api_return[i].total_commission:0)+' '+api_return[i].prices[0].currency+'</span></span>\
+                        <span class="box-block">\
+                            <span>Status: '+api_return[i].status_commission+'</span>\
+                            <span>Payment info: link</span>\
+                        </span>\
+                    </div></div></div>';
+
+                //Append event wallet unit
+                $("#inner-wrapper-wallet").append(walletUnit);
+            }
+        }
+        else{
+            alert("You have not created any event yet");
+        }
+   }
+   else{
+        alert("You are offline. You cannot access your wallet");
+   }
+}
+
+function MPRProfileUpdate(res){
+    let arrStatus = res['arr_status'];
+    if(arrStatus['action_status']==1){
+        location.reload();
+    }
+    else{
+        alert("Profile details update failed: \nMake sure picture is not greater than 1.5MB\nMake sure picture format is among (jpeg, jpg, png)");
+    }
+}
+
+function MPRRAgentManagement(res){
+    //Hide fields display
+    $("#wrapper-fields-to-edit-2").css("display","none");
+    //show box result
+    $("#illustration-agent-config-result").css("display","flex");
+    //Hide button save changes
+    $("#btn-save-changes-agent").css("display", "none");
+    //Change text of cancel btn
+    $("#cancel-modal-manage-agent").text("close");
+
+    let arr_stats = res['arr_status'];
+    $("#agent-config-status").empty();
+    if(arr_stats['action_status']==1){
+        $("#img-result-agent-config").attr("src","media/icons/success.gif");
+        let returnArr = res['arr_return'];
+        for(let i=0; i<returnArr.length;i++){
+            let pAgentAndStatus = returnArr[0];
+            let pAStat ="succeeded";
+            if(pAgentAndStatus['status']==0){
+                pAStat ="Failed";
+            }
+            let HTMLElement = '<span>@'+pAgentAndStatus['username']+' | '+pAStat;
+            $("#agent-config-status").append(HTMLElement);
+        }
+    }
+    else{
+        $("#img-result-agent-config").attr("src","media/icons/failure-scan.png");
+        $("#agent-config-status").append("Configuration has been unsuccessful.");
+    }
 }
 
 function resetGlobalsEditing(){
@@ -513,6 +1303,14 @@ function resetGlobalsEditing(){
 
     //Empty input file
     $("#new-event-pictures").val(null);
+}
+
+function resetGlobalsProfile(){
+    idUserToBeModified=""; 
+    lastNameModified = false;
+    firstNameModified = false;
+    aboutModified = false;
+    profilePicModified = false;
 }
 
 //Function that process return of the editing functionality
@@ -672,6 +1470,12 @@ var imagesPreview = function(input, placeToInsertImagePreview) {
 
 };
 
+//Diplay users into user-box
+function displayUsers(user, index){
+    let addedUser = "<span class='categ-unit'>"+user+"<a class='x-delete' id='user-"+index+"'>X</a></span>";
+    $("#event-potential-agent").append(addedUser);
+}
+
 //display categories into box
 function displayCateg(categ, index){
     let addedCateg = "<span class='categ-unit'>"+categ+"<a class='x-delete' id='"+index+"'>X</a></span>";
@@ -824,10 +1628,16 @@ function stdDisplayUserInfo(res){
         }
 
         $("#user-fname-lname").text(res['firstName']+" "+ res['lastName']);
+        //Add first name last name to popup
+        $("#id-fn").val(res['firstName']);
+        $("#id-ln").val(res['lastName']);
+
         $("#username").text(res['username']);
 
         //Display bio
         bio = res['bio']==null? "NONE" : res['bio']; //Pay attention to what might return null to avoid bugs
+        //Add about/Bio to popup box
+        $("#id-about").val(res['bio']);
         $("#user_bio_text").text(displayBio(bio));
 
         //Take care of total user events
@@ -855,11 +1665,12 @@ function stdDisplayUserInfo(res){
         $("#followers-tot").html(totFollowers);
 
         if(res['actor']=="SELF"){
-            //$("#btn-follow").css("display","none");
-            //$("#btn-unfollow").css("display","none");
-            let groupBtn = '<button id="btn-edit-id-'+res['idUser']+'">EDIT</button>\
+            let groupBtn = '<button id="btn-edit">EDIT</button>\
                             <button id="btn-share-id-'+res['idUser']+'">SHARE</button>';
             $("#button-action").append(groupBtn);
+
+            //Display settings box
+            $("#id-settings-options").css("display","flex");
         }
         else{
             //$("#btn-edit").css("display","none");
@@ -1032,6 +1843,23 @@ function PREventSuggestions(res){
     }    
 }
 
+function PREventSuggestions2(res){
+    $("#box-suggestion-events-2").empty();
+    let arrStatus = res['arr_status'];
+    
+    if(!(arrStatus['divers_error']=="USER_OFFLINE")){
+        let arrEvents = res['arr_my_events'];
+        let resultArrEvent = displaySuggestionsEvent(arrEvents,"box-suggestion-events-2");
+        if(!resultArrEvent){
+            $("#box-suggestion-events-2").append("<strong>No event found</strong");
+        } 
+    }
+    else{
+        $("#box-suggestion-events-2").append("<strong>You are offline. Login to see your events</strong");
+    }    
+}
+
+
 function displaySuggestionsCity(arr, desDis){
     if(arr.length>1){
         for(let i=1; i<arr.length; i++){
@@ -1147,6 +1975,63 @@ function PREventDisplayToEdit2(res){
     else{
         alert("You cannot edit event. You are offline");
     }    
+}
+
+function displayEventToConfigRights(arr){
+    let eventUnit = arr;
+    $("#cr-event-title").text(eventUnit['title']);
+
+    let arrPosters = eventUnit['linkPosters'];
+    if(arrPosters.length>0){
+        $("#cr-poster-pic").attr("src", arrPosters[0]);
+    }
+    else{
+        $("#cr-poster-pic").attr("src", "media/icons/no-bg-post.jpg");
+    }
+
+    let eventPriceToAppend = eventUnit['prices'];
+    let eventDetailsToAppend = '<span>'+eventUnit['location']+'</span><span>'+eventUnit['dateTime']+'</span>';
+    if(eventPriceToAppend.length>0){
+        let priceInfo = eventPriceToAppend[0];
+        eventDetailsToAppend+='<span>'+priceInfo['price']+" "+priceInfo['currency']+'</span>';
+    }
+    $("#cr-event-detail").empty();
+    $("#cr-event-detail").append(eventDetailsToAppend);
+}
+
+function PREventDisplayConfigRights(res){
+    
+    let arrEvents = res['arr_event'];
+    
+    if(arrEvents['isOnline']==1){
+        displayEventToConfigRights(arrEvents);
+    }
+    else{
+        alert("You cannot do any configurations now. You are offline");
+    }    
+}
+
+//Function to display users into box-suggestion-users
+function displaySuggestionsUser(arr, desDis){
+    if(arr.length>0){
+        for(let i=0; i<arr.length; i++){
+            let unitSuggest = arr[i];
+            let HTMLUnitSuggest = '<span>@<strong>'+unitSuggest['username']+'</strong></span>';
+            $("#"+desDis).append(HTMLUnitSuggest);
+        }
+        return 1;
+    }
+    return 0;
+}
+//Function to handle user display in pop-up suggestion box HTTP part
+function PRUserSuggestions(res){
+    let arrUsers = res['arr_users'];
+        $("#box-suggestion-users").empty();
+        let resultArrUsers = displaySuggestionsUser(arrUsers,"box-suggestion-users");
+        if(!resultArrUsers){
+            $("#box-suggestion-users").append("<strong>No user found</strong");
+        }  
+
 }
 //To work this function depend on some external libraries
 //<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> (must be included in the <head> section of the html page)

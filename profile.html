@@ -12,209 +12,478 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="js/profile.js"></script>
 </head>
-<body>
-
-    <div class="container-fluid">
-        <div class="card">
-            <div class="image"> <span><img id="userimage" src="media/icons/user-icon.png"></span>
-                <h3 id="user-fname-lname"></h3>
-                <h4 id="username"></h4>
-            </div>
-            <div class="arc"> <span></span> </div>
-            <div class="about">
-                <p><u>About</u></p>
-                <p id="bio-container">
-                    <span id="user_bio_text"><!--User bio--></span>
-                    <span id="see-more" style="color: #161010; display: none;">see more...</span>
-                    <span id="see-less" style="color: #161010; display: none;">see less</span>
-                </p>
-            </div>
-        
-            <div class="profile-info">
-                <span class="user-stat" id="event-tot"><h2>0</h2> <span>POSTS</span></span>
-                <span class="user-stat" id="following-tot"><h2>0</h2> <span>FOLLOWING</span></span>
-                <span class="user-stat" id="followers-tot"><h2>0</h2> <span>FOLLOWERS</span></span>
-            </div>
-            <div class="button" id="button-action"> 
-                <!--button id="btn-follow">FOLLOW</button> 
-                <button id="btn-unfollow">UNFOLLOW</button> 
-                <button id="btn-share">SHARE</button> 
-                <button id="btn-edit">EDIT</button-->
-            </div>
-        </div>
-    </div>
-
-    <div class="wrapper-settings-options">
-        <div class="unit-option">
-            <img src="media/icons/wallet.png" alt="wallet"/>
-            <span>Wallet</span>
-        </div>
-
-        <div class="unit-option" id="manage-event">
-            <img src="media/icons/manage_event.png" alt="events"/>
-            <span>Manage event</span>
-        </div>
-
-        <div class="unit-option">
-            <img src="media/icons/perso_settings.png" alt="settings"/>
-            <span>Personnal settings</span>
-        </div>
-
-        <div class="unit-option">
-            <img src="media/icons/agents.png" alt="agents"/>
-            <span>Manage agent</span>
-        </div>
-
-    </div>
-
-    <div class="container container-events-flip-card" id="container-events-flip-card">
-        
-        <!--div class="wrapper-flip-card">
-            <div class="scene scene--card">
-                <div class="card-event">
-                  <div class="card__face card__face--front">
-                      <img id="img-poster-flip" src="media/icons/cover 11.png" width="100%" height="100%"/>
-                  </div>
-                  <div class="card__face card__face--back" id="back-card-flip">
-                      <span><span><img src="media/icons/clock.png"/></span>22:22:22</span>
-                      <span><span><img src="media/icons/location.png"/></span>22:22:22</span>
-                      <span><span><img src="media/icons/price.png"/></span>22:22:22</span>
-                  </div>
+<body class="class-body-profile">
+    <div class="profile-body">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="image"> <span><img id="userimage" src="media/icons/user-icon.png"></span>
+                    <h3 id="user-fname-lname"></h3>
+                    <h4 id="username"></h4>
+                </div>
+                <div class="arc"> <span></span> </div>
+                <div class="about">
+                    <p><u>About</u></p>
+                    <p id="bio-container">
+                        <span id="user_bio_text"><!--User bio--></span>
+                        <span id="see-more" style="color: #161010; display: none;">see more...</span>
+                        <span id="see-less" style="color: #161010; display: none;">see less</span>
+                    </p>
+                </div>
+            
+                <div class="profile-info">
+                    <span class="user-stat" id="event-tot"><h2>0</h2> <span>POSTS</span></span>
+                    <span class="user-stat" id="following-tot"><h2>0</h2> <span>FOLLOWING</span></span>
+                    <span class="user-stat" id="followers-tot"><h2>0</h2> <span>FOLLOWERS</span></span>
+                </div>
+                <div class="button" id="button-action"> 
+                    <!--button id="btn-follow">FOLLOW</button> 
+                    <button id="btn-unfollow">UNFOLLOW</button> 
+                    <button id="btn-share">SHARE</button> 
+                    <button id="btn-edit">EDIT</button-->
                 </div>
             </div>
-            <div class="container-btn">
-                <button>View event</button>
+        </div>
+
+        <div class="wrapper-settings-options" id="id-settings-options">
+            <div class="unit-option" id="myWallet">
+                <img src="media/icons/wallet.png" alt="wallet"/>
+                <span>Wallet</span>
             </div>
-        </div-->
 
-        <!--div class="post">
-            <h3 class="info">Title of event</h3>
-            <img class="post-image" src="media/icons/cover 11.png"/>
-            <div class="btns-container-prof">
-                <a href="#"><button class="main-action-btn-profile">View event</button></a>
+            <div class="unit-option" id="manage-event">
+                <img src="media/icons/manage_event.png" alt="events"/>
+                <span>Manage event</span>
             </div>
-        </div-->
 
-    </div>
+            <div class="unit-option" id="personnal-settings">
+                <img src="media/icons/perso_settings.png" alt="settings"/>
+                <span>preferences</span>
+            </div>
 
-    <div class="configuration-modal" id="modal-manage-event">
-        <div class="configuration-modal-content">
-            <div class="wrapper-search-event-to-edit">
-                <span class="pair-input-edit"><input type="search" placeholder="search for event by title" id="id-search-event" /><button id="change-event">Change</button></span>
-                <div class="box-suggestion-events" id="box-suggestion-events">
-                    <!--List of event suggested-->
+            <div class="unit-option" id="manage-agent">
+                <img src="media/icons/agents.png" alt="agents"/>
+                <span>Manage agent</span>
+            </div>
+
+        </div>
+
+        <div class="container container-events-flip-card" id="container-events-flip-card">
+            
+            <!--div class="wrapper-flip-card">
+                <div class="scene scene--card">
+                    <div class="card-event">
+                    <div class="card__face card__face--front">
+                        <img id="img-poster-flip" src="media/icons/cover 11.png" width="100%" height="100%"/>
+                    </div>
+                    <div class="card__face card__face--back" id="back-card-flip">
+                        <span><span><img src="media/icons/clock.png"/></span>22:22:22</span>
+                        <span><span><img src="media/icons/location.png"/></span>22:22:22</span>
+                        <span><span><img src="media/icons/price.png"/></span>22:22:22</span>
+                    </div>
+                    </div>
                 </div>
-            </div>
-            <div class="wrapper-fields-to-edit" id="wrapper-fields-to-edit">
+                <div class="container-btn">
+                    <button>View event</button>
+                </div>
+            </div-->
+
+            <!--div class="post">
+                <h3 class="info">Title of event</h3>
+                <img class="post-image" src="media/icons/cover 11.png"/>
+                <div class="btns-container-prof">
+                    <a href="#"><button class="main-action-btn-profile">View event</button></a>
+                </div>
+            </div-->
+
+        </div>
+
+        <!--Modal manage event editing-->
+        <div class="configuration-modal" id="modal-manage-event">
+            <div class="configuration-modal-content">
+                <div class="wrapper-search-event-to-edit">
+                    <span class="pair-input-edit"><input type="search" placeholder="search for event by title" id="id-search-event" /><button id="change-event">Change</button></span>
+                    <div class="box-suggestion-events" id="box-suggestion-events">
+                        <!--List of event suggested-->
+                    </div>
+                </div>
+                <div class="wrapper-fields-to-edit" id="wrapper-fields-to-edit">
+
+                    <span class="simple-input-unit">
+                        <label>Event title</label>
+                        <input class="field-has-changed" type="text" id="field-event-title"/>
+                    </span>
+
+                    <span class="simple-input-unit">
+                        <label>Post message</label>
+                        <input class="field-has-changed" type="text" id="field-event-post-msg"/>
+                    </span>
+
+                    <span class="simple-text-area-unit">
+                        <label>Event description</label>
+                        <textarea class="field-has-changed" type="text" id="field-event-description" rows="4"></textarea>
+                    </span>
+
+                <div class="container-posters-btn">
+                        <div class="container-posters">
+                            <div class="ancient-posters" id="ancient-posters">
+
+                                <!--span class="unit-ancient-poster">
+                                    <span class="remove-poster">No poster(s)</span>
+                                    <img src="media/icons/nothing1.gif"/>
+                                </span-->
+                                
+                            </div>
+                            <div class="new-posters" id="new-posters">
+
+                                <!--span class="unit-new-poster">
+                                    <span>Upload New</span>
+                                    <img src="media/posters/post1.jpg"/>
+                                </span-->
+
+                            </div>
+
+                        </div>
+                        <div class="btn-up-new-posters">
+                            <input class="field-has-changed" type="file" name='files[]' multiple id="new-event-pictures" accept="image/png, image/gif, image/jpeg" style="display: none;">
+                            <button id="upload-new-posters">Uplaod new posters</button>
+                        </div>
+                </div>
 
                 <span class="simple-input-unit">
-                    <label>Event title</label>
-                    <input class="field-has-changed" type="text" id="field-event-title"/>
+                        <label>Event Country</label>
+                        <input type="text" id="event-country" readonly/>
+                </span>
+
+                <div class="box-country-city">
+                    <label>Event city</label>
+                        <div class="box-suggestion-input-pair">
+                            <span class="btn-input-pair">
+                                <input class="field-has-changed form-control" type="text" placeholder="City" id="id-city" readonly/>
+                                <button class="btn btn-primary" id="edit-city">Edit</button>
+                            </span>
+                            <div class="box-suggestion" id="box-suggestion-cities">
+                            <!--Cities-->
+                            </div>
+                        </div>
+                </div>
+
+                <span class="simple-input-unit">
+                        <label>Address</label>
+                        <input class="field-has-changed" type="text" id="field-event-address"/>
                 </span>
 
                 <span class="simple-input-unit">
-                    <label>Post message</label>
-                    <input class="field-has-changed" type="text" id="field-event-post-msg"/>
+                        <label>Event date</label>
+                        <input class="field-has-changed" type="datetime-local"  id="id-date-time"/>
                 </span>
 
-                <span class="simple-text-area-unit">
-                    <label>Event description</label>
-                    <textarea class="field-has-changed" type="text" id="field-event-description" rows="4"></textarea>
-                </span>
-
-               <div class="container-posters-btn">
-                    <div class="container-posters">
-                        <div class="ancient-posters" id="ancient-posters">
-
-                            <!--span class="unit-ancient-poster">
-                                <span class="remove-poster">No poster(s)</span>
-                                <img src="media/icons/nothing1.gif"/>
-                            </span-->
+                <div class="section-choose-categ">
+                        <label for="categories">Choose event categories:</label>
+                        <select class="field-has-changed drop-down-categ" name="categList" id="idCategList">
+                            <option selected="true" disabled="disabled">Select categories</option>
+                            <!--Categories options list-->
+                        </select>
+                        <div class="event-categories" id="event-categ">
                             
                         </div>
-                        <div class="new-posters" id="new-posters">
+                </div>
 
-                            <!--span class="unit-new-poster">
-                                <span>Upload New</span>
-                                <img src="media/posters/post1.jpg"/>
-                            </span-->
+                <span class="simple-input-unit-price">
+                        <label>Event price</label>
+                        <span class="pair-price-currency"><input class="field-has-changed" type="text" id="field-event-price"/><button id="price-currency">USD</button></span>
+                </span>
+                    
+                </div>
 
-                        </div>
-
+                <div class="illustration-modify-event" id="illustration-modify-event">
+                    <div class="img-and-legend">
+                        <img src="media/icons/editing-event.png" alt="illustration" width="50%"/>
+                        <span>Event editing</span>
                     </div>
-                    <div class="btn-up-new-posters">
-                        <input class="field-has-changed" type="file" name='files[]' multiple id="new-event-pictures" accept="image/png, image/gif, image/jpeg" style="display: none;">
-                        <button id="upload-new-posters">Uplaod new posters</button>
+                </div>
+
+                <div class="illustration-editing-result" id="illustration-editing-result">
+                    <img src="media/icons/success.gif" alt="illustration" width="50%"/>
+                    <div class="editing-infos" id="editing-infos">
+                        <!--List of editing status-->
                     </div>
-               </div>
-
-               <span class="simple-input-unit">
-                    <label>Event Country</label>
-                    <input type="text" id="event-country" readonly/>
-               </span>
-
-               <div class="box-country-city">
-                   <label>Event city</label>
-                    <div class="box-suggestion-input-pair">
-                        <span class="btn-input-pair">
-                            <input class="field-has-changed form-control" type="text" placeholder="City" id="id-city" readonly/>
-                            <button class="btn btn-primary" id="edit-city">Edit</button>
-                        </span>
-                        <div class="box-suggestion" id="box-suggestion-cities">
-                        <!--Cities-->
-                        </div>
-                    </div>
-               </div>
-
-               <span class="simple-input-unit">
-                    <label>Address</label>
-                    <input class="field-has-changed" type="text" id="field-event-address"/>
-               </span>
-
-               <span class="simple-input-unit">
-                    <label>Event date</label>
-                    <input class="field-has-changed" type="datetime-local"  id="id-date-time"/>
-               </span>
-
-               <div class="section-choose-categ">
-                    <label for="categories">Choose event categories:</label>
-                    <select class="field-has-changed drop-down-categ" name="categList" id="idCategList">
-                        <option selected="true" disabled="disabled">Select categories</option>
-                        <!--option value="Education">Education</option>
-                        <option value="Sport">Sport</option>
-                        <option value="Loisirs">Loisirs</option>
-                        <option value="Politique">Politique</option-->
-                    </select>
-                    <div class="event-categories" id="event-categ">
-                        
-                    </div>
-               </div>
-
-               <span class="simple-input-unit-price">
-                    <label>Event price</label>
-                    <span class="pair-price-currency"><input class="field-has-changed" type="text" id="field-event-price"/><button id="price-currency">USD</button></span>
-               </span>
+                </div>
                 
             </div>
-
-            <div class="illustration-modify-event" id="illustration-modify-event">
-                <div class="img-and-legend">
-                    <img src="media/icons/editing-event.png" alt="illustration" width="50%"/>
-                    <span>Event editing</span>
-                </div>
+            <div class="configuration-modal-btns">
+                <button id="cancel-modal-manage-event">Cancel</button>
+                <button id="btn-save-changes">Save changes</button>
             </div>
-
-            <div class="illustration-editing-result" id="illustration-editing-result">
-                <img src="media/icons/success.gif" alt="illustration" width="50%"/>
-                <div class="editing-infos" id="editing-infos">
-                    <!--List of editing status-->
-                </div>
-            </div>
-            
         </div>
-        <div class="configuration-modal-btns">
-            <button id="cancel-modal-manage-event">Cancel</button>
-            <button id="btn-save-changes">Save changes</button>
+
+        <!--POPUP for profile configuration-->
+        <div class="custom-model-main" id="popup-profile-config">
+            <div class="custom-model-inner">        
+            <div class="close-btn" id="close-popup-edit-profile">×</div>
+                <div class="custom-model-wrap">
+                    <div class="pop-up-content-wrap">
+                    <div id="id-content-popup">
+                    <div class="myProfile-config-box">
+
+                            <span class="pair-label-input">
+                                <label>First name</label>
+                                <input class="modified-prof-input" type="text" id="id-fn" autocomplete="new-password"/>
+                            </span> 
+
+                            <span class="pair-label-input">
+                                <label>Last name</label>
+                                <input class="modified-prof-input" type="text" id="id-ln" autocomplete="new-password"/>
+                            </span>
+                            
+                            <span class="pair-label-input">
+                                <label>About</label>
+                                <textarea class="modified-prof-input" type="text" id="id-about" autocomplete="new-password"></textarea>
+                            </span>
+                            
+                            <span class="box-update-prof-pic">
+                                <input class="modified-prof-input" type="file" id="id-profile-picture" readonly/>
+                            </span>
+                            
+                            <span class="box-btn-action-config-prof">
+                                <button id="id-save">Save changes</button>
+                            </span>
+
+                    </div>
+                    </div>
+                    </div>
+                </div>  
+            </div>  
+            <div class="bg-overlay"></div>
+        </div>
+
+        <!--POPUP FOR AGENT CINFIGURATION-->
+        <!--Modal manage event editing-->
+        <div class="configuration-modal" id="modal-manage-agent">
+            <div class="configuration-modal-content">
+                <div class="wrapper-search-event-to-edit">
+                    <span class="pair-input-edit"><input type="search" placeholder="search for event by title" id="id-search-event-2" /><button id="change-event-2">Change</button></span>
+                    <div class="box-suggestion-events" id="box-suggestion-events-2">
+                        <!--List of event suggested-->
+                    </div>
+                </div>
+                <div class="wrapper-fields-to-edit" id="wrapper-fields-to-edit-2" style="display: flex;">
+                    
+                <div class="inner-wrapper-field-agent-management">
+                        <div class="event-preview-wrapper">
+                            <div class="event-preview">
+                                <div class="post">
+                                    <h3 class="info-ticket" id="cr-event-title"><!--Title of event--></h3>
+                                    <img class="" id="cr-poster-pic" src="media/icons/cover 11.png" width="100%"/>
+                                    <div class="box-event-details-info" id="cr-event-detail">
+                                        <!--Details about event-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="simple-input-unit">
+                                <label>Search for user by username</label>
+                                <input class="field-has-changed" type="text" id="field-agent-username"/>
+                            </span>
+                            <div class="box-suggestion-users" id="box-suggestion-users">
+                                <!--List of suggested users-->
+                            </div>
+                        </div>
+
+                        <div class="event-categories" id="event-potential-agent">
+                            <b>No user selected</b>
+                        </div>
+
+                        <div class="box-rights">
+                            <span>
+                                <input type="checkbox" id="rights-to-sell" name="sell" value="1">
+                                <label for="selling-rights"> Selling rights</label><br>
+                            </span>
+
+                            <span>
+                                <input type="checkbox" id="rights-to-scan" name="scan" value="1">
+                                <label for="scanning-rights">Scanning rights</label><br>
+                            </span>
+                        </div>
+
+                    </div>
+                
+                </div>
+
+                <div class="illustration-modify-event" id="illustration-agent-event">
+                    <div class="img-and-legend">
+                        <img src="media/icons/editing-event.png" alt="illustration" width="50%"/>
+                        <span>Manage agents</span>
+                    </div>
+                </div>
+
+                <div class="illustration-editing-result" id="illustration-agent-config-result">
+                    <img id="img-result-agent-config" src="#" alt="illustration" width="50%"/>
+                    <div class="editing-infos" id="agent-config-status">
+                        <!--List of config status-->
+                    </div>
+                </div>
+                
+            </div>
+            <div class="configuration-modal-btns">
+                <button id="cancel-modal-manage-agent">Cancel</button>
+                <button id="btn-save-changes-agent">Save changes</button>
+            </div>
+        </div>
+
+        <!--POPUP WALLET-->
+        <div class="configuration-modal" id="modal-user-wallet">
+            <div class="configuration-modal-content">
+                <div class="wrapper-fields-to-edit" id="wrapper-fields-to-edit-3" style="display: flex;">  
+                <div class="inner-wrapper-wallet" id="inner-wrapper-wallet">
+
+                        <div class="wallet-event-unit">
+
+                            <div class="info-wallet-header">
+                                <span class="title-header">Grand match de foot</span>
+                                <span class="other-header-info">
+                                    <span><b>Date & time</b><br/> 2022-12-11 19:00</span>
+                                    <span><b>Address</b><br/> Mopra 16</span>
+                                    <span><b>Location</b><br/> Russia, Oryol</span>
+                                </span>
+                            </div>
+                            <div class="info-wallet-body">
+
+                                <div class="info-block">
+                                    <span class="title-block"><span class="title">TICKETS -></span> <span class="number">500</span></span>
+                                    <span class="box-block">
+                                        <span>Sold: 450</span>
+                                        <span>Scanned:300</span>
+                                    </span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="title-block"><span class="title">PRICES -></span> <span class="number">19 800 Rbles</span></span>
+                                    <span class="box-block">
+                                        <span>Price: 450 Rbles (220)</span>
+                                        <span>Price: 500 Rbles (140)</span>
+                                    </span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="title-block"><span class="title">AGENT(S) -></span> <span class="number">2</span></span>
+                                    <span class="box-block">
+                                        <!--Table of event statistic control-->
+                                    </span>  
+                                </div>
+                                <div class="info-block">
+                                    <span class="title-block"><span class="title">SERVICE FEE -></span> <span class="number">144 Rbles</span></span>
+                                    <span class="box-block">
+                                        <span>Status: NOT PAID</span>
+                                        <span>Payment info: link</span>
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="configuration-modal-btns">
+                <button id="close-modal-user-wallet">Close</button>
+            </div>
+        </div>
+
+        <!--POPUP PERSONNAL SETTINGS-->
+        <div class="configuration-modal" id="modal-personnal-settings">
+            <div class="configuration-modal-content">
+                <div class="wrapper-fields-to-edit" id="wrapper-fields-to-edit-4" style="display: flex;">  
+                <div class="inner-wrapper-wallet" id="inner-wrapper-config-block">
+
+                        <div class="section-config">
+                            <span class="settings-title" id="config-location-title">Configure location</span>
+                            <div class="config-location" id="config-location-box">
+                                <span>
+                                    <label>Your country</label>
+                                    <input type="text" id="config-country" autocomplete="new-password"/>
+                                    <div class="box-suggestion" id="box-suggestion-countries-config">
+                                        <!--Countries-->
+                                    </div>
+                                </span>
+
+                                <span>
+                                    <label>Your city</label>
+                                    <input type="text" id="config-city" autocomplete="new-password"/>
+                                    <div class="box-suggestion" id="box-suggestion-cities-config">
+                                        <!--Cities-->
+                                    </div>
+                                </span>
+                                <span>
+                                    <button id="btn-save-location-config">save changes</button>
+                                </span>
+                            </div>
+                            
+                            <p  class="result-config-msg" id="config-msg-user-location" style="font-size: 12px;"></p>
+        
+                        </div>
+                        <div class="section-config">
+                            <span class="settings-title" id="config-preferences-title">Category preferences</span>
+                            <div class="config-preferences" id="config-preferences-box">
+                                <div id="categs-config-box">
+                                    <!--List of all categories-->
+                                </div>
+                                <span>
+                                    <button id="btn-save-preferences-config">save changes</button>
+                                </span>
+                            </div>
+
+                            <p  class="result-config-msg" id="config-msg-user-preferences" style="font-size: 12px;"></p>
+
+                        </div>
+                        <div class="section-config">
+                            <span class="settings-title" id="config-social-links-title">Configure social links</span>
+                            <div class="config-location" id="config-social-links-box">
+                                <span>
+                                    <label>Facebook link</label>
+                                    <input type="text" id="fb-link" autocomplete="new-password"/>
+                                </span>
+
+                                <span>
+                                    <label>Instagram link</label>
+                                    <input type="text" id="ig-link" autocomplete="new-password"/>
+                                </span>
+
+                                <span>
+                                    <label>WhatsApp tel</label>
+                                    <input type="tel" id="wsapp-tel" autocomplete="new-password"/>
+                                </span>
+                                <span>
+                                    <button id="btn-save-user-socials-config">save changes</button>
+                                </span>
+
+                            </div>
+
+                            <p  class="result-config-msg" id="config-msg-user-socials" style="font-size: 12px;"></p>
+
+                        </div>
+                        <div class="section-config">
+                            <span class="settings-title" id="config-acc-verification-title">Request account verification</span>
+                            <div class="config-acc-verification" id="config-acc-verification-box">
+                                <span>
+                                    <p><span id="acc-email"></span> is the email address linked to your account. A member of our team will contact you for the account verification proccess. Please submit one of the required document below.</p>
+                                </span>
+                                <span>
+                                    <label>Upload a scan of passport first page or national ID card, or driving licence</label>
+                                    <input type="file" id="file-acc-verification"/>
+                                </span>
+                                <span>
+                                    <button id="btn-save-user-acc-verification">Submit</button>
+                                </span>
+                            </div>
+                            <p  class="result-config-msg" id="config-msg-user-acc-verification" style="font-size: 12px;"></p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="configuration-modal-btns">
+                <button id="close-modal-perso-settings">Close</button>
+            </div>
         </div>
     </div>
     <!--Bottom nav bar-->

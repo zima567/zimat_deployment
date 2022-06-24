@@ -29,35 +29,7 @@ $(document).ready(function(){
        }
 
     });
-    //Verified if email exist in our database
-    /*$("#idEmail").focusout(function(){
-        $("#errorEmail").text("");
-
-             //Email validation
-            let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-            if($("#idEmail").val().trim().match(regexEmail)){
-                verificationRequest(MRPVerification, "EMAIL", $("#idEmail").val().trim());
-            }
-            else{
-            
-                if($("#idEmail").val().trim()!=""){
-                    $("#errorEmail").text("Incorrect email address");
-                }
-                else{
-                    $("#errorEmail").text("This field is required");
-                }
-            }
-    });*/
-
-    /*$("#idNewPwd").focusout(function(){
-        
-    });
-
-      //Focus out password configuration
-      $("#idConfNewPwd").focusout(function(){
-        
-    });*/
-
+    
     //On click on request code btn
     $("#idRequestCode").on("click", function(e){
         e.preventDefault();
@@ -129,6 +101,29 @@ $(document).ready(function(){
 
 });
 
+/********************REQUEST SENDER FUNCTION *******************/
+function requestSender(destinationToRequest, obj, processorFunc){
+    $.ajax({
+        url: destinationToRequest,
+        data: obj,
+        type: "POST",
+        dataType : "json",
+        beforeSend:function(){
+            $("#loading-circle").css("display","flex");
+        }
+    })
+    .done(function( response ) {
+        $("#loading-circle").css("display","none");
+        //console.log(response);
+        processorFunc(response)
+    })
+    .fail(function( xhr, status, errorThrown ) {
+        alert( "Sorry, there was a problem!" );
+        console.log( "Error: " + errorThrown );
+        console.log( "Status: " + status );
+        console.dir( xhr );
+    });
+}
 
 function MRPVerification(res){
     if(res['db_connection'] =="SUCCEED" && res['query_error']=="NONE"){
@@ -159,12 +154,17 @@ function verificationRequest(myFunc, inputField, value){
         data: {"field": inputField,"value": value},
         type: "POST",
         dataType : "json",
+        beforeSend:function(){
+            $("#loading-circle").css("display","flex");
+        }
     })
     .done(function( response ) {
-        console.log(response);
+        $("#loading-circle").css("display","none");
+        //console.log(response);
         myFunc(response, inputField);
     })
     .fail(function( xhr, status, errorThrown ) {
+        $("#loading-circle").css("display","none");
         alert( "Sorry, there was a problem!" );
         console.log( "Error: " + errorThrown );
         console.log( "Status: " + status );
@@ -180,8 +180,6 @@ function MRPReset(res, option){
             //display field to insert code and btn to submit it
             $("#box-request-code").css("display","none");
             $("#box-submit-code").css("display","block");
-            //$("#idCode").css("display","block");
-            //$("#idBtnSubmitCode").css("display","block");
         }
         else{
             //send a message that code failed to be sent
@@ -205,15 +203,9 @@ function MRPReset(res, option){
             submitCodeTry = submitCodeTry +1;
             $("#errorCode").text("The code you entered did not match, you can ask for code to be resent by clicking below");
 
-            //if(submitCodeTry>4){
-                //refresh page
-                //location.reload();
-            //}
         }
     }
     else if(option =="RESET_PASSWORD"){
-
-        //$("#box-reset-fields").css("display", "none");
         //Hide the form
         $("#box-form").css("display","none");
         if(res['option_status'] ==1){
@@ -257,11 +249,11 @@ function ResetRequest(myFunc, option, email, value=""){
         type: "POST",
         dataType : "json",
         beforeSend:function(){
-           // $("#loading-circle").css("display","flex");
+           $("#loading-circle").css("display","flex");
         }
     })
     .done(function( response ) {
-        //$("#loading-circle").css("display","none");
+        $("#loading-circle").css("display","none");
         console.log(response);
         myFunc(response, option);
     })

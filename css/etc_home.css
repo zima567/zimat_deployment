@@ -20,6 +20,33 @@ body{
     font-family: 'roboto', sans-serif;
 }
 
+/*MAIN LOGO STYLING*/
+.logo-n-version{
+    display: flex;
+    flex-direction: row;
+}
+
+.logo-n-version .zimaccess-logo{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight:lighter;
+    font-style: italic;
+    margin-right: 10px;
+}
+
+.logo-n-version .logo-beta{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color:rgb(0, 162, 255);
+    padding: 4px 16px 4px 16px;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    font-weight: lighter;
+    font-style: italic;
+    font-size: 12px;
+}
+
 /*CSS for My custom loader*/
 .bg-transpa{
     position: -webkit-sticky; /* Safari */
@@ -70,6 +97,22 @@ body{
     font-style: italic;
 }
 
+/*CSS for fadein notification text*/
+.copy-notification {
+    color: #ffffff;
+    background-color: rgba(0,0,0,0.8);
+    padding: 20px;
+    border-radius: 30px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 150px;
+    margin-top: -30px;
+    margin-left: -85px;
+    display: none;
+    text-align:center;
+}
+
 .navbar{
     position: fixed;
     top: 0;
@@ -96,24 +139,6 @@ body{
     height: 100%;
     margin-top: 5px;
 }
-
-/*.search-box{
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 200px;
-    height: 25px;
-    background: #fafafa;
-    border: 1px solid #dfdfdf;
-    border-radius: 2px;
-    color: rgba(0, 0, 0, 0.5);
-    text-align: center;
-    text-transform: capitalize;
-}*/
-
-/*.search-box::placeholder{
-    color: rgba(0, 0, 0, 0.5);
-}*/
 
 .nav-items{
     height: 22px;
@@ -698,6 +723,31 @@ body{
 
   .more-conf-options .conf-text{
       font-size: 11px;
+  }
+
+  /*Small code for CSS copy link popup*/
+  #id-content-popup3{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+  }
+
+  #event-link-val{
+    padding: 8px;
+    border: none;
+    border-bottom: 1px solid black;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  #id-content-popup3 button{
+    padding: 12px;
+      background-color: #5cb85c;
+      color: white;
+      border: none;
+      border-radius: 15px;
   }
 
   /*CSS MY CATALOGUE-MYEVENTS-TICKETS*/

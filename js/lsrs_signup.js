@@ -1,3 +1,4 @@
+//IMPORTANT GLOBAL VARIABLES
     var emailVerified = false;
     var usernameVerified = false;
     var passwordVerified = false;
@@ -7,7 +8,6 @@
 $(document).ready(function(){
 
     $("#idBtnSignUp").on("click", function(){
-      
         //EMAIL VALIDATION
         $("#errorEmail").text("");
 
@@ -95,27 +95,9 @@ $(document).ready(function(){
             let passwordVar = $("#idPassword").val().trim();
     
             //Send the request to the api
-            $.ajax({
-                url: "api_php/api_lsrs_signup.php",
-                data: {"email": emailVar, "username": usernameVar, "password":passwordVar},
-                type: "POST",
-                dataType : "json",
-                beforeSend:function(){
-                    $("#loading-circle").css("display","flex");
-                }
-            })
-            .done(function( response ) {
-                $("#loading-circle").css("display","none");
-                console.log(response);
-                FRPSignup(response);
-            })
-            .fail(function( xhr, status, errorThrown ) {
-                $("#loading-circle").css("display","none");
-                alert( "Sorry, there was a problem!" );
-                console.log( "Error: " + errorThrown );
-                console.log( "Status: " + status );
-                console.dir( xhr );
-            });
+            let destinationToRequest = 'api_php/api_lsrs_signup.php';
+            let obj ={email: emailVar, username: usernameVar, password:passwordVar};
+            requestSender(destinationToRequest, obj, FRPSignup);
         }
 
 
@@ -196,4 +178,28 @@ function FRPSignup(res){
             alert("Sign up failed, please try again by paying carefull attention to the requirements");
         }
     }
+}
+
+/********************REQUEST SENDER FUNCTION *******************/
+function requestSender(destinationToRequest, obj, processorFunc){
+    $.ajax({
+        url: destinationToRequest,
+        data: obj,
+        type: "POST",
+        dataType : "json",
+        beforeSend:function(){
+            $("#loading-circle").css("display","flex");
+        }
+    })
+    .done(function( response ) {
+        $("#loading-circle").css("display","none");
+        //console.log(response);
+        processorFunc(response)
+    })
+    .fail(function( xhr, status, errorThrown ) {
+        alert( "Sorry, there was a problem!" );
+        console.log( "Error: " + errorThrown );
+        console.log( "Status: " + status );
+        console.dir( xhr );
+    });
 }

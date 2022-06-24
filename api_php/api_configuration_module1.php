@@ -1,4 +1,7 @@
 <?php
+//Mailer php custom file
+require("mailing.php");
+
 //Start session in this script
 session_start();
 //connect to DB
@@ -20,9 +23,9 @@ if(isset($_SESSION['idUser'])){
 
                 $multipleHandler['action_type'] = "T_SELECT";
                 //Check for configuration types
-                if($_POST['config_type']=="select_categ_not_of_users"){
+                if($_POST['config_type']=="select_categ_of_users"){
                     /**********config - start***********/
-                    $multipleHandler['config_type'] = "select_categ_not_of_users";
+                    $multipleHandler['config_type'] = "select_categ_of_users";
 
                     //Select event base on user categ profiling
                     $sql_user_categ = "SELECT `categ_profiling` FROM `user_profile` WHERE `idUserFK` =? ";
@@ -35,50 +38,119 @@ if(isset($_SESSION['idUser'])){
                         if(!empty($strCateg)){$userArrCateg = explode(" ",$strCateg);}
                     }
 
-                    if(!count($userArrCateg)>0){
-                        //User has no preferred categories
-                        $sql_range_categ = "SELECT `idCategory`, `title` FROM `category` LIMIT 100";
-                        $stmt_range_categ = $connection->prepare($sql_range_categ);
-                        $stmt_range_categ->execute();
-                        if($stmt_range_categ->rowCount()>0){
-                            $temp_arr_categ = array();
-                            while($row_range_categ = $stmt_range_categ->fetch()){
-                                array_push($temp_arr_categ, array("idCategory"=>$row_range_categ['idCategory'],
-                                                                  "title"=>$row_range_categ['title']));
-                            }
-                            $APIResponse['arr_return'] = $temp_arr_categ;
-                            $multipleHandler['action_status'] = 1;
+                    $sql_range_categ = "SELECT `idCategory`, `title` FROM `category` LIMIT 200";
+                    $stmt_range_categ = $connection->prepare($sql_range_categ);
+                    $stmt_range_categ->execute();
+                    if($stmt_range_categ->rowCount()>0){
+                        $temp_arr_categ = array();
+                        while($row_range_categ = $stmt_range_categ->fetch()){
+                            array_push($temp_arr_categ, array("idCategory"=>$row_range_categ['idCategory'],
+                                                               "title"=>$row_range_categ['title']));
                         }
+                        $temp_api_return = array("arr_user_categ"=>$userArrCateg, "arr_all_categ"=>$temp_arr_categ);
+                        $APIResponse['arr_return'] = $temp_api_return;
+                        $multipleHandler['action_status'] = 1;
                     }
-                    else{
-                        //user has already preffered categories
-                        $sql_rest_of_categ = " SELECT `idCategory`, `title` FROM `category` WHERE `title` NOT IN ( '";
-                        $count = 0;
-                        foreach($userArrCateg as $item) {
-                            $sql_rest_of_categ .= $item;
-                            if ($count != count($userArrCateg) - 1)
-                            $sql_rest_of_categ .= "', '";
-                            $count++;
-                        }
-                        $sql_rest_of_categ .= "') LIMIT 100";
-
-                        if($count!=0){
-                            $stmt_range_categ = $connection->prepare($sql_rest_of_categ);
-                            $stmt_range_categ->execute();
-                            if($stmt_range_categ->rowCount()>0){
-                                $temp_arr_categ = array();
-                                while($row_range_categ = $stmt_range_categ->fetch()){
-                                    array_push($temp_arr_categ, array("idCategory"=>$row_range_categ['idCategory'],
-                                                                      "title"=>$row_range_categ['title']));
-                                }
-                                $APIResponse['arr_return'] = $temp_arr_categ;
-                                $multipleHandler['action_status'] = 1;
-                            }
-                        }
-
-                    }
+                    
 
                      /**********config - end***********/
+                }
+                elseif($_POST['config_type']=="select_complete_location_of_user"){
+                    $multipleHandler['config_type'] = "select_complete_location_of_user";
+                    //select user country and city
+                    $sql_full_location = "SELECT `country`.`name` AS `location_country`, `cities`.`name` AS `location_city` FROM ((`user_profile` INNER JOIN `country` ON `user_profile`.`location_country` = `country`.`idCountry`) INNER JOIN `cities` ON `user_profile`.`location_city` = `cities`.`idCity`) WHERE `user_profile`.`idUserFK` =?";
+                    $stmt_full_location = $connection->prepare($sql_full_location);
+                    $stmt_full_location->execute([$_SESSION['idUser']]);
+                    if($stmt_full_location->rowCount()>0){
+                        $row_full_location = $stmt_full_location->fetch();
+                        $APIResponse['arr_return'] = array("location_country"=>$row_full_location['location_country'], "location_city"=>$row_full_location['location_city']);
+                        $multipleHandler['action_status'] = 1;   
+                    }
+                }
+                elseif($_POST['config_type']=="select_user_socials"){
+                    $multipleHandler['config_type'] = "select_user_socials";
+
+                    //Select user sucials
+                    $arr_user_socials = array("facebook"=>"NONE", "instagram"=>"NONE", "whatsApp"=>"NONE", "twitter"=>"NONE", "vk"=>"NNOE");
+                    $sql_user_socials = "SELECT `facebook`, `instagram`, `twitter`, `vk`, `whatsApp` FROM `user_socials` WHERE `idUserFK` =?";
+                    $stmt_user_socials = $connection->prepare($sql_user_socials);
+                    $stmt_user_socials->execute([$_SESSION['idUser']]);
+                    if($stmt_user_socials->rowCount()>0){
+                        $multipleHandler['action_status'] = 1;   
+
+                        $row_user_socials = $stmt_user_socials->fetch();
+                        $arr_user_socials['facebook'] = $row_user_socials['facebook'];
+                        $arr_user_socials['instagram'] = $row_user_socials['instagram'];
+                        $arr_user_socials['whatsApp'] = $row_user_socials['whatsApp'];
+                        $arr_user_socials['twitter'] = $row_user_socials['twitter'];
+                        $arr_user_socials['vk'] = $row_user_socials['vk'];
+
+                    }
+                    $APIResponse['arr_return'] = $arr_user_socials;
+                    
+                }
+                elseif($_POST['config_type']=="select_user_acc_verification_info"){
+                    $multipleHandler['config_type'] = "select_user_acc_verification_info";
+
+                    $temp_api_return = array("is_account_verified"=>0, "is_email_verified"=>0, "email"=>"NONE");
+                    $allGood = true;
+                    //SQLs
+                    $sql_get_user_email = "SELECT `email` FROM `user` WHERE `idUser` =?";
+                    $stmt_get_user_email = $connection->prepare($sql_get_user_email);
+
+                    $sql_acc_verification = "SELECT `idUserFK`, `verified` FROM `user_verified` WHERE `idUserFK` =?";
+                    $stmt_acc_verification = $connection->prepare($sql_acc_verification);
+
+                    $sql_email_verification = "SELECT `idUserFK` FROM `user_profile` WHERE `verification_email` =? AND `idUserFK` =?";
+                    $stmt_email_verification = $connection->prepare($sql_email_verification);
+
+                    $stmt_acc_verification->execute([$_SESSION['idUser']]);
+                    if($stmt_acc_verification->rowCount()>0){
+                        $row_acc_verification = $stmt_acc_verification->fetch();
+                        if($row_acc_verification['verified']==0){
+                            //Account not yet verified or verification is rolling
+                            $temp_api_return['is_account_verified'] = 0;
+                            //Check if email is verified
+                            $stmt_email_verification->execute([1, $_SESSION['idUser']]);
+                            if($stmt_email_verification->rowCount()>0){
+                                //Email is verified
+                                $temp_api_return['is_email_verified'] = 1;
+                                //Get email of user where email for acc verification will be sent
+                                $stmt_get_user_email->execute([$_SESSION['idUser']]);
+                                if($stmt_get_user_email->rowCount()>0){
+                                    $row_get_user_email = $stmt_get_user_email->fetch();
+                                    $temp_api_return['email'] = $row_get_user_email['email'];
+                                }
+                                else{
+                                    //could not find email of user. Something is wrong set action proccess to 0
+                                    $temp_api_return['email'] = "ERROR";
+                                    $allGood = false;
+                                }
+                            }
+    
+                        }
+                        elseif($row_acc_verification['verified']==1){
+                            //Account verified
+                            $temp_api_return['is_account_verified'] = 1;
+                        }
+                        elseif($row_acc_verification['verified']==2){
+                            //Account verification rolling
+                            $temp_api_return['is_account_verified'] = 2;
+                        }
+                        else{
+                            $temp_api_return['is_account_verified'] = -1;
+                        }
+
+                    }
+                    else{
+                        $allGood =false;
+                    }
+                    
+
+                    //Set action status
+                    if($allGood){$multipleHandler['action_status'] = 1; }
+                    $APIResponse['arr_return'] = $temp_api_return;
+            
                 }
                 else{
                     $multipleHandler['config_type'] = "NOT_HANDLED";
@@ -95,15 +167,13 @@ if(isset($_SESSION['idUser'])){
                 if($_POST['config_type']=="update_user_categories"){
                     $multipleHandler['config_type'] = "update_user_categories";
                     
-                    $sql_select_categ_str = "SELECT `categ_profiling` FROM `user_profile` WHERE `idUserFK` =?";
-                    $stmt_select_categ_str = $connection->prepare($sql_select_categ_str);
-
                     $sql_update_categ_str = "UPDATE `user_profile` SET `categ_profiling` =? WHERE `idUserFK` =?";
                     $stmt_update_categ_str = $connection->prepare($sql_update_categ_str);
 
                     $sql_test_categ_name = "SELECT `idCategory` FROM category WHERE `title` =?";
                     $stmt_test_categ_name = $connection->prepare($sql_test_categ_name);
 
+                   
                     function isCategNameCorrect($stmt_test_categ_name, $categName){
                         $stmt_test_categ_name->execute([$categName]);
                         if($stmt_test_categ_name->rowCount()>0) return true;
@@ -121,18 +191,9 @@ if(isset($_SESSION['idUser'])){
                         }
                         
                         if(!empty(trim($new_user_categ_str))){
-                            $stmt_select_categ_str->execute([$_SESSION['idUser']]);
-                            if($stmt_select_categ_str->rowCount()>0){
-
-                                $row_select_categ_str = $stmt_select_categ_str->fetch();
-                                $update_str = trim($new_user_categ_str)." ".trim($row_select_categ_str['categ_profiling']);
-                                if($stmt_update_categ_str->execute([$update_str, $_SESSION['idUser']]))  $multipleHandler['action_status'] = 1;
-
-                            }
-                            else{
-
-                                if($stmt_update_categ_str->execute([$new_user_categ_str, $_SESSION['idUser']]))  $multipleHandler['action_status'] = 1;
-                            }
+                           
+                            if($stmt_update_categ_str->execute([$new_user_categ_str, $_SESSION['idUser']]))  $multipleHandler['action_status'] = 1;
+                            
                         }
 
                     }
@@ -403,6 +464,246 @@ if(isset($_SESSION['idUser'])){
                     }
 
                     
+                }
+                elseif($_POST['config_type']=="update_user_profile_details"){
+                    $multipleHandler['config_type'] = "update_user_profile_details";
+                    $temp_action_status = true;
+                    $result_profile_update = array("stat_fname"=>1, "stat_lname"=>1, "stat_about"=>1, "img_error"=>array());
+
+                    if(isset($_POST['fname'])){
+                        $sql_update_fname = "UPDATE `user_profile` SET `firstName` =? WHERE `idUserFK` =?";
+                        $stmt_update_fname = $connection->prepare($sql_update_fname);
+                        if(!$stmt_update_fname->execute([$_POST['fname'], $_SESSION['idUser']])){ $temp_action_status = false; $result_profile_update['stat_fname'] =0; }
+                    }
+
+                    if(isset($_POST['lname'])){
+                        $sql_update_lname = "UPDATE `user_profile` SET `lastName` =? WHERE `idUserFK` =?";
+                        $stmt_update_lname = $connection->prepare($sql_update_lname);
+                        if(!$stmt_update_lname->execute([$_POST['lname'], $_SESSION['idUser']])){ $temp_action_status = false; $result_profile_update['stat_lname'] =0; }
+
+                    }
+
+                    if(isset($_POST['about'])){
+                        $sql_update_about = "UPDATE `user_profile` SET `bio` =? WHERE `idUserFK` =?";
+                        $stmt_update_about = $connection->prepare($sql_update_about);
+                        if(!$stmt_update_about->execute([$_POST['about'], $_SESSION['idUser']])){ $temp_action_status = false; $result_profile_update['stat_about'] =0; }
+                    }
+
+                    if(isset($_FILES['profile-avatar'])){
+                        $sql_set_avatar = "UPDATE `user_profile` SET `avatar` =? WHERE `idUserFK` =?";
+                        $stmt_set_avatar = $connection->prepare($sql_set_avatar);
+
+                        $errors= array();
+                        $path = "../media/profiles/";
+                        $file_name = $path.basename($_FILES['profile-avatar']['name']);
+                        $file_size =$_FILES['profile-avatar']['size'];
+                        $file_tmp =$_FILES['profile-avatar']['tmp_name'];
+                        $file_type=$_FILES['profile-avatar']['type'];
+                        $file_ext=strtolower(pathinfo($file_name,PATHINFO_EXTENSION));
+                        
+                        $extensions= array("jpeg","jpg","png");
+                        
+                        if(in_array($file_ext,$extensions)=== false){
+                           $errors[]="extension not allowed, please choose a JPEG or PNG file.";
+                        }
+                        
+                        if($file_size >= 1572864){
+                           $errors[]='File size too big.';
+                        }
+                        
+                        if(empty($errors)==true){
+                            
+                           move_uploaded_file($file_tmp,$file_name);
+                           //Add to database
+                           $file_name_to_db = str_replace("../","", $file_name);
+                           $stmt_set_avatar->execute([$file_name_to_db, $_SESSION['idUser']]);
+                           //echo "Success";
+                        }else{
+                           //print_r($errors);
+                           $temp_action_status = false;
+                           $result_profile_update['img_error'] = $errors;
+
+                        }
+
+                    }
+
+                    if($temp_action_status){
+                        $multipleHandler['action_status'] = 1;
+                    }
+                    $APIResponse['arr_return'] = $result_profile_update;
+
+                }
+                elseif($_POST['config_type']=="config_event_agents" && isset($_POST['idEvent']) && isset($_POST['arr_agents'])){
+                    $multipleHandler['config_type'] = "update_user_profile_details";
+                    //Other post var
+                    $varSellingRight = isset($_POST['sellingRight'])?$_POST['sellingRight']:0;
+                    $varScanningRight = isset($_POST['scanningRight'])?$_POST['scanningRight']:0;
+
+                    $sql_user_director = "SELECT `directorFK` FROM `event` INNER JOIN `event_agent` ON `event`.`idEvent` = `event_agent`.`idEventFK` WHERE `idEvent` =? AND `directorFK` =? AND `sellingRight` =? AND `scanningRight` =?";
+                    $stmt_user_director = $connection->prepare($sql_user_director);
+
+                    $sql_get_id_user = "SELECT `idUser` FROM `user` WHERE `username` =? AND `idUser`<>?";
+                    $stmt_get_id_user = $connection->prepare($sql_get_id_user);
+
+                    $sql_is_event_agent = "SELECT `idAgentFK` FROM `event_agent` WHERE `idAgentFK` =? AND `idEventFK` =?";
+                    $stmt_is_event_agent = $connection->prepare($sql_is_event_agent);
+
+                    $sql_update_agent = "UPDATE `event_agent` SET `sellingRight` =?, `scanningRight` =? WHERE `idAgentFK` =? AND `idEventFK` =?";
+                    $stmt_update_agent = $connection->prepare($sql_update_agent);
+
+                    $sql_delete_agent = "DELETE FROM `event_agent` WHERE `idAgentFK` =? AND `idEventFK` =?";
+                    $stmt_delete_agent = $connection->prepare($sql_delete_agent);
+
+                    $sql_set_agent = "INSERT INTO `event_agent` (`idAgentFK`, `idEventFK`, `sellingRight`, `scanningRight`) VALUES(?,?,?,?)";
+                    $stmt_set_agent = $connection->prepare($sql_set_agent);
+
+                    $stmt_user_director->execute([$_POST['idEvent'], $_SESSION['idUser'],1,1]);
+                    if($stmt_user_director->rowCount()>0){
+                        //User is director of this event
+                        //Create array for agents statuses
+                        $arr_agent_stats = array();
+
+                        $arrAgents = $_POST['arr_agents'];
+                        foreach($arrAgents as $agent){
+                            $agent_added = false;
+                            $agent_updated =false;
+
+                            $stmt_get_id_user->execute([$agent, $_SESSION['idUser']]);
+                            if($stmt_get_id_user->rowCount()>0){
+                                //User valid
+                                $row_get_id_user = $stmt_get_id_user->fetch();
+                                $stmt_is_event_agent->execute([$row_get_id_user['idUser'], $_POST['idEvent']]);
+                                //If is selling or scanning right is granted
+                                if($stmt_is_event_agent->rowCount()>0){
+                                    //User already an agent update
+                                    if($stmt_update_agent->execute([$varSellingRight, $varScanningRight, $row_get_id_user['idUser'], $_POST['idEvent']])){$agent_updated=true;}
+                                }
+                                else{
+                                    //User is not yet an agent insert agent
+                                    if($stmt_set_agent->execute([$row_get_id_user['idUser'], $_POST['idEvent'], $varSellingRight, $varScanningRight])){$agent_added=true;}
+                                }
+                                
+                            }
+                            else{
+                                //This username is found in our database
+                                $multipleHandler['divers_error'] = "USER_DO_NOT_EXIST";
+                            }
+
+                            if($agent_added || $agent_updated){
+                                $multipleHandler['action_status']=1;
+                                array_push($arr_agent_stats, array("username"=>$agent, "status"=>1));
+                            }
+                            else{
+                                array_push($arr_agent_stats, array("username"=>$agent, "status"=>0));
+                            }
+                        }
+                        
+                        $APIResponse['arr_return'] = $arr_agent_stats;
+                    }
+                    else{
+                        //User online is not a director
+                        $multipleHandler['divers_error'] = "USER_NOT_EVENT_DIRECTOR";
+                    }
+
+
+                }
+                elseif($_POST['config_type']=="update_user_socials"){
+                    $multipleHandler['config_type'] = "update_user_socials";
+
+                    //SQLs
+                    $sql_update_user_socials = "UPDATE `user_socials` SET `facebook` =?, `instagram` =?, `whatsApp` =? WHERE `idUserFK` =?";
+                    $stmt_update_user_socials = $connection->prepare($sql_update_user_socials);
+
+                    if(isset($_POST['fbLink']) && isset($_POST['igLink']) && isset($_POST['wspTel'])){
+                        if($stmt_update_user_socials->execute([$_POST['fbLink'], $_POST['igLink'], $_POST['wspTel'], $_SESSION['idUser']])){ $multipleHandler['action_status']=1;}
+                    }
+                }
+                elseif($_POST['config_type']=="update_doc_acc_verification"){
+                    $multipleHandler['config_type'] = "update_doc_acc_verification";
+
+                    $arr_result_submission = array("doc_error"=>array(), "doc_saved_to_db"=>0, "doc_send_via_email"=>0);
+
+                    //SQLs
+                    $sql_submit_doc = "UPDATE `user_verified` SET `doc` =?, `verified` =? WHERE `idUserFK` =?";
+                    $stmt_submit_doc = $connection->prepare($sql_submit_doc);
+
+                    $sql_get_email = "SELECT `username`, `email` FROM `user` INNER JOIN `user_profile` ON `user`.`idUser` = `user_profile`.`idUserFK` WHERE `idUser` =? AND `verification_email` =?";
+                    $stmt_get_email = $connection->prepare($sql_get_email);
+
+                    if(isset($_FILES['doc_file'])){
+                        $errors= array();
+                        $path = "../media/offDoc/";
+                        $file_name = $path.date("Y_m_d_h_i_sa").basename($_FILES['doc_file']['name']);
+                        $file_size =$_FILES['doc_file']['size'];
+                        $file_tmp =$_FILES['doc_file']['tmp_name'];
+                        $file_type=$_FILES['doc_file']['type'];
+                        $file_ext=strtolower(pathinfo($file_name,PATHINFO_EXTENSION));
+                        
+                        $extensions= array("jpeg","jpg","png","pdf");
+                        
+                        if(in_array($file_ext,$extensions)=== false){
+                           $errors[]="extension not allowed, please choose a JPEG or PNG or PDF file.";
+                        }
+                        
+                        if($file_size >= 1572864){
+                           $errors[]='File size too big.';
+                        }
+                        
+                        if(empty($errors)==true){
+                            
+                           //Select Email to send than send
+                           $stmt_get_email->execute([$_SESSION['idUser'], 1]);
+                           if($stmt_get_email->rowCount()>0){
+                                //Email found
+                                $file_name = $file_name;
+                                move_uploaded_file($file_tmp,$file_name);
+                                //Add to database
+                                $file_name_to_db = str_replace("../","", $file_name);
+                                //Start transaction
+                                $connection->beginTransaction();
+                                //Insert to db
+                                $stmt_submit_doc->execute([$file_name_to_db, 2, $_SESSION['idUser']]);
+                                $arr_result_submission['doc_saved_to_db'] =1;
+
+                                //Get email
+                                $row_get_email = $stmt_get_email->fetch();
+                                $arr_result_submission['email'] = $row_get_email['email'];
+                            
+                                //Require email sender library at the very top
+                                $sender =$gsv_senderN1;
+                                $senderTitle ="Zimaware INC.";
+                                $receiver =$gsv_receiver_account_verification_N1;
+                                $receiverTitle = $row_get_email['username']." Hello dear team member, this user is requesting account verification";
+                                $subject = "ACCOUNT VERIFICATION REQUEST";
+                                $body ='<p>This user is requesting account verification: '.$row_get_email['username'].'</p>';
+                                $altbody ="alternate msg for account verification";
+                                $emailResponse = sendSimpleMail($sender, $senderTitle, $receiver, $receiverTitle, $subject, $body, $altbody,  $arr_result_submission['email'], $file_name);
+                                //Check if email has been sent
+                                //$emailResponse['status'] == 1
+                                $multipleHandler['divers_error'] = $emailResponse['status'];
+                                if($emailResponse['status'] == 1){
+                                    //If email is sent successfully send api response +
+                                    $connection->commit();
+                                    $arr_result_submission['doc_send_via_email'] =1;
+                                    $multipleHandler['action_status']=1;
+                                }
+                                else{
+                                    //If email not sent //Rollback //Unlink doc //Send api response -
+                                    $connection->rollBack();
+                                    $arr_result_submission['doc_saved_to_db'] =0;
+                                    unlink($file_name);
+                                }
+                           }
+                           
+                
+                        }else{
+                            
+                           $arr_result_submission['doc_error'] = $errors;
+
+                        }
+                    }
+                    $APIResponse['arr_return'] =  $arr_result_submission;
+
                 }
                 else{
                     $multipleHandler['config_type'] = "NOT_HANDLED";

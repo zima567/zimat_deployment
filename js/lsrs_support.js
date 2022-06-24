@@ -1,4 +1,4 @@
-//data variables
+//IMPORTANT GLOABAL VARIABLES
 var emailVar="";
 var texAreaVal ="";
 var emailVerified = false;
@@ -70,7 +70,7 @@ function MRPSupport(res, support_type){
         }
         else{
             //Something went wrong
-            $("#errorSupport").text("Something went wrong. If this error persists contact us on INTENDED_CONTACT");
+            $("#errorSupport").text("Something went wrong. If this error persists contact us on zimaware@gmail.com");
         }
     }
     else{
@@ -103,7 +103,6 @@ function supportRequest(myFunc, email, support_msg, support_type){
         console.dir( xhr );
     });
 }
-
 
 /*
 check for INTENDED_CONTACT literals to be replace it by a proper phone/e-mail address

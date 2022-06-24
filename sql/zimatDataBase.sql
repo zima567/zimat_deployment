@@ -4,7 +4,7 @@ CREATE SCHEMA IF NOT EXISTS `zimaware_zimatdb` DEFAULT CHARACTER SET utf8 ;
 USE `zimaware_zimatdb` ;
 
 -- -----------------------------------------------------
--- Table `zimaware_zimatdb`.`currency`
+-- Table `zimaware_zimatdb`.`currency`------------------
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`currency` (
   `idCurrency` INT NOT NULL auto_increment,
@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user` (
   `username` VARCHAR(255) NOT NULL,
   `email` VARCHAR(255) NULL,
   `password` VARCHAR(255) NOT NULL,
+  `tokenHash` VARCHAR(255) NULL,
   PRIMARY KEY (`idUser`))
 ENGINE = InnoDB;
 
@@ -100,6 +101,7 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_socials` (
   `instagram` VARCHAR(255) NULL DEFAULT "NONE",
   `twitter` VARCHAR(255) NULL DEFAULT "NONE",
   `vk` VARCHAR(255) NULL DEFAULT "NONE",
+  `whatsApp` VARCHAR(255) NULL DEFAULT "NONE",
   PRIMARY KEY (`idUserFK`),
   INDEX `fk_idUserFK_user_user_socials_index` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_user_user_socials`
@@ -153,7 +155,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_verified` (
   `idUserFK` INT NOT NULL auto_increment,
   `doc` VARCHAR(255) NULL,
-  `verified` BOOLEAN DEFAULT 0,
+  `verified` INT DEFAULT 0,
   PRIMARY KEY (`idUserFK`),
    INDEX `index_user_verified_From_origin` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_idUser_user_verified`
@@ -263,8 +265,6 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_agent` (
   `idEventFK` INT NOT NULL,
   `sellingRight` BOOLEAN DEFAULT 0,
   `scanningRight` BOOLEAN DEFAULT 0,
-  `contact` VARCHAR(255) NULL,
-  `location` VARCHAR(255) NULL,
   PRIMARY KEY (`idAgentFK`, `idEventFK`),
   INDEX `index_idAgentFK_From_origin` (`idAgentFK` ASC),
    CONSTRAINT `fk_idAgentFK_idUser_eventAgent`

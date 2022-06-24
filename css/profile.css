@@ -5,6 +5,16 @@
     padding: 0
 }
 
+.class-body-profile{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+.profile-body{
+    width: 100%;
+}
+
 .card {
    /* height: 430px;*/
     width: 100%;
@@ -123,10 +133,10 @@
 }
 
 .button {
-    padding-left: 20px;
+    /*padding-left: 20px;*/
     display: flex;
     position: relative;
-    padding-top: 35px;
+    padding: 35px 0px 25px 0px;
     justify-content: center;
     align-items: center;
 }
@@ -203,7 +213,7 @@
     align-items: center
 }
 
-.profile-info .user-stat{
+.profile-info .user-stat {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -230,7 +240,7 @@
 
 /*CSS settings options*/
 .wrapper-settings-options{
-    display: flex;
+    display: none;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-around;
@@ -242,8 +252,8 @@
 }
 
 .unit-option{
-    border: 1px solid red;
-    border-radius: 5px;
+    border: thick double #f1f1f1;
+    border-radius: 15px;
     margin: 8px;
     padding: 8px;
     display: flex;
@@ -253,6 +263,14 @@
 }
 
 /*NEW CSS FOR EVENT DISPLAY*/
+.container-events-flip-card{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 70px;
+}
+
 .post{
     width: 100%;
     height: auto;
@@ -268,6 +286,15 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
+}
+
+.info-ticket{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 10px 20px;
 }
 
 .post-image{
@@ -305,6 +332,7 @@
 .configuration-modal{
     position: absolute;
     top: 0;
+    left: 0;
     display: none;
     flex-direction: column;
     width: 100%;
@@ -405,6 +433,7 @@
     justify-content: center;
     align-items: center;
     padding: 8px;
+    margin-top: 25px;
 }
 
 .illustration-editing-result img{
@@ -422,7 +451,7 @@
 }
 
 
-.wrapper-fields-to-edit, #btn-save-changes{
+.wrapper-fields-to-edit, #btn-save-changes, #btn-save-changes-agent{
     display: none;
 }
 
@@ -549,7 +578,7 @@
     flex-direction: column;
     padding: 8px;
 }
-.box-suggestion-input-pair .box-suggestion{
+.box-suggestion{
     display: none; /*flex*/
     flex-direction: column;
     padding: 8px;
@@ -620,7 +649,347 @@
     color: white;
 }
 
+/**/
+/*CSS POPUP FOR profile config*/
+.custom-model-main {
+    text-align: center;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0; /* z-index: 1050; */
+    -webkit-overflow-scrolling: touch;
+    outline: 0;
+    opacity: 0;
+    -webkit-transition: opacity 0.15s linear, z-index 0.15;
+    -o-transition: opacity 0.15s linear, z-index 0.15;
+    transition: opacity 0.15s linear, z-index 0.15;
+    z-index: -1;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+  
+.model-open {
+    z-index: 99999;
+    opacity: 1;
+    overflow: hidden;
+}
+.custom-model-inner {
+    -webkit-transform: translate(0, -25%);
+    -ms-transform: translate(0, -25%);
+    transform: translate(0, -25%);
+    -webkit-transition: -webkit-transform 0.3s ease-out;
+    -o-transition: -o-transform 0.3s ease-out;
+    transition: -webkit-transform 0.3s ease-out;
+    -o-transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out;
+    display: inline-block;
+    vertical-align: middle;
+    width: 600px;
+    margin: 30px auto;
+    max-width: 97%;
+}
+.custom-model-wrap {
+    display: block;
+    width: 100%;
+    position: relative;
+    background-color: #fff;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+    background-clip: padding-box;
+    outline: 0;
+    text-align: left;
+    padding: 20px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    max-height: calc(100vh - 70px);
+      overflow-y: auto;
+}
+.model-open .custom-model-inner {
+    -webkit-transform: translate(0, 0);
+    -ms-transform: translate(0, 0);
+    transform: translate(0, 0);
+    position: relative;
+    z-index: 999;
+}
+.model-open .bg-overlay {
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99;
+}
+.bg-overlay {
+    background: rgba(0, 0, 0, 0);
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    -webkit-transition: background 0.15s linear;
+    -o-transition: background 0.15s linear;
+    transition: background 0.15s linear;
+}
+.close-btn {
+    position: absolute;
+    right: 0;
+    top: -30px;
+    cursor: pointer;
+    z-index: 99;
+    font-size: 30px;
+    color: #fff;
+}
 
+/*Small code for css my profile editing*/
+.myProfile-config-box{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.myProfile-config-box .pair-label-input{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    margin: 8px;
+}
+
+.pair-label-input input, .pair-label-input textarea{
+    border-radius: 5px;
+    padding: 4px;
+    border:1px solid black;
+}
+
+.box-update-prof-pic , .box-btn-action-config-prof{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 8px;
+}
+
+ .box-btn-action-config-prof button{
+    padding: 8px 14px 8px 14px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    background-color:#161c2d;
+    color: white;
+}
+
+.box-btn-action-config-prof button{
+    background-color:rgb(0, 162, 255);
+    display: none;
+}
+
+/*CSS For agent mange popup*/
+.inner-wrapper-field-agent-management{
+    display: flex;
+    flex-direction: column;
+}
+
+.event-preview-wrapper{
+    border: 1px solid green;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 15px;
+    padding: 4px;
+}
+
+.event-preview{
+    width: 70%;
+}
+
+.box-event-details-info{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.box-event-details-info span{
+    border-radius: 5px;
+    padding: 8px;
+    margin: 4px;
+}
+
+.box-rights{
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+}
+
+/*small code to style users suggested inside the suggestion box*/
+.box-suggestion-users{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 8px;
+}
+
+/*CSS FOR USER WALLET*/
+.inner-wrapper-wallet{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 15px;
+    padding-bottom: 50px;
+}
+
+.inner-wrapper-wallet .wallet-event-unit{
+    border-radius: 5px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid white;
+    margin-top: 15px;
+}
+
+.wallet-event-unit .info-wallet-header{
+    display: flex;
+    flex-direction: column;
+}
+
+.info-wallet-header .title-header{
+    text-align: center;
+    font-weight: 500;
+}
+
+.info-wallet-header .other-header-info{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    font-size: 10px;
+}
+
+.wallet-event-unit .info-wallet-body{
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+}
+
+.info-wallet-body .info-block{
+    display: flex;
+    flex-direction: column;
+    margin: 4px;
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+.title-block .title{
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.title-block .number{
+    background-color: white;
+    border-radius: 15px;
+    padding: 4px 12px 4px 12px;
+}
+
+.info-block .box-block{
+    font-weight: lighter;
+    font-size: 12px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 8px;
+}
+
+.box-block table, .box-block th, .box-block td {
+    border: 2px solid #686868;
+    border-collapse: collapse;
+    padding: 4px;
+  }
+
+  /*CSS MODAL PERSONNAL SETTINGS*/
+  .section-config{
+    border: none;
+    border-radius: 10px;
+    background-color: white;
+    margin-top: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+  }
+
+  .section-config .config-location, .section-config .config-preferences, .section-config .config-acc-verification{
+    display: none;
+    flex-direction: column;
+  }
+
+ .config-location span {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section-config input {
+    border: 1px solid black;
+    border-radius: 15px;
+    padding: 8px;
+    margin: 4px;
+  }
+
+  .section-config .settings-title{
+    color: rgb(0, 162, 255);
+    font-size: 16px;
+    letter-spacing: 3px;
+    text-decoration: underline;
+  }
+
+  .section-config button{
+    display: none;
+    border: none;
+    color: white;
+    width: 50%;
+    border-radius: 15px;
+    padding: 8px;
+    background-color: rgb(0, 162, 255);
+  }
+
+  .config-preferences div{
+    margin: 4px;
+    padding: 4px;
+    max-height: 250px;
+    border: 2px solid #f1f1f1;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .config-preferences div span{
+    border: none;
+    border-radius: 15px;
+    padding: 4px 8px 4px 8px;
+    margin: 4px;
+  }
+
+  .background-not-selected{
+    background-color:#b6adff;
+    color: white;
+  }
+
+  .background-selected{
+    color: white;
+    background-color: #0275d8;
+  }
 
 /*CSS Bottom navigation*/
 .app-navigation-container {
@@ -689,6 +1058,40 @@
 .app-navigation-toggle.active {
     background-color: rgb(200, 200, 200);
 }
+
+@media screen and (min-width:800px){
+    .custom-model-main:before {
+      content: "";
+      display: inline-block;
+      height: auto;
+      vertical-align: middle;
+      margin-right: -0px;
+      height: 100%;
+    }
+
+    .class-body-profile{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .profile-body{
+        width: 50%;
+    }
+
+    .configuration-modal{
+        justify-content: center;
+        align-items: center;
+    }
+
+    .configuration-modal .configuration-modal-content{
+        width: 50%;
+    }
+}
+@media screen and (max-width:799px){
+  .custom-model-inner{margin-top: 45px;}
+}
+/*END CSS POPUP*/ 
 
 @media screen and (max-width:992px) {
     .app-navigation-container-icon {

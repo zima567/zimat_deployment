@@ -30,7 +30,7 @@ try{
     $sql_event_categ = "SELECT `category`.`title` FROM `event_categ` INNER JOIN `category` ON `event_categ`.`idCategFK` = `category`.`idCategory` WHERE `idEventFK` =?";
     $stmt4 = $connection->prepare($sql_event_categ); //many records
 
-    $sql_select_agent = "SELECT `idAgentFK`, `sellingRight`, `scanningRight`, `contact`, `location`, `username` FROM `event_agent` INNER JOIN `user` ON `event_agent`.`idAgentFK` = `user`.`idUser` WHERE `idEventFK`=?";
+    $sql_select_agent = "SELECT `idAgentFK`, `sellingRight`, `scanningRight`, `username`, `facebook`, `instagram`, `twitter`, `vk`, `whatsApp` FROM ((`event_agent` INNER JOIN `user` ON `event_agent`.`idAgentFK` = `user`.`idUser`) INNER JOIN `user_socials` ON `event_agent`.`idAgentFK` = `user_socials`.`idUserFK`) WHERE `idEventFK`=?";
     $stmt5 = $connection->prepare($sql_select_agent); //many records
 
     $sql_available_ticket = "SELECT COUNT(`idTicket`) AS `availableTicket` FROM `event_ticket` WHERE `idEventFK`=? AND `sold`=?";
@@ -113,9 +113,12 @@ try{
                     array_push($temp_arr_agent, array("idAgentFK"=>$row_agents['idAgentFK'],
                                                     "sellingRight"=>$row_agents['sellingRight'],
                                                     "scanningRight"=>$row_agents['scanningRight'],
-                                                    "contact"=>$row_agents['contact'],
-                                                    "location"=>$row_agents['location'],
-                                                    "username"=>$row_agents['username'])); 
+                                                    "username"=>$row_agents['username'],
+                                                    "facebook"=>$row_agents['facebook'],
+                                                    "instagram"=>$row_agents['instagram'],
+                                                    "twitter"=>$row_agents['twitter'],
+                                                    "vk"=>$row_agents['vk'],
+                                                    "whatsApp"=>$row_agents['whatsApp'])); 
                 }
                 $temp_arr_event['agents'] = $temp_arr_agent;
             }

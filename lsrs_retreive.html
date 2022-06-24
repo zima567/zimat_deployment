@@ -11,59 +11,68 @@
   <title>ZIMACCESS | Reset password</title>
 </head>
 <body>
-    <div>
-        <img src="media/icons/std_forgot_pwd.jpg" class="img-fluid"/>
-    </div>
-    <div class="box-form" id="box-form">
-        <form>
-            <!-- Email input -->
-            <div class="box-request-code" id="box-request-code">
-                <div class="form-outline mb-4">
-                    <label class="form-label" for="form2Example1">Email address</label>
-                    <input type="email" id="idEmail" class="form-control" />
-                    <span class="error-text" id="errorEmail"></span>
-                </div>
-                <button id="idRequestCode" class="btn btn-primary btn-block mb-4">Request code</button>
-            </div>
-
-            <!-- Sent code -->
-            <div class="box-submit-code" id="box-submit-code">
-                <div class="form-outline mb-4">
-                    <label class="form-label" for="form2Example1">We've sent you a code on your email, enter it below</label>
-                    <input type="text" id="idCode" class="form-control" />
-                    <span class="error-text" id="errorCode"></span>
-                </div>
-                <button id="idBtnSubmitCode" class="btn btn-primary btn-block mb-4">Submit code</button>
-                <p id="receiveNewCode"><a href="lsrs_retreive.html">Receive a new code?</a></p>
-            </div>
-        
-            <!-- Password input -->
-            <div class="box-reset-fields" id="box-reset-fields">
-                <div class="form-outline mb-4">
-                    <label class="form-label" for="form2Example2">New Password</label>
-                    <input type="password" id="idNewPwd" class="form-control" />
-                    <span class="error-text" id="errorNewPwd"></span>
+    <div class="loading-circle" id="loading-circle">
+        <div class="d-flex justify-content-center">
+          <div class="spinner-border text-primary" style="width: 6rem; height: 6rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    <div class="body-pic-input">
+        <div>
+            <img src="media/icons/std_forgot_pwd.jpg" class="img-fluid"/>
+        </div>
+        <div class="box-form" id="box-form">
+            <form>
+                <!-- Email input -->
+                <div class="box-request-code" id="box-request-code">
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form2Example1">Account email address</label>
+                        <input type="email" id="idEmail" class="form-control" />
+                        <span class="error-text" id="errorEmail"></span>
+                    </div>
+                    <button id="idRequestCode" class="btn btn-primary btn-block mb-4">Request code</button>
                 </div>
 
-                <div class="form-outline mb-4">
-                    <label class="form-label" for="form2Example2">Confirm Password</label>
-                    <input type="password" id="idConfNewPwd" class="form-control" />
-                    <span class="error-text" id="errorConfNewPwd"></span>
+                <!-- Sent code -->
+                <div class="box-submit-code" id="box-submit-code">
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form2Example1">We've sent you a code on your email, enter it below</label>
+                        <input type="text" id="idCode" class="form-control" />
+                        <span class="error-text" id="errorCode"></span>
+                    </div>
+                    <button id="idBtnSubmitCode" class="btn btn-primary btn-block mb-4">Submit code</button>
+                    <p id="receiveNewCode"><a href="lsrs_retreive.html">Receive a new code?</a></p>
                 </div>
+            
+                <!-- Password input -->
+                <div class="box-reset-fields" id="box-reset-fields">
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form2Example2">New Password</label>
+                        <input type="password" id="idNewPwd" class="form-control" />
+                        <span class="error-text" id="errorNewPwd"></span>
+                    </div>
 
-                <!-- Submit button -->
-            <button type="button" class="btn btn-primary btn-block mb-4" id="idBtnReset">Reset password</button>
-            </div>
-        
-        
-            <!-- Register buttons -->
-            <div class="text-center">
-                <p>Want to log in? <a href="lsrs_login.html">Login now</a></p>
-                <p>Need help?<a href="lsrs_support.html">contact us</a></p>
-            </div>
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form2Example2">Confirm Password</label>
+                        <input type="password" id="idConfNewPwd" class="form-control" />
+                        <span class="error-text" id="errorConfNewPwd"></span>
+                    </div>
+
+                    <!-- Submit button -->
+                <button type="button" class="btn btn-primary btn-block mb-4" id="idBtnReset">Reset password</button>
+                </div>
+            
+            
+                <!-- Register buttons -->
+                <div class="text-center">
+                    <p>Want to log in? <a href="lsrs_login.html">Login now</a></p>
+                    <p>Need help?<a href="lsrs_support.html">contact us</a></p>
+                </div>
             </form>
+        </div>
+        <div class="box-alert-reset" id="box-alert-reset"><!--alert password reset success status--></div>
     </div>
-    <div class="box-alert-reset" id="box-alert-reset"><!--alert password reset success status--></div>
 
      <!-- JavaScript Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>

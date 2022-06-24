@@ -37,6 +37,9 @@ try{
     $sql_insert_verified = "INSERT INTO `user_verified` (`idUserFK`) VALUES(?)";
     $stmt5 = $connection->prepare($sql_insert_verified);
 
+    $sql_insert_user_socials = "INSERT INTO `user_socials` (`idUserFK`) VALUES(?)";
+    $stmt6 = $connection->prepare($sql_insert_user_socials);
+
     $stmt1->execute([$username, $email]);
     if(!$stmt1->rowCount()>0){
 
@@ -50,6 +53,8 @@ try{
         $stmt3->execute([$idInsertedUser]);
         //Initiate user_verified
         $stmt5->execute([$idInsertedUser]);
+        //Initiate user_socials
+        $stmt6->execute([$idInsertedUser]);
         $connection->commit();
 
         $resultSignUp['sign_up_success']= 1;
@@ -112,7 +117,7 @@ try{
                   <table role="presentation" style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
                     <tr>
                       <td style="padding:40px 30px 30px 30px;text-align:center;font-size:24px;font-weight:bold;">
-                        <a href="http://www.example.com/" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/logo.png" width="165" alt="Logo" style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;"></a>
+                        <a href="#" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/logo.png" width="165" alt="Logo" style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;"></a>
                       </td>
                     </tr>
                     <tr>
@@ -123,7 +128,7 @@ try{
                     </tr>
                     <tr>
                       <td style="padding:0;font-size:24px;line-height:28px;font-weight:bold;">
-                        <a href="http://www.example.com/" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/1200x800-2.png" width="600" alt="" style="width:100%;height:auto;display:block;border:none;text-decoration:none;color:#363636;"></a>
+                        <a href="#" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/1200x800-2.png" width="600" alt="" style="width:100%;height:auto;display:block;border:none;text-decoration:none;color:#363636;"></a>
                       </td>
                     </tr>
                     <tr>
@@ -137,7 +142,7 @@ try{
                     </tr>
                     <tr>
                       <td style="padding:30px;font-size:24px;line-height:28px;font-weight:bold;background-color:#ffffff;border-bottom:1px solid #f0f0f5;border-color:rgba(201,201,207,.35);">
-                        <a href="http://www.example.com/" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/1200x800-1.png" width="540" alt="" style="width:100%;height:auto;border:none;text-decoration:none;color:#363636;"></a>
+                        <a href="#" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/1200x800-1.png" width="540" alt="" style="width:100%;height:auto;border:none;text-decoration:none;color:#363636;"></a>
                       </td>
                     </tr>
                     <tr>

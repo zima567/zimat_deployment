@@ -17,7 +17,7 @@ $arrUsersMTF = array();
 
 try{
 
-    $sql_user_infos = "SELECT `idUser`, `username`, `avatar` FROM `user` INNER JOIN `user_profile` ON `user`.`idUser` = `user_profile`.`idUserFK`";
+    $sql_user_infos = "SELECT `idUser`, `username`, `avatar` FROM `user` INNER JOIN `user_profile` ON `user`.`idUser` = `user_profile`.`idUserFK` WHERE `user`.`idUser` =?";
     $stmt1 = $connection->prepare($sql_user_infos);
 
     $sql_users_EL = "SELECT DISTINCT `idUser`, `username`, `avatar` FROM (((`event_like` INNER JOIN `event` ON `event_like`.`idEventFK` = `event`.`idEvent`) INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `user`.`idUser` = `user_profile`.`idUserFK`) WHERE `idLikerFK` =?";

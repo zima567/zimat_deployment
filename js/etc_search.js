@@ -92,19 +92,18 @@ function appendCards(arr, type){
                 let userProfile = userUnit['avatar'];
 
                 if(userUnit['avatar']=="NONE"){
-                    userProfile = "media/icons/user-icon.png";
+                    userProfile = "media/icons/search-user.png";
                 }
 
                 let HTMLUserUnit = '<div class="card">\
                     <div class="body">\
                         <div class="row">\
                             <div class="col-lg-4 col-md-4 col-12">\
-                                <div class="profile-image float-md-right"> <img src="media/icons/loadingSpinner.gif" class="lazy" data-src="'+userProfile+'" data-srcset="'+userProfile+'" alt="" width="100%"> </div>\
+                                <div class="float-md-right"> <img src="media/icons/loadingSpinner.gif" class="rounded lazy" data-src="'+userProfile+'" data-srcset="'+userProfile+'" alt="" width="100%"> </div>\
                             </div>\
                             <div class="col-lg-8 col-md-8 col-12">\
                                 <h4 class="m-t-0 m-b-0"><strong>'+userUnit['lastName']+'</strong> '+userUnit['firstName']+'</h4>\
-                                <span class="job_post">'+userUnit['username']+'</span>\
-                                <p>'+userUnit['location']+'</p>\
+                                <span class="job_post">@'+userUnit['username']+'</span>\
                             <div>\
                                     <a href="profile.html?e='+userUnit['idUser']+'"><button class="btn btn-primary btn-round">View profile</button></a>\
                                 </div>\
@@ -130,7 +129,7 @@ function appendCards(arr, type){
                     <div class="body">\
                         <div class="row">\
                             <div class="col-lg-4 col-md-4 col-12">\
-                                <div class="profile-image float-md-right"> <img src="media/icons/loadingSpinner.gif" class="lazy" data-src="'+eventPoster+'" data-srcset="'+eventPoster+'"  alt="" width="100%"> </div>\
+                                <div class="float-md-right"> <img src="media/icons/loadingSpinner.gif" class="lazy" data-src="'+eventPoster+'" data-srcset="'+eventPoster+'"  alt="" width="100%"> </div>\
                             </div>\
                             <div class="col-lg-8 col-md-8 col-12">\
                                 <h4 class="m-t-0 m-b-0">'+eventUnit['title']+'</h4>\

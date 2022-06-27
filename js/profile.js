@@ -5,8 +5,109 @@ var arrPoters_trash = [];
 var quotaPosters = 3;
 
 $(document).ready(function(){
+    //Variables acting like triggers
+    let idEventToBeModified ="";
+    let title_modified = false;
+    let postMessage_modified = false;
+    let description_modified = false;
+    let newPoster_update = false;
+    let oldPoster_delete = false;
+    let city_modified = false;
+    let address_modified = false;
+    let eventDate_modified = false;
+    let eventCateg_modified = false;
+    let eventPrice_modified = false;
 
-    //TEST PERSONNAL SETTINGS API
+    //Variables acting like triggers for user profile
+    let lastNameModified = false;
+    let firstNameModified = false;
+    let aboutModified = false;
+    let profilePicModified = false;
+
+    //Event right access variable
+    let idEventRightAccess ="";
+    let arrUsers =[];
+    let sellingRight = 0;
+    let scanningRight = 0;
+
+      //Query profile info of user
+    //api destination file
+    let destination = "api_php/api_profile.php";
+     //Get the user ID from the URL
+     let userID = getParameter("e");
+    
+     let obj ={idUser:userID};
+    requestSender(destination, obj, stdDisplayUserInfo, "Loading profile info...");
+
+    //Onclick on see-more
+    $("#see-more").on("click", function(){
+        let bioReprocessed = displayFullBio(bio);
+        $("#user_bio_text").text(bioReprocessed);
+    });
+
+    //OnClick on see-less
+    $("#see-less").on("click", function(){
+        let bioReprocessed = displayBio(bio);
+        $("#user_bio_text").text(bioReprocessed);
+    });
+
+    //To show fullscreen profile picture
+    $("#user_main_avatar").on("click", function(){
+        let linkImgProfile = $("#user_main_avatar_img").attr('src');
+        $("#fullPageDisplay-img").attr("src",linkImgProfile);
+        $("#fullPageDisplay").css("display", "flex");
+        $("#fullPageDisplay").fadeIn();
+    });
+
+    //To hide fullscreen profile picture
+    $("#close-full-screen").on("click", function(){
+        
+       $("#fullPageDisplay").fadeOut();
+    });
+
+    //HANDLE BUTTONS ACTIONS CLICKS
+    $("#button-action").on("click", ".follow_unfollow", function(e){
+        e.preventDefault();
+        let userID = e.target.id;
+        userID = userID.replace("btn-un-follow-id-","");
+        let actionType = "FOLLOW_UNFOLLOW";
+
+        $.ajax({
+            url: "api_php/api_btn_action.php",
+            data: {actionType: actionType, user_to_follow_unfollow: userID, actionDateTime: currentDateAndTime()},
+            type: "POST",
+            dataType : "json",
+        })
+        .done(function( response ) {
+            //console.log(response);
+            MPBtnFollowUnfollow(response);
+        })
+        .fail(function( xhr, status, errorThrown ) {
+            alert( "Sorry, there was a problem!" );
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+            console.dir( xhr );
+        });
+
+    });
+    //End of query profile info of user
+
+    //CODE-FOR THE SHARE FUNCTIONALITY
+    //Handle share button functionality
+    $("#button-action").on("click", "#btn-share-id-"+getParameter("e"), function(event){
+        let linkToShare = "https://www.zimaccess.com/profile.html?e="+getParameter("e");
+        $("#event-link-val").val(linkToShare);
+        $("#pop-up-box3").addClass('model-open');
+        
+    });
+    //Handle the copy of the link once click on the copy link btn
+    $("#id-content-popup3").on("click", "#btn-cpy-link", function(event){
+        event.preventDefault();
+        CopyToClipboard($("#event-link-val").val(), true, "link copied");
+        $("#pop-up-box3").removeClass('model-open');
+    });
+
+    //+++++++++++[BLOCK-A] TEST PERSONNAL SETTINGS API
     //show modal personnal settings api
     $("#personnal-settings").on("click", function(){
         $("#modal-personnal-settings").css("display", "flex");
@@ -27,8 +128,7 @@ $(document).ready(function(){
 
     });
 
-   
-     //MANAGE COUNTRY CHOICE---START
+     //[BLOCK-A] MANAGE COUNTRY CHOICE---START
      $("#config-country").on("keyup", function(){
         let resultDisplayDestination = "box-suggestion-countries-config";
         if($("#"+resultDisplayDestination).css("display")!="flex"){
@@ -116,8 +216,9 @@ $(document).ready(function(){
             alert("Empty fields: Country and city fields are required");
         }
     });
+    //*************[BLOCK-A]******************/
 
-    //handle click on config-titles --config-preferences
+    //+++++++++++++[BLOCK-B]++++++++++++++ handle click on config-titles --config-preferences
     $("#config-preferences-title").on("click", function(){
         if($("#config-preferences-box").css("display")=="flex"){
             $("#config-preferences-box").css("display", "none");
@@ -168,8 +269,9 @@ $(document).ready(function(){
             alert("No categories selected");
         }
     });
+    //***************[BLOCK-B]***************/
 
-    //Handle click on social link configuration
+    //+++++++++++++++[BLOCK-C]++++++++++++++ Handle click on social link configuration
     $("#config-social-links-title").on("click", function(){
         if($("#config-social-links-box").css("display")=="flex"){
             $("#config-social-links-box").css("display", "none");
@@ -203,8 +305,9 @@ $(document).ready(function(){
             alert("You have empty fields!");
         }
     });
+    //*****************[BLOCK-C]***************** */
 
-    //handle click on config-titles --config-acc-verification
+    //++++++++++++++++[BLOCK-D]+++++++++++++++++ handle click on config-titles --config-acc-verification
     $("#config-acc-verification-title").on("click", function(){
         if($("#config-acc-verification-box").css("display")=="flex"){
             $("#config-acc-verification-box").css("display", "none");
@@ -226,7 +329,6 @@ $(document).ready(function(){
 
     //Handle click on submit button
     $("#btn-save-user-acc-verification").on("click", function(){
-       
         let formData = new FormData();
         //Append the mendatory post variables
         formData.append("action_type", "T_UPDATE");
@@ -241,120 +343,31 @@ $(document).ready(function(){
 
     });
 
-
-    //Close modal personnal settings api
-    $("#close-modal-perso-settings").on("click", function(){
+     //Close modal personnal settings api
+     $("#close-modal-perso-settings").on("click", function(){
         $("#modal-personnal-settings").css("display", "none");
         $(".section-config span button").css("display", "none");
         $(".section-config .result-config-msg").text("");
     });
+    //***************[BLOCK-D]******************** */
 
-    //TEST WALLET FUNCTIONALITY API
+    //++++++++++++++[BLOCK-AA]+++++++++++ TEST WALLET FUNCTIONALITY API
     $("#myWallet").on("click", function(){
         $("#modal-user-wallet").css("display", "flex");
 
         let destination = "api_php/api_stat_display.php";
         let obj ={stat_type:"WALLET"};
-        requestSender(destination, obj, displayEventWallet);
+        requestSender(destination, obj, displayEventWallet,"Loading wallet info...");
     });
 
     $("#close-modal-user-wallet").on("click", function(){
         $("#modal-user-wallet").css("display","none");
         $("#inner-wrapper-wallet").empty();
     });
+    //****************[BLOCK-AA]****************** */
 
-    //Display categories From db But this request should be done on click on manage event button 
-    //Also in the categories box should be displayed the event already set categories and then added global categArr
-    //Variables acting like triggers
-    let idEventToBeModified ="";
-    let title_modified = false;
-    let postMessage_modified = false;
-    let description_modified = false;
-    let newPoster_update = false;
-    let oldPoster_delete = false;
-    let city_modified = false;
-    let address_modified = false;
-    let eventDate_modified = false;
-    let eventCateg_modified = false;
-    let eventPrice_modified = false;
 
-    //Variables acting like triggers for user profile
-    let lastNameModified = false;
-    let firstNameModified = false;
-    let aboutModified = false;
-    let profilePicModified = false;
-
-    //Event right access variable
-    let idEventRightAccess ="";
-    let arrUsers =[];
-    let sellingRight = 0;
-    let scanningRight = 0;
-
-    //Query profile info of user
-    //api destination file
-    let destination = "api_php/api_profile.php";
-     //Get the user ID from the URL
-     let userID = getParameter("e");
-    
-     let obj ={idUser:userID};
-    //let obj ={idUser:2};
-    requestSender(destination, obj, stdDisplayUserInfo);
-    //standardFunctionRequest(destination, obj, stdDisplayUserInfo);
-
-    //Onclick on see-more
-    $("#see-more").on("click", function(){
-        let bioReprocessed = displayFullBio(bio);
-        $("#user_bio_text").text(bioReprocessed);
-    });
-
-    //OnClick on see-less
-    $("#see-less").on("click", function(){
-        let bioReprocessed = displayBio(bio);
-        $("#user_bio_text").text(bioReprocessed);
-    });
-
-    //To show fullscreen profile picture
-    $("#user_main_avatar").on("click", function(){
-        let linkImgProfile = $("#user_main_avatar_img").attr('src');
-        $("#fullPageDisplay-img").attr("src",linkImgProfile);
-        $("#fullPageDisplay").css("display", "flex");
-        $("#fullPageDisplay").fadeIn();
-    });
-
-    //To hide fullscreen profile picture
-    $("#close-full-screen").on("click", function(){
-        
-       $("#fullPageDisplay").fadeOut();
-    });
-
-    //HANDLE BUTTONS ACTIONS CLICKS
-    $("#button-action").on("click", ".follow_unfollow", function(e){
-        e.preventDefault();
-        let userID = e.target.id;
-        userID = userID.replace("btn-un-follow-id-","");
-        let actionType = "FOLLOW_UNFOLLOW";
-
-        $.ajax({
-            url: "api_php/api_btn_action.php",
-            data: {actionType: actionType, user_to_follow_unfollow: userID, actionDateTime: currentDateAndTime()},
-            type: "POST",
-            dataType : "json",
-        })
-        .done(function( response ) {
-            console.log(response);
-            MPBtnFollowUnfollow(response);
-        })
-        .fail(function( xhr, status, errorThrown ) {
-            alert( "Sorry, there was a problem!" );
-            console.log( "Error: " + errorThrown );
-            console.log( "Status: " + status );
-            console.dir( xhr );
-        });
-
-    });
-    //End of query profile info of user
-
-    //On click on edit profile button
+    //++++++++++++++[BLOCK-AAA]+++++++++++++++++ On click on edit profile button
     $("#button-action").on("click", "#btn-edit", function(event){
         event.preventDefault();
         $("#popup-profile-config").addClass("model-open");
@@ -387,7 +400,6 @@ $(document).ready(function(){
     $("#id-save").on("click", function(){
         //Send request for editing
         //Form data for submission 
-        //We are using formData submission because of the need to upload images
         let formData = new FormData();
         //Append the mendatory post variables
         formData.append("action_type", "T_UPDATE");
@@ -415,12 +427,45 @@ $(document).ready(function(){
     });
 
     //HANDLE CLOSING OF POPUP BOX TO MODIFY PROFILE DETAILS
-    $("#close-popup-edit-profile").on("click", function(){
+    $(".close-btn, .bg-overlay").click(function(){
         $("#popup-profile-config").removeClass("model-open");
+        $("#pop-up-box3").removeClass("model-open");
     });
+
+    //******************[BLOCK-AAA]********************** */
     
 
-    //SEARCH FOR EVENT TO BE MODIFED
+    //+++++++++++++++++++[BLOCK-AAAA]++++++++++++++++++ SEARCH FOR EVENT TO BE MODIFED
+     //HANDLE EVENT-MANAGE BUTTON CLICK
+    $("#manage-event").on("click", function(){
+        //Display modal manage event
+        $("#modal-manage-event").css("display", "flex");
+        //Hide the editing status modal
+        $("#illustration-editing-result").css("display", "none");
+
+        //Display Categories from DB
+        let dataObj ={family_suggest:"EVENT_CATEGORIES", query_data:""};
+        let destinationReq = "api_php/api_etc_suggestion_v2.php";
+        requestSender(destinationReq, dataObj, PRCategDisplay);
+
+
+    });
+
+    //Handle cancel button of configuration-modal-manage-EVENT
+    $("#cancel-modal-manage-event").on("click", function(){
+        $("#modal-manage-event").css("display", "none");
+        $("#wrapper-fields-to-edit").css("display", "none");
+        $("#illustration-modify-event").css("display", "flex");
+
+        //empy the search event bar
+        $("#id-search-event").attr("readonly", false); 
+        $("#id-search-event").val("");
+        $("#change-event").css("display", "none");
+
+        //Reset variables
+        resetGlobalsEditing();  
+    });
+
     //HANDLE EVENT SUGGESTION MODIFY EVENT
     $("#id-search-event").on("keyup", function(){
         let resultDisplayDestination = "box-suggestion-events";
@@ -488,17 +533,14 @@ $(document).ready(function(){
 
     $("#field-event-title").on("focusout", function(){
         title_modified = true;
-        //alert($("#field-event-title").val());
     });
 
     $("#field-event-post-msg").on("focusout", function(){
         postMessage_modified = true;
-        //alert($("#field-event-title").val());
     });
 
     $("#field-event-description").on("focusout", function(){
         description_modified = true;
-        //alert($("#field-event-title").val());
     });
 
     $("#id-city").on("focusout", function(){
@@ -544,13 +586,111 @@ $(document).ready(function(){
     $("#new-event-pictures").on("change", function(){
         newPoster_update = true;
     });
+    
+    //MANAGE PICTURE UPLOAD
+    //Control click on button to upload images
+    $("#upload-new-posters").on("click", function(){
+        $("#new-event-pictures").trigger("click");
+        $('#new-posters').empty();
+       $("#new-event-pictures").val(null);
+    });
 
+    $('#new-event-pictures').on('change', function() {
+        imagesPreview(this, 'new-posters');
+    });
+
+     //MANAGE CITY CHOICE---START
+     $("#id-city").on("keyup", function(){
+            let resultDisplayDestination = "box-suggestion-cities";
+            if($("#"+resultDisplayDestination).css("display")!="flex"){
+                $("#"+resultDisplayDestination).css("display","flex");
+            }
+
+            //Get data entered
+            let inputValueToQuery = $("#id-city").val();
+            countryName = $("#event-country").val().trim();
+            //Function suggestion + request function
+            if(inputValueToQuery!="" && countryName!=""){
+                let dataObj ={family_suggest: "COUNTRY_CITY", query_data: inputValueToQuery, countryName: countryName};
+                let destinationReq = "api_php/api_etc_suggestion_v2.php";
+                requestSender(destinationReq, dataObj, PRCCSuggestions);
+    
+            }
+            else{
+                $("#box-suggestion-cities").empty();
+                $("#box-suggestion-cities").css("display", "none");
+            }
+    });
+
+     //On click on suggested element in box-suggestion
+     $("#box-suggestion-cities").on("click", "span", function(e){
+        e.preventDefault();
+        let choosenCities = $(this).text();
+        $("#id-city").val(choosenCities);
+        //Set input read only
+        //display edit button
+        $("#box-suggestion-cities").css("display", "none");
+
+    });
+    //On click on Edit country button
+    $("#edit-city").on("click", function(){
+        $("#id-city").attr("readonly", false); 
+        $("#id-city").val("");
+        $("#edit-city").css("display", "none");
+    });
+    //MANAGE CITY CHOICE ---END
+
+       //MANAGE THE CHOICE OF CATEG
+       $("#idCategList").on("change", function(){
+        let checkVar = true;
+        for(let i=0; i<arrCateg.length; i++){
+            if(arrCateg[i]==$("#idCategList").val()){
+                checkVar = false;
+            }
+        }
+
+        if(checkVar){
+            arrCateg.push($("#idCategList").val());
+            let addedCateg = "<span class='categ-unit'>"+$("#idCategList").val()+"<a class='x-delete' id='"+(arrCateg.length - 1)+"'>X</a></span>";
+            $("#event-categ").append(addedCateg);
+        }
+        
+        
+    });
+
+    //Delete a categ from chosen list than add it to trashed categ list
+    $( "#event-categ" ).on( "click", "a", function( event ) {
+        event.preventDefault();
+        //Notify of change
+        eventCateg_modified = true;
+        $("#btn-save-changes").css("display", "block");
+
+        //Push this category to trash
+        //First verify if such categ were intented to be deleted
+        let alreadyTrashed = false;
+        for(let i=0; i<arrCateg_trash.length;i++){
+            if(arrCateg_trash[i] == arrCateg[event.target.id].trim()){
+                alreadyTrashed = true;
+                break;
+            }
+        }
+
+        if(!alreadyTrashed){
+            arrCateg_trash.push(arrCateg[event.target.id].trim());
+        }
+       
+        //Remove categ to arrCateg
+        arrCateg.splice(event.target.id, 1);
+        //console.log(arrCateg);
+        $("#event-categ").empty();
+        arrCateg.forEach(displayCateg);
+    });
+     //MANAGE THE CHOICE OF CATEG--END
 
     $("#btn-save-changes").on("click", function(){
 
         //Send request for editing
         //Form data for submission 
-        //We are using formData submission because of the need to upload images
         let formData = new FormData();
         //Append the mendatory post variables
         formData.append("action_type", "T_UPDATE");
@@ -558,55 +698,45 @@ $(document).ready(function(){
         formData.append("editDateTime", currentDateAndTime());
         formData.append("idEvent", idEventToBeModified);
 
-        //let dataObj ={action_type:"T_UPDATE", config_type:"update_event_details", idEvent:idEventToBeModified};
-
         //Set conditional updated field
         //Set param for title update
         if(title_modified){
             let newValue = $("#field-event-title").val().trim();
             if(newValue!=""){
-                //dataObj.update_title = newValue;
                 formData.append("update_title", newValue);
             }
         }
 
         if(postMessage_modified){
             let newValue = $("#field-event-post-msg").val().trim();
-            //dataObj.update_postMessage = newValue;
             formData.append("update_postMessage", newValue);
         }
 
         if(description_modified){
             let newValue = $("#field-event-description").val().trim();
-            //dataObj.update_description = newValue;
             formData.append("update_description", newValue);
         }
 
         if(city_modified){
             let newValue = $("#id-city").val().trim();
             let countryVal = $("#event-country").val().trim();
-            //dataObj.update_city = newValue;
             formData.append("update_city", newValue);
-            //dataObj.event_country = countryVal;
             formData.append("event_country", countryVal);
         }
 
         if(address_modified){
             let newValue = $("#field-event-address").val().trim();
-            //dataObj.update_address = newValue;
             formData.append("update_address", newValue);
         }
 
         if(eventDate_modified){
             let newValue = $("#id-date-time").val().trim();
-            //dataObj.update_date_time = newValue;
             formData.append("update_date_time", newValue);
         }
 
         if(eventPrice_modified){
             let newValue = $("#field-event-price").val().trim();
             //I will just send the amount, i will get the currency from php
-            //dataObj.update_price = newValue;
             formData.append("update_price", newValue);
         }
 
@@ -654,32 +784,9 @@ $(document).ready(function(){
         let destinationReq = "api_php/api_configuration_module1.php";
         requestSenderFormData(destinationReq, formData, MPREditingProcess);
     });
-   
-    //Bottom menu jquery
-   $('.app-navigation-toggle').click(function() {
+   //************************[BLOCK-AAAA]******************* */
 
-    $('.app-navigation-container').toggleClass('open', 300);
-
-    $(this).toggleClass('active');
-
-    });
-
-    //HANDLE EVENT-MANAGE BUTTON CLICK
-    $("#manage-event").on("click", function(){
-        //Display modal manage event
-        $("#modal-manage-event").css("display", "flex");
-        //Hide the editing status modal
-        $("#illustration-editing-result").css("display", "none");
-
-        //Display Categories from DB
-        let dataObj ={family_suggest:"EVENT_CATEGORIES", query_data:""};
-        let destinationReq = "api_php/api_etc_suggestion_v2.php";
-        requestSender(destinationReq, dataObj, PRCategDisplay);
-
-
-    });
-
-    //MANAGE EVENT-AGENTS BUTTON CLICK
+    //+++++++++++++++++++++++[BLOCK-AAAAA]+++++++++++++++++++ MANAGE EVENT-AGENTS BUTTON CLICK
     $("#manage-agent").on("click", function(){
         //Display modal manage agent
         $("#modal-manage-agent").css("display", "flex");
@@ -687,115 +794,24 @@ $(document).ready(function(){
         $("#wrapper-fields-to-edit-2").css("display", "none");
          //Hide the editing status modal
          $("#illustration-agent-config-result").css("display", "none");
+         $("#btn-save-changes-agent").css("display", "none");
     });
 
-    //MANAGE PICTURE UPLOAD
-    //Control click on button to upload images
-    $("#upload-new-posters").on("click", function(){
-        $("#new-event-pictures").trigger("click");
-        $('#new-posters').empty();
-       $("#new-event-pictures").val(null);
-    });
+    //Handle cancel button of configuration-modal-manage-AGENT
+    $("#cancel-modal-manage-agent").on("click", function(){
+        $("#modal-manage-agent").css("display", "none");
+        $('#rights-to-sell').prop('checked', false);
+        $('#rights-to-scan').prop('checked', false);
+        $("#event-potential-agent").empty();
+        $("#wrapper-fields-to-edit-2").css("display", "none");
+        $("#illustration-agent-event").css("display", "flex");
 
-    $('#new-event-pictures').on('change', function() {
-        imagesPreview(this, 'new-posters');
-    });
-
-     //MANAGE CITY CHOICE---START
-     $("#id-city").on("keyup", function(){
-            let resultDisplayDestination = "box-suggestion-cities";
-            if($("#"+resultDisplayDestination).css("display")!="flex"){
-                $("#"+resultDisplayDestination).css("display","flex");
-            }
-
-            //Get data entered
-            let inputValueToQuery = $("#id-city").val();
-            countryName = $("#event-country").val().trim();
-            //Function suggestion + request function
-            if(inputValueToQuery!="" && countryName!=""){
-                let dataObj ={family_suggest: "COUNTRY_CITY", query_data: inputValueToQuery, countryName: countryName};
-                let destinationReq = "api_php/api_etc_suggestion_v2.php";
-                requestSender(destinationReq, dataObj, PRCCSuggestions);
-    
-            }
-            else{
-                $("#box-suggestion-cities").empty();
-                $("#box-suggestion-cities").css("display", "none");
-            }
-
+        //empy the search event bar
+        $("#id-search-event-2").attr("readonly", false); 
+        $("#id-search-event-2").val("");
+        $("#change-event-2").css("display", "none");
 
     });
-
-     //On click on suggested element in box-suggestion
-     $("#box-suggestion-cities").on("click", "span", function(e){
-        e.preventDefault();
-        let choosenCities = $(this).text();
-        $("#id-city").val(choosenCities);
-        //Set input read only
-        //display edit button
-       // $("#id-city").attr("readonly", true);
-        $("#box-suggestion-cities").css("display", "none");
-        //$("#edit-city").css("display","block");
-
-    });
-    //On click on Edit country button
-    $("#edit-city").on("click", function(){
-        $("#id-city").attr("readonly", false); 
-        $("#id-city").val("");
-        $("#edit-city").css("display", "none");
-    });
-    //MANAGE CITY CHOICE ---END
-
-       //MANAGE THE CHOICE OF CATEG
-       $("#idCategList").on("change", function(){
-        //alert($("#idCategList").val());
-        let checkVar = true;
-        for(let i=0; i<arrCateg.length; i++){
-            if(arrCateg[i]==$("#idCategList").val()){
-                checkVar = false;
-            }
-        }
-
-        if(checkVar){
-            arrCateg.push($("#idCategList").val());
-            let addedCateg = "<span class='categ-unit'>"+$("#idCategList").val()+"<a class='x-delete' id='"+(arrCateg.length - 1)+"'>X</a></span>";
-            $("#event-categ").append(addedCateg);
-        }
-        
-        
-    });
-
-    //Delete a categ from chosen list than add it to trashed categ list
-    $( "#event-categ" ).on( "click", "a", function( event ) {
-        event.preventDefault();
-        //Notify of change
-        eventCateg_modified = true;
-        $("#btn-save-changes").css("display", "block");
-
-        //alert(arrCateg[event.target.id]);
-        //Push this category to trash
-        //First verify if such categ were intented to be deleted
-        let alreadyTrashed = false;
-        for(let i=0; i<arrCateg_trash.length;i++){
-            if(arrCateg_trash[i] == arrCateg[event.target.id].trim()){
-                alreadyTrashed = true;
-                break;
-            }
-        }
-
-        if(!alreadyTrashed){
-            arrCateg_trash.push(arrCateg[event.target.id].trim());
-        }
-        //console.log(arrCateg_trash);
-
-        //alert(event.target.id);
-        //Remove categ to arrCateg
-        arrCateg.splice(event.target.id, 1);
-        //console.log(arrCateg);
-        $("#event-categ").empty();
-        arrCateg.forEach(displayCateg);
-    });
-     //MANAGE THE CHOICE OF CATEG--END
 
      //MANAGE CHOICE OF EVENT TO BE ASSIGN AGENT TO
      //SEARCH FOR EVENT TO BE ASSIGN AGENT TO
@@ -860,7 +876,6 @@ $(document).ready(function(){
     });
     //HANDLE EVENT SUGGESTION---END---ASSIGN AGENT
 
-
     //MANAGE USER APPEND---START-----AGENT
     $("#field-agent-username").on("keyup", function(){
         let resultDisplayDestination = "box-suggestion-users";
@@ -909,7 +924,6 @@ $(document).ready(function(){
         
     });
 
-
     //Delete a USER from chosen list
     $("#event-potential-agent").on("click", "a", function(event){
         event.preventDefault();
@@ -953,37 +967,7 @@ $(document).ready(function(){
         }
 
     });
-
-
-    //Handle cancel button of configuration-modal-manage-event
-    $("#cancel-modal-manage-event").on("click", function(){
-        $("#modal-manage-event").css("display", "none");
-        $("#wrapper-fields-to-edit").css("display", "none");
-        $("#illustration-modify-event").css("display", "flex");
-
-        //empy the search event bar
-        $("#id-search-event").attr("readonly", false); 
-        $("#id-search-event").val("");
-        $("#change-event").css("display", "none");
-
-        //Reset variables
-        resetGlobalsEditing();
-        
-    });
-
-    $("#cancel-modal-manage-agent").on("click", function(){
-        $("#modal-manage-agent").css("display", "none");
-        $("#wrapper-fields-to-edit-2").css("display", "none");
-        $("#illustration-agent-event").css("display", "flex");
-
-        //empy the search event bar
-        $("#id-search-event-2").attr("readonly", false); 
-        $("#id-search-event-2").val("");
-        $("#change-event-2").css("display", "none");
-
-        //Reset variables
-       // resetGlobalsEditing();
-    });
+    //**********************[BLOCK-AAAAA]************************** */
 
     //logout of the system
     $("#logout").on("click", function(){
@@ -994,7 +978,7 @@ $(document).ready(function(){
             dataType : "json",
         })
         .done(function( response ) {
-            console.log(response);
+            //console.log(response);
             logoutHelper(response);
         })
         .fail(function( xhr, status, errorThrown ) {
@@ -1005,435 +989,19 @@ $(document).ready(function(){
         });
     });
 
+    //Bottom menu jquery
+    $('.app-navigation-toggle').click(function() {
+
+        $('.app-navigation-container').toggleClass('open', 300);
+
+        $(this).toggleClass('active');
+
+    });
+
 });
 
 function voidFunction(res){
     $("#popup-profile-config").removeClass("model-open");
-}
-
-//Function to handle return of docs submission for acc-verification
-function RAVRequest(res){
-    if(res.arr_status.action_status == 1){
-        if(res.arr_return.doc_saved_to_db == 1 && res.arr_return.doc_send_via_email == 1){
-            $("#config-acc-verification-box").css("display","none");
-            $("#config-msg-user-acc-verification").css("color","black");
-            $("#config-msg-user-acc-verification").text("Our team is considering your request for account verification.");
-        }
-        else{
-            $("#config-acc-verification-box").css("display","none");
-            $("#config-msg-user-acc-verification").css("color","red");
-            $("#config-msg-user-acc-verification").text("Request for account verification failed."); 
-        }
-         
-    }
-    else{
-        $("#config-acc-verification-box").css("display","none");
-        $("#config-msg-user-acc-verification").css("color","red");
-        $("#config-msg-user-acc-verification").text("Request for account verification failed. Reasons: ..."); 
-    }
-}
-
-//Fucntion to handle return on click on config-account title
-function RCOConfigAcc(res){
-    if(res.arr_status.action_status ==1){
-        //Action succeed process the return
-        if(res.arr_return.is_account_verified==0){
-            if(res.arr_return.is_email_verified==1){
-                $("#config-acc-verification-box").css("display", "flex");
-                $("#acc-email").text(res.arr_return.email);
-            }
-            else{
-                $("#config-msg-user-acc-verification").css("color","black");
-                $("#config-msg-user-acc-verification").text("Oops! You cannot request for account verification if you have not confirm your email address on signing up on our platform. Please make sure you verify your email address via the email we sent to you the first time you sign up on our plateform. Or request for email verification right below:");
-                $("#config-msg-user-acc-verification").append("<br/><a href='#'>Request email verification</a>")
-            }
-
-        }
-        else if(res.arr_return.is_account_verified==1){
-            $("#config-msg-user-acc-verification").css("color","green");
-            $("#config-msg-user-acc-verification").text("Your account have been successfully verified");
-        }
-        else if(res.arr_return.is_account_verified==2){
-            $("#config-msg-user-acc-verification").css("color","black");
-            $("#config-msg-user-acc-verification").text("Our team is considering your request for account verification.");
-        }
-       
-    }
-    else{
-        //Action failed
-        $("#config-acc-verification-box").css("display","none");
-        $("#config-msg-user-acc-verification").css("color","black");
-        $("#config-msg-user-acc-verification").text("Oops! Something went wrong. Make sure you are logged in <br\> If this problem persist logout and login and try the account verification again. <br> If the previous solution does not work, maybe your account has been compromised. Reach for help from our support team.");
-    }
-}
-
-//Function request return of save-changes user socials
-function RSCUserSocials(res){
-    if(res.arr_status.action_status ==1){
-        $("#config-msg-user-socials").css("color","#47d447");
-        $("#config-msg-user-socials").text("Modification saved!");
-        $("#config-social-links-box").css("display","none");
-    }
-    else{
-        $("#config-msg-user-socials").css("color","red");
-        $("#config-msg-user-socials").text("Modification failed to be saved! Make sure your inputs are correct."); 
-    }
-}
-
-//Function to display socials to their inputs
-function displaySocials(res){
-    if(res.arr_status.action_status == 1){
-        $("#fb-link").val(res.arr_return.facebook);
-        $("#ig-link").val(res.arr_return.instagram);
-        $("#wsapp-tel").val(res.arr_return.whatsApp);
-    }
-    else{
-        alert("Oops! Something went wrong. Cannot get user social links");
-    }
-}
-//Function request return of save-changes user preferences
-function RSCUserPreferences(res){
-    if(res.arr_status.action_status ==1){
-        $("#config-msg-user-preferences").css("color","#47d447");
-        $("#config-msg-user-preferences").text("Modification saved!");
-        $("#config-preferences-box").css("display","none");
-    }
-    else{
-        $("#config-msg-user-preferences").css("color","red");
-        $("#config-msg-user-preferences").text("Modification failed to be saved! Make sure your inputs are correct."); 
-    }
-}
-
-//Handle return of categ array for user in personnal settings
-function displayCategsConfig(res){
-    $("#categs-config-box").empty();
-    let arrCategs = res['arr_return'].arr_all_categ;
-
-    if(res['arr_return'].arr_all_categ.length>0){
-        for(let i=0; i<res['arr_return'].arr_all_categ.length;i++){
-            let HTMLElementCateg = '<span class="categ-unit background-not-selected">'+res['arr_return'].arr_all_categ[i].title+'</span>';
-            for(let j=0; j<res['arr_return'].arr_user_categ.length; j++){
-                if(res['arr_return'].arr_user_categ[j] == res['arr_return'].arr_all_categ[i].title){
-                    HTMLElementCateg = '<span class="categ-unit background-selected">'+res['arr_return'].arr_all_categ[i].title+'</span>';
-                }
-            }
-            $("#categs-config-box").append(HTMLElementCateg);
-        }
-    }
-    else{
-        let HTMLElementCateg = '<strong>No categories available</strong>';
-        $("#box-categories").append(HTMLElementCateg);
-    }
-}
-
-//Handle request return of save-changes location config
-function RSCUserLocation(res){
-    if(res.arr_status.action_status ==1){
-        $("#config-msg-user-location").css("color","#47d447");
-        $("#config-msg-user-location").text("Modification saved!");
-        $("#config-location-box").css("display","none");
-    }
-    else{
-        $("#config-msg-user-location").css("color","red");
-        $("#config-msg-user-location").text("Modification failed to be saved! Make sure your inputs are correct."); 
-    }
-}
-//Function to display of countries and cities in the personnal settings
-function displaySuggestionsCityConfig(res){
-    if(res['arr_cities'].length>1){
-        $("#box-suggestion-cities-config").empty();
-        for(let i=1; i<res['arr_cities'].length; i++){
-            $("#box-suggestion-cities-config").append('<span class="content">'+res.arr_cities[i].name+'</span>');
-        }
-    }
-    else{
-        $("#box-suggestion-cities-config").empty();
-        $("#box-suggestion-cities-config").append("<b>City not found</b>");
-    }
-    
-}
-
-//Function to display of countries and cities in the personnal settings
-function displaySuggestionsCountryConfig(res){
-    if(res['arr_countries'].length>0){
-        $("#box-suggestion-countries-config").empty();
-        for(let i=0; i<res['arr_countries'].length; i++){
-            $("#box-suggestion-countries-config").append('<span class="content">'+res.arr_countries[i].name+'</span>');
-        }
-    }
-    else{
-        $("#box-suggestion-countries-config").empty();
-        $("#box-suggestion-countries-config").append("<b>Country not supported</b>");
-    }
-    
-}
-
-//FUNCTIONS TO HANDLE PERSONNAL SETTINGS
-//CONFIG-LOCATION
-function fullUserLocToInput(res){
-    if(res['arr_status'].action_status == 1){
-        $("#config-country").val(res['arr_return'].location_country);
-        $("#config-city").val(res['arr_return'].location_city);
-    }
-}
-
-function displayEventWallet(res){
-   if(res['arr_status'].is_user_online == 1){
-        if(res['api_return'].length>0){
-            $("#inner-wrapper-wallet").empty();
-            let api_return = res['api_return'];
-            for(let i=0; i<api_return.length;i++){
-                let walletUnit = ' <div class="wallet-event-unit">\
-                    <div class="info-wallet-header">\
-                    <span class="title-header">'+api_return[i].title+'</span>\
-                    <span class="other-header-info">\
-                        <span><b>Date & time</b><br/>'+api_return[i].dateTime+'</span>\
-                        <span><b>Address</b><br/>'+api_return[i].location+'</span>\
-                        <span><b>Location</b><br/>'+api_return[i].location_country+', '+api_return[i].location_city+'</span>\
-                    </span></div>\
-                    <div class="info-wallet-body">\
-                    <div class="info-block">\
-                        <span class="title-block"><span class="title">TICKETS -></span> <span class="number">'+api_return[i].total_ticket+'</span></span>\
-                        <span class="box-block">\
-                            <span>Sold: '+api_return[i].total_sold+'</span>\
-                            <span>Scanned: '+api_return[i].total_scanned+'</span>\
-                        </span>\
-                    </div>\
-                    <div class="info-block">\
-                        <span class="title-block"><span class="title">PRICES -></span> <span class="number">'+(api_return[i].revenue!=null? api_return[i].revenue:0)+' '+api_return[i].prices[0].currency+'</span></span>\
-                        <span class="box-block">';
-                for(let j=0; j<api_return[i].prices.length;j++){
-                    walletUnit+='<span>Price: '+api_return[i].prices[j].price+' '+api_return[i].prices[j].currency+' ('+api_return[i].prices[j].qt_ticket_sold+')</span>';
-                }
-
-                walletUnit+='</span></div>\
-                    <div class="info-block">\
-                        <span class="title-block"><span class="title">AGENT(S) -></span> <span class="number">'+api_return[i].agents.length+'</span></span>\
-                        <span class="box-block">\
-                            <table>\
-                                <tr><th>Username</th><th>Sell-Right</th><th>Scan-Right</th><th>Sold</th><th>Scan</th></tr>';
-                for(let j=0; j<api_return[i].agents.length;j++){
-                    walletUnit+='<tr><td>'+api_return[i].agents[j].username+'</td><td>'+(api_return[i].agents[j].sellingRight==1? "YES":"NO")+'</td><td>'+(api_return[i].agents[j].scanningRight==1? "YES":"NO")+'</td><td>'+api_return[i].agents[j].total_sold+'</td><td>'+api_return[i].agents[j].total_scanned+'</td></tr>';
-                }
-
-                walletUnit+='</table></span></div>\
-                    <div class="info-block">\
-                        <span class="title-block"><span class="title">SERVICE FEE -></span> <span class="number">'+(api_return[i].total_commission!=null? api_return[i].total_commission:0)+' '+api_return[i].prices[0].currency+'</span></span>\
-                        <span class="box-block">\
-                            <span>Status: '+api_return[i].status_commission+'</span>\
-                            <span>Payment info: link</span>\
-                        </span>\
-                    </div></div></div>';
-
-                //Append event wallet unit
-                $("#inner-wrapper-wallet").append(walletUnit);
-            }
-        }
-        else{
-            alert("You have not created any event yet");
-        }
-   }
-   else{
-        alert("You are offline. You cannot access your wallet");
-   }
-}
-
-function MPRProfileUpdate(res){
-    let arrStatus = res['arr_status'];
-    if(arrStatus['action_status']==1){
-        location.reload();
-    }
-    else{
-        alert("Profile details update failed: \nMake sure picture is not greater than 1.5MB\nMake sure picture format is among (jpeg, jpg, png)");
-    }
-}
-
-function MPRRAgentManagement(res){
-    //Hide fields display
-    $("#wrapper-fields-to-edit-2").css("display","none");
-    //show box result
-    $("#illustration-agent-config-result").css("display","flex");
-    //Hide button save changes
-    $("#btn-save-changes-agent").css("display", "none");
-    //Change text of cancel btn
-    $("#cancel-modal-manage-agent").text("close");
-
-    let arr_stats = res['arr_status'];
-    $("#agent-config-status").empty();
-    if(arr_stats['action_status']==1){
-        $("#img-result-agent-config").attr("src","media/icons/success.gif");
-        let returnArr = res['arr_return'];
-        for(let i=0; i<returnArr.length;i++){
-            let pAgentAndStatus = returnArr[0];
-            let pAStat ="succeeded";
-            if(pAgentAndStatus['status']==0){
-                pAStat ="Failed";
-            }
-            let HTMLElement = '<span>@'+pAgentAndStatus['username']+' | '+pAStat;
-            $("#agent-config-status").append(HTMLElement);
-        }
-    }
-    else{
-        $("#img-result-agent-config").attr("src","media/icons/failure-scan.png");
-        $("#agent-config-status").append("Configuration has been unsuccessful.");
-    }
-}
-
-function resetGlobalsEditing(){
-    //RESET VARIABLES
-    idEventToBeModified ="";
-    title_modified = false;
-    postMessage_modified = false;
-    description_modified = false;
-    newPoster_update = false;
-    oldPoster_delete = false;
-    city_modified = false;
-    address_modified = false;
-    eventDate_modified = false;
-    eventCateg_modified = false;
-    eventPrice_modified = false;
-
-    //Re-initiate quota image per event var
-    quotaPosters = 3;
-
-    //Reset arrays
-    arrCateg=[];
-    arrCateg_trash = [];
-    arrPoters_trash = [];
-
-    //Empty input file
-    $("#new-event-pictures").val(null);
-}
-
-function resetGlobalsProfile(){
-    idUserToBeModified=""; 
-    lastNameModified = false;
-    firstNameModified = false;
-    aboutModified = false;
-    profilePicModified = false;
-}
-
-//Function that process return of the editing functionality
-function MPREditingProcess(res){
-    $("#wrapper-fields-to-edit").css("display","none");
-    $("#btn-save-changes").css("display","none");
-    $("#cancel-modal-manage-event").text("Close");
-    $("#illustration-editing-result").css("display", "flex");
-
-    //Reset variables
-    resetGlobalsEditing();
-
-    let returnStatuses = res['arr_status'];
-    //title
-    if(returnStatuses['is_title_updated'] ==1){
-        let notiText = '<span class="noti-text success">Title successfully edited</span>';
-        $("#editing-infos").append(notiText);
-    }
-    else if(returnStatuses['is_title_updated'] ==0){
-        let notiText = '<span class="noti-text failure">Title failed to be edited</span>';
-        $("#editing-infos").append(notiText);
-    }
-
-    //postMessage
-    if(returnStatuses['is_postMessage_updated'] ==1){
-        let notiText = '<span class="noti-text success">Post message successfully edited</span>';
-        $("#editing-infos").append(notiText);
-    }
-    else if(returnStatuses['is_postMessage_updated'] ==0){
-        let notiText = '<span class="noti-text failure">Post message failed to be edited</span>';
-        $("#editing-infos").append(notiText);
-    }
-
-    //description
-    if(returnStatuses['is_description_updated'] ==1){
-        let notiText = '<span class="noti-text success">Event description successfully edited</span>';
-        $("#editing-infos").append(notiText);
-    }
-    else if(returnStatuses['is_description_updated'] ==0){
-        let notiText = '<span class="noti-text failure">Event description failed to be edited</span>';
-        $("#editing-infos").append(notiText);
-    }
-
-    //Posters updated
-    if(returnStatuses['is_posters_updated'] ==1){
-        let notiText = '<span class="noti-text success">Poster(s) successfully updpated</span>';
-        $("#editing-infos").append(notiText);
-    }
-    else if(returnStatuses['is_posters_updated'] ==0){
-        let notiText = '<span class="noti-text failure">Poster(s) failed to be updated</span>';
-        $("#editing-infos").append(notiText);
-    }
-
-    //Poster deletion
-    if(returnStatuses['is_posters_deleted'] ==1){
-        let notiText = '<span class="noti-text success">Poster(s) successfully deleted</span>';
-        $("#editing-infos").append(notiText);
-    }
-    else if(returnStatuses['is_posters_deleted'] ==0){
-        let notiText = '<span class="noti-text failure">Poster(s) failed to be deleted</span>';
-        $("#editing-infos").append(notiText);
-    }
-
-    //City update
-    if(returnStatuses['is_city_updated'] ==1){
-        let notiText = '<span class="noti-text success">Event city successfully updated</span>';
-        $("#editing-infos").append(notiText);
-    }
-    else if(returnStatuses['is_city_updated'] ==0){
-        let notiText = '<span class="noti-text failure">Event city failed to be updated</span>';
-        $("#editing-infos").append(notiText);
-    }
-
-    //Address update
-    if(returnStatuses['is_address_updated'] ==1){
-        let notiText = '<span class="noti-text success">Event address successfully updated</span>';
-        $("#editing-infos").append(notiText);
-    }
-    else if(returnStatuses['is_address_updated'] ==0){
-        let notiText = '<span class="noti-text failure">Event address failed to be updated</span>';
-        $("#editing-infos").append(notiText);
-    }
-
-    //Event dateTime
-    if(returnStatuses['is_dateTime_updated'] ==1){
-        let notiText = '<span class="noti-text success">Event date successfully updated</span>';
-        $("#editing-infos").append(notiText);
-    }
-    else if(returnStatuses['is_dateTime_updated'] ==0){
-        let notiText = '<span class="noti-text failure">Event date failed to be updated</span>';
-        $("#editing-infos").append(notiText);
-    }
-
-    //Categories update
-    if(returnStatuses['is_categories_updated'] ==1){
-        let notiText = '<span class="noti-text success">Event categories successfully updated</span>';
-        $("#editing-infos").append(notiText);
-    }
-    else if(returnStatuses['is_categories_updated'] ==0){
-        let notiText = '<span class="noti-text failure">Event categories failed to be updated</span>';
-        $("#editing-infos").append(notiText);
-    }
-
-    //Categories deleted
-    if(returnStatuses['is_categories_deleted'] ==1){
-        let notiText = '<span class="noti-text success">Event categories successfully deleted</span>';
-        $("#editing-infos").append(notiText);
-    }
-    else if(returnStatuses['is_categories_deleted'] ==0){
-        let notiText = '<span class="noti-text failure">Event categories failed to be deleted</span>';
-        $("#editing-infos").append(notiText);
-    }
-
-    //Price update
-    if(returnStatuses['is_price_updated'] ==1){
-        let notiText = '<span class="noti-text success">Event ticket price successfully updated</span>';
-        $("#editing-infos").append(notiText);
-    }
-    else if(returnStatuses['is_price_updated'] ==0){
-        let notiText = '<span class="noti-text failure">Event ticket price failed to be updated</span>';
-        $("#editing-infos").append(notiText);
-    }
-
 }
 
 //Function to uplad pictures
@@ -1470,38 +1038,6 @@ var imagesPreview = function(input, placeToInsertImagePreview) {
 
 };
 
-//Diplay users into user-box
-function displayUsers(user, index){
-    let addedUser = "<span class='categ-unit'>"+user+"<a class='x-delete' id='user-"+index+"'>X</a></span>";
-    $("#event-potential-agent").append(addedUser);
-}
-
-//display categories into box
-function displayCateg(categ, index){
-    let addedCateg = "<span class='categ-unit'>"+categ+"<a class='x-delete' id='"+index+"'>X</a></span>";
-    $("#event-categ").append(addedCateg);
-}
-
-function displayCategories(arr, desBis){
-    if(arr.length>0){
-        for(let i=0; i<arr.length;i++){
-            let unitCateg = arr[i];
-            let HTMLUnitCateg = ' <option value="'+unitCateg['title']+'">'+unitCateg['title']+'</option>';
-            $("#"+desBis).append(HTMLUnitCateg);
-        }
-        return 1;
-    }
-    return 0;
-}
-
-function PRCategDisplay(res){
-    let arrCateg = res['arr_categ'];
-    $("#idCategList").empty();
-    let resultArrCateg = displayCategories(arrCateg, "idCategList");
-    if(!resultArrCateg){
-        $("#idCategList").append('<option selected="true" disabled="disabled">Categories not found</option>'); 
-    }
-}
 //Get parameters from URL
 function getParameter(p)
 {
@@ -1532,12 +1068,6 @@ function currentDateAndTime(){
     today = yyyy+'-'+ mm + '-' + dd +"T"+hours+":"+minutes+":"+ seconds;
 
     return today;
-}
-
-function logoutHelper(res){
-    if(res['succ_logout']==1){
-        window.location.replace("lsrs_login.html");
-    }
 }
 
 function displayBio(bio){
@@ -1690,22 +1220,875 @@ function stdDisplayUserInfo(res){
         requestHandlerEventCard(res);
 
     }
+
+    //Handle changes on buttom menu icons depending on if user is online or offline
+    if(res.is_user_online ==0){
+        let loginIcon = '<a href="lsrs_login.html?lr=SET&or=profile.html&keyvar=e&ad='+getParameter("e")+'"><img src="media/icons/login.png" alt="login-icon"/></a>'
+        $("#logout").html(loginIcon);
+    }
     
 }
 
+function requestHandlerEventCard(res){
+    if(res['actor']!="SELF"){
+         let arrEvent = res['arrEvent'];
+         let resultArrEvent = appendEventsCardTo(arrEvent);
+         if(!resultArrEvent){
+            $("#container-events-flip-card").empty();
+            $("#container-events-flip-card").append(' <h2 style="font-style: italic; letter-spacing: 2px;">No event created</h2>');
+         }
+ 
+         //Lazy load handling
+         let Lazyimages = [].slice.call($(".post-image"));
+         
+         if("IntersectionObserver" in window){
+             let observer = new IntersectionObserver((entries, observer)=>{
+                 entries.forEach(function(entry){
+                     if(entry.isIntersecting){
+                         let lazyimage = entry.target;
+                         lazyimage.src = lazyimage.dataset.src;
+                         lazyimage.srcset = lazyimage.dataset.srcset;
+                         lazyimage.classList.remove("post-image");
+                         observer.unobserve(lazyimage);
+                     }
+                 })
+             });
+             //Loop through all images
+             Lazyimages.forEach((lazyimage)=>{
+                 observer.observe(lazyimage);
+             })
+         }
+    }
+ 
+ }
+
+ function appendEventsCardTo(arr){
+    if(arr.length>0){
+        for(let i=0; i<arr.length;i++){
+            let unitEvent = arr[i];
+            let posterLink = unitEvent['posterLink'];
+            if(posterLink == "NONE"){
+                posterLink = "media/icons/cover 11.png";
+            }
+
+            let HTMLEventUnit = ' <div class="post">\
+            <h3 class="info">'+unitEvent['title']+'</h3>\
+            <img class="post-image" src="media/icons/loadingSpinner.gif" data-src="'+posterLink+'" data-srcset="'+posterLink+'" width="100%"/>\
+            <div class="btns-container-prof">\
+            <a href="etc_display_event.html?e='+unitEvent['idEvent']+'"><button class="main-action-btn-profile">View event</button></a>\
+            </div>\
+        </div>';
+
+        //Append event card to the catalogue
+        $("#container-events-flip-card").append(HTMLEventUnit);
+
+        }
+        return 1;
+    }
+    return 0;
+}
+
+/*Function to copy to clipboard */
+function CopyToClipboard(value, showNotification, notificationText) {
+    var $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val(value).select();
+    document.execCommand("copy");
+    $temp.remove();
+
+    if (typeof showNotification === 'undefined') {
+        showNotification = true;
+    }
+    if (typeof notificationText === 'undefined') {
+        notificationText = "Copied to clipboard";
+    }
+
+    var notificationTag = $("div.copy-notification");
+    if (showNotification && notificationTag.length == 0) {
+        notificationTag = $("<div/>", { "class": "copy-notification", text: notificationText });
+        $("body").append(notificationTag);
+
+        notificationTag.fadeIn("slow", function () {
+            setTimeout(function () {
+                notificationTag.fadeOut("slow", function () {
+                    notificationTag.remove();
+                });
+            }, 1000);
+        });
+    }
+}
+
+//[BLOCK-A]
+//Handle request return of save-changes location config
+function RSCUserLocation(res){
+    if(res.arr_status.action_status ==1){
+        $("#config-msg-user-location").css("color","#47d447");
+        $("#config-msg-user-location").text("Modification saved!");
+        $("#config-location-box").css("display","none");
+    }
+    else{
+        $("#config-msg-user-location").css("color","red");
+        $("#config-msg-user-location").text("Modification failed to be saved! Make sure your inputs are correct."); 
+    }
+}
+//[BLOCK-A]
+//Function to display of countries and cities in the personnal settings
+function displaySuggestionsCityConfig(res){
+    if(res['arr_cities'].length>1){
+        $("#box-suggestion-cities-config").empty();
+        for(let i=1; i<res['arr_cities'].length; i++){
+            $("#box-suggestion-cities-config").append('<span class="content">'+res.arr_cities[i].name+'</span>');
+        }
+    }
+    else{
+        $("#box-suggestion-cities-config").empty();
+        $("#box-suggestion-cities-config").append("<b>City not found</b>");
+    }
+    
+}
+
+//[BLOCK-A]
+//Function to display of countries and cities in the personnal settings
+function displaySuggestionsCountryConfig(res){
+    if(res['arr_countries'].length>0){
+        $("#box-suggestion-countries-config").empty();
+        for(let i=0; i<res['arr_countries'].length; i++){
+            $("#box-suggestion-countries-config").append('<span class="content">'+res.arr_countries[i].name+'</span>');
+        }
+    }
+    else{
+        $("#box-suggestion-countries-config").empty();
+        $("#box-suggestion-countries-config").append("<b>Country not supported</b>");
+    }
+    
+}
+
+//[BLOCK-A]
+//FUNCTIONS TO HANDLE PERSONNAL SETTINGS
+//CONFIG-LOCATION
+function fullUserLocToInput(res){
+    if(res['arr_status'].action_status == 1){
+        $("#config-country").val(res['arr_return'].location_country);
+        $("#config-city").val(res['arr_return'].location_city);
+    }
+}
+
+//[BLOCK-AA]
+function displayEventWallet(res){
+    if(res['arr_status'].is_user_online == 1){
+         if(res['api_return'].length>0){
+             $("#inner-wrapper-wallet").empty();
+             let api_return = res['api_return'];
+             for(let i=0; i<api_return.length;i++){
+                 let walletUnit = ' <div class="wallet-event-unit">\
+                     <div class="info-wallet-header">\
+                     <span class="title-header">'+api_return[i].title+'</span>\
+                     <span class="other-header-info">\
+                         <span><b>Date & time</b><br/>'+api_return[i].dateTime+'</span>\
+                         <span><b>Address</b><br/>'+api_return[i].location+'</span>\
+                         <span><b>Location</b><br/>'+api_return[i].location_country+', '+api_return[i].location_city+'</span>\
+                     </span></div>\
+                     <div class="info-wallet-body">\
+                     <div class="info-block">\
+                         <span class="title-block"><span class="title">TICKETS -></span> <span class="number">'+api_return[i].total_ticket+'</span></span>\
+                         <span class="box-block">\
+                             <span>Sold: '+api_return[i].total_sold+'</span>\
+                             <span>Scanned: '+api_return[i].total_scanned+'</span>\
+                         </span>\
+                     </div>\
+                     <div class="info-block">\
+                         <span class="title-block"><span class="title">REVENUE -></span> <span class="number">'+(api_return[i].revenue!=null? api_return[i].revenue:0)+' '+api_return[i].prices[0].currency+'</span></span>\
+                         <span class="box-block">';
+                 for(let j=0; j<api_return[i].prices.length;j++){
+                     walletUnit+='<span>Price: '+api_return[i].prices[j].price+' '+api_return[i].prices[j].currency+' ('+api_return[i].prices[j].qt_ticket_sold+')</span>';
+                 }
+ 
+                 walletUnit+='</span></div>\
+                     <div class="info-block">\
+                         <span class="title-block"><span class="title">AGENT(S) -></span> <span class="number">'+api_return[i].agents.length+'</span></span>\
+                         <span class="box-block">\
+                             <table>\
+                                 <tr><th>Username</th><th>Sell-Right</th><th>Scan-Right</th><th>Sold</th><th>Scan</th></tr>';
+                 for(let j=0; j<api_return[i].agents.length;j++){
+                     walletUnit+='<tr><td>'+api_return[i].agents[j].username+'</td><td>'+(api_return[i].agents[j].sellingRight==1? "YES":"NO")+'</td><td>'+(api_return[i].agents[j].scanningRight==1? "YES":"NO")+'</td><td>'+api_return[i].agents[j].total_sold+'</td><td>'+api_return[i].agents[j].total_scanned+'</td></tr>';
+                 }
+ 
+                 walletUnit+='</table></span></div>\
+                     <div class="info-block">\
+                         <span class="title-block"><span class="title">SERVICE FEE -></span> <span class="number">'+(api_return[i].total_commission!=null? api_return[i].total_commission:0)+' '+api_return[i].prices[0].currency+'</span></span>\
+                         <span class="box-block">\
+                             <span>Status: '+api_return[i].status_commission+'</span>\
+                             <span>Payment info: link</span>\
+                         </span>\
+                     </div></div></div>';
+ 
+                 //Append event wallet unit
+                 $("#inner-wrapper-wallet").append(walletUnit);
+             }
+         }
+         else{
+             alert("You have not created any event yet");
+         }
+    }
+    else{
+         alert("You are offline. You cannot access your wallet");
+    }
+ }
+
+ //[BLOCK-AAA]
+function MPRProfileUpdate(res){
+    let arrStatus = res['arr_status'];
+    if(arrStatus['action_status']==1){
+        location.reload();
+    }
+    else{
+        alert("Profile details update failed: \nMake sure picture is not greater than 1.5MB\nMake sure picture format is among (jpeg, jpg, png)");
+    }
+}
+
+//[BLOCK-AAAA]
+function PRCCSuggestions(res){
+    
+    let arrCities = res['arr_cities'];
+        $("#box-suggestion-cities").empty();
+        let resultArrCities = displaySuggestionsCity(arrCities,"box-suggestion-cities");
+        if(!resultArrCities){
+            $("#box-suggestion-cities").append("<strong class='content'>No city found</strong");
+        }  
+
+}
+
+//PAIR-UP
+function displaySuggestionsCity(arr, desDis){
+    if(arr.length>1){
+        for(let i=1; i<arr.length; i++){
+            let unitSuggest = arr[i];
+            let HTMLUnitSuggest = '<span class="content">'+unitSuggest['name']+'</span>';
+            $("#"+desDis).append(HTMLUnitSuggest);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+//[BLOCK-AAAA]
+//Function to handle event display in pop-up suggestion box HTTP part
+function PREventSuggestions(res){
+    $("#box-suggestion-events").empty();
+    let arrStatus = res['arr_status'];
+    
+    if(!(arrStatus['divers_error']=="USER_OFFLINE")){
+        let arrEvents = res['arr_my_events'];
+        let resultArrEvent = displaySuggestionsEvent(arrEvents,"box-suggestion-events");
+        if(!resultArrEvent){
+            $("#box-suggestion-events").append("<strong>No event found</strong");
+        } 
+    }
+    else{
+        $("#box-suggestion-events").append("<strong>You are offline. Login to see your events</strong");
+    }    
+}
+
+//[BLOCK-AAAA]
+function PREventDisplayToEdit2(res){
+    
+    let arrEvents = res['arr_event'];
+    
+    if(arrEvents['isOnline']==1){
+        if(arrEvents['status']!="OUTDATED"){
+            displayEventToEdit(arrEvents);
+        }
+        else{
+            alert("This event is outdated. It cannot be edited anymore");
+        }  
+    }
+    else{
+        resetDisplayedFieldsME();
+        if(Array.isArray(arrEvents)){alert("Oops! Something went wrong. If this error message persits, reach to customer service.");}
+        else{alert("You cannot edit event. You are offline");}
+    }    
+}
+
+//Function for manage event
+function resetDisplayedFieldsME(){
+    $("#field-event-title").val("");
+    $("#field-event-post-msg").val("");
+    $("#field-event-description").val("");
+    $("#ancient-posters").empty();
+    $("#event-country").val("");
+    $("#id-city").val("");
+    $("#field-event-address").val("");
+    $("#id-date-time").val("");
+    $("#event-categ").empty();
+    $("#new-posters").empty();
+    $("#field-event-price").val("");
+    $("#price-currency").text("X");
+}
+
+function displayEventToEdit(arr){
+    let eventUnit = arr;
+    //pass title, short msg, description
+    $("#field-event-title").val(eventUnit['title']);
+    $("#field-event-post-msg").val(eventUnit['postMessage']);
+    $("#field-event-description").val(eventUnit['description']);
+
+    //Add posters
+    let postersArr = eventUnit['linkPosters'];
+    if(postersArr.length>0){
+        //Get the posters quota images to be updloaded per event
+        quotaPosters = quotaPosters - (postersArr.length);
+        $("#ancient-posters").empty();
+        for(let i=0; i<postersArr.length;i++){
+            let onePoster = '<span class="unit-ancient-poster">\
+                <span class="remove-poster">Delete</span>\
+                <img src="'+postersArr[i]+'"/>\
+                </span>';
+            
+            //Add it to arrPosters
+            //arrPoters.push(postersArr[i]);
+            //Append it to ancient poster box
+            $("#ancient-posters").append(onePoster);
+        }
+    }
+    else{
+        $("#ancient-posters").empty();
+        let noPoster ='<span class="unit-ancient-poster">\
+            <span>No poster(s)</span>\
+            <img src="media/icons/nothing1.gif"/>\
+            </span>';
+
+        $("#ancient-posters").append(noPoster);  
+    }
+    
+    //Add country and city value
+    $("#event-country").val(eventUnit['location_country']);
+    $("#id-city").val(eventUnit['location_city']);
+
+    //Address and datetime
+    $("#field-event-address").val(eventUnit['location']);
+    //Treat the datetime string
+    eventDateTime = eventUnit['dateTime'].replace(" ", "T");
+    $("#id-date-time").val(eventDateTime);
+
+    //Add categories already set
+    let arrEventCateg = eventUnit['categories'];
+    if(arrEventCateg.length>0){
+        $("#event-categ").empty();
+        for(let i=0; i<arrEventCateg.length;i++){
+            let oneCateg = '<span class="categ-unit">'+arrEventCateg[i]+'<a class="x-delete" id="'+i+'">X</a></span>';
+            $("#event-categ").append(oneCateg);
+            arrCateg.push(arrEventCateg[i]);
+
+        }
+    }
+
+    //Add price and currency
+    let arrPrice = eventUnit['prices'];
+    if(arrPrice.length>0){
+        let currentPrice = arrPrice[0];
+        $("#field-event-price").val(currentPrice['price']);
+        $("#price-currency").text(currentPrice['currency']);
+    }
+    else{
+        //$("#price-currency").text(currentPrice['currency']);
+        $("#field-event-price").attr("readonly", true);
+        $("#field-event-price").val("Price unavailable");
+        $("#price-currency").text("X");
+    }
+
+    //Add default add new poster unit
+    $("#new-posters").empty();
+    let HTMLDefaultAddNewPoster = '<span class="unit-new-poster">\
+            <span>Upload New</span>\
+            <img src="media/posters/post1.jpg"/>\
+            </span>';
+    $("#new-posters").append(HTMLDefaultAddNewPoster);
+}
+
+//[BLOCK-AAAA]
+//display categories into box
+function displayCateg(categ, index){
+    let addedCateg = "<span class='categ-unit'>"+categ+"<a class='x-delete' id='"+index+"'>X</a></span>";
+    $("#event-categ").append(addedCateg);
+}
+
+function displayCategories(arr, desBis){
+    if(arr.length>0){
+        for(let i=0; i<arr.length;i++){
+            let unitCateg = arr[i];
+            let HTMLUnitCateg = ' <option value="'+unitCateg['title']+'">'+unitCateg['title']+'</option>';
+            $("#"+desBis).append(HTMLUnitCateg);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+////[BLOCK-AAAA]
+function PRCategDisplay(res){
+    let arrCateg = res['arr_categ'];
+    $("#idCategList").empty();
+    let resultArrCateg = displayCategories(arrCateg, "idCategList");
+    if(!resultArrCateg){
+        $("#idCategList").append('<option selected="true" disabled="disabled">Categories not found</option>'); 
+    }
+}
+
+//[BLOCK-AAAA]
+function resetGlobalsEditing(){
+    //RESET VARIABLES
+    idEventToBeModified ="";
+    title_modified = false;
+    postMessage_modified = false;
+    description_modified = false;
+    newPoster_update = false;
+    oldPoster_delete = false;
+    city_modified = false;
+    address_modified = false;
+    eventDate_modified = false;
+    eventCateg_modified = false;
+    eventPrice_modified = false;
+
+    //Re-initiate quota image per event var
+    quotaPosters = 3;
+
+    //Reset arrays
+    arrCateg=[];
+    arrCateg_trash = [];
+    arrPoters_trash = [];
+
+    //Empty input file
+    $("#new-event-pictures").val(null);
+}
+
+//[BLOCK-AAAA]
+//Function that process return of the editing functionality
+function MPREditingProcess(res){
+    $("#wrapper-fields-to-edit").css("display","none");
+    $("#btn-save-changes").css("display","none");
+    $("#cancel-modal-manage-event").text("Close");
+    $("#illustration-editing-result").css("display", "flex");
+
+    //Reset variables
+    resetGlobalsEditing();
+
+    let returnStatuses = res['arr_status'];
+    //title
+    if(returnStatuses['is_title_updated'] ==1){
+        let notiText = '<span class="noti-text success">Title successfully edited</span>';
+        $("#editing-infos").append(notiText);
+    }
+    else if(returnStatuses['is_title_updated'] ==0){
+        let notiText = '<span class="noti-text failure">Title failed to be edited</span>';
+        $("#editing-infos").append(notiText);
+    }
+
+    //postMessage
+    if(returnStatuses['is_postMessage_updated'] ==1){
+        let notiText = '<span class="noti-text success">Post message successfully edited</span>';
+        $("#editing-infos").append(notiText);
+    }
+    else if(returnStatuses['is_postMessage_updated'] ==0){
+        let notiText = '<span class="noti-text failure">Post message failed to be edited</span>';
+        $("#editing-infos").append(notiText);
+    }
+
+    //description
+    if(returnStatuses['is_description_updated'] ==1){
+        let notiText = '<span class="noti-text success">Event description successfully edited</span>';
+        $("#editing-infos").append(notiText);
+    }
+    else if(returnStatuses['is_description_updated'] ==0){
+        let notiText = '<span class="noti-text failure">Event description failed to be edited</span>';
+        $("#editing-infos").append(notiText);
+    }
+
+    //Posters updated
+    if(returnStatuses['is_posters_updated'] ==1){
+        let notiText = '<span class="noti-text success">Poster(s) successfully updpated</span>';
+        $("#editing-infos").append(notiText);
+    }
+    else if(returnStatuses['is_posters_updated'] ==0){
+        let notiText = '<span class="noti-text failure">Poster(s) failed to be updated</span>';
+        $("#editing-infos").append(notiText);
+    }
+
+    //Poster deletion
+    if(returnStatuses['is_posters_deleted'] ==1){
+        let notiText = '<span class="noti-text success">Poster(s) successfully deleted</span>';
+        $("#editing-infos").append(notiText);
+    }
+    else if(returnStatuses['is_posters_deleted'] ==0){
+        let notiText = '<span class="noti-text failure">Poster(s) failed to be deleted</span>';
+        $("#editing-infos").append(notiText);
+    }
+
+    //City update
+    if(returnStatuses['is_city_updated'] ==1){
+        let notiText = '<span class="noti-text success">Event city successfully updated</span>';
+        $("#editing-infos").append(notiText);
+    }
+    else if(returnStatuses['is_city_updated'] ==0){
+        let notiText = '<span class="noti-text failure">Event city failed to be updated</span>';
+        $("#editing-infos").append(notiText);
+    }
+
+    //Address update
+    if(returnStatuses['is_address_updated'] ==1){
+        let notiText = '<span class="noti-text success">Event address successfully updated</span>';
+        $("#editing-infos").append(notiText);
+    }
+    else if(returnStatuses['is_address_updated'] ==0){
+        let notiText = '<span class="noti-text failure">Event address failed to be updated</span>';
+        $("#editing-infos").append(notiText);
+    }
+
+    //Event dateTime
+    if(returnStatuses['is_dateTime_updated'] ==1){
+        let notiText = '<span class="noti-text success">Event date successfully updated</span>';
+        $("#editing-infos").append(notiText);
+    }
+    else if(returnStatuses['is_dateTime_updated'] ==0){
+        let notiText = '<span class="noti-text failure">Event date failed to be updated</span>';
+        $("#editing-infos").append(notiText);
+    }
+
+    //Categories update
+    if(returnStatuses['is_categories_updated'] ==1){
+        let notiText = '<span class="noti-text success">Event categories successfully updated</span>';
+        $("#editing-infos").append(notiText);
+    }
+    else if(returnStatuses['is_categories_updated'] ==0){
+        let notiText = '<span class="noti-text failure">Event categories failed to be updated</span>';
+        $("#editing-infos").append(notiText);
+    }
+
+    //Categories deleted
+    if(returnStatuses['is_categories_deleted'] ==1){
+        let notiText = '<span class="noti-text success">Event categories successfully deleted</span>';
+        $("#editing-infos").append(notiText);
+    }
+    else if(returnStatuses['is_categories_deleted'] ==0){
+        let notiText = '<span class="noti-text failure">Event categories failed to be deleted</span>';
+        $("#editing-infos").append(notiText);
+    }
+
+    //Price update
+    if(returnStatuses['is_price_updated'] ==1){
+        let notiText = '<span class="noti-text success">Event ticket price successfully updated</span>';
+        $("#editing-infos").append(notiText);
+    }
+    else if(returnStatuses['is_price_updated'] ==0){
+        let notiText = '<span class="noti-text failure">Event ticket price failed to be updated</span>';
+        $("#editing-infos").append(notiText);
+    }
+
+}
+
+//[BLOCK-AAAAA]
+function MPRRAgentManagement(res){
+    //Hide fields display
+    $("#wrapper-fields-to-edit-2").css("display","none");
+    //show box result
+    $("#illustration-agent-config-result").css("display","flex");
+    //Hide button save changes
+    $("#btn-save-changes-agent").css("display", "none");
+    //Change text of cancel btn
+    $("#cancel-modal-manage-agent").text("close");
+
+    let arr_stats = res['arr_status'];
+    $("#agent-config-status").empty();
+    if(arr_stats['action_status']==1){
+        $("#img-result-agent-config").attr("src","media/icons/success.gif");
+        let returnArr = res['arr_return'];
+        for(let i=0; i<returnArr.length;i++){
+            let pAgentAndStatus = returnArr[0];
+            let pAStat ="succeeded";
+            if(pAgentAndStatus['status']==0){
+                pAStat ="Failed";
+            }
+            let HTMLElement = '<span>@'+pAgentAndStatus['username']+' | '+pAStat;
+            $("#agent-config-status").append(HTMLElement);
+        }
+    }
+    else{
+        $("#img-result-agent-config").attr("src","media/icons/failure-scan.png");
+        $("#agent-config-status").append("Configuration has been unsuccessful.");
+    }
+}
+
+//[BLOCK-AAAAA]
+//Function to handle user display in pop-up suggestion box HTTP part
+function PRUserSuggestions(res){
+    let arrUsers = res['arr_users'];
+        $("#box-suggestion-users").empty();
+        let resultArrUsers = displaySuggestionsUser(arrUsers,"box-suggestion-users");
+        if(!resultArrUsers){
+            $("#box-suggestion-users").append("<strong>No user found</strong");
+        }  
+
+}
+//Function to display users into box-suggestion-users ->PAIR-UP
+function displaySuggestionsUser(arr, desDis){
+    if(arr.length>0){
+        for(let i=0; i<arr.length; i++){
+            let unitSuggest = arr[i];
+            let HTMLUnitSuggest = '<span>@<strong>'+unitSuggest['username']+'</strong></span>';
+            $("#"+desDis).append(HTMLUnitSuggest);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+//[BLOCK-AAAAA] -->PAIR-DOWN
+function displayEventToConfigRights(arr){
+    let eventUnit = arr;
+    $("#cr-event-title").text(eventUnit['title']);
+
+    let arrPosters = eventUnit['linkPosters'];
+    if(arrPosters.length>0){
+        $("#cr-poster-pic").attr("src", arrPosters[0]);
+    }
+    else{
+        $("#cr-poster-pic").attr("src", "media/icons/no-bg-post.jpg");
+    }
+
+    let eventPriceToAppend = eventUnit['prices'];
+    let eventDetailsToAppend = '<span>'+eventUnit['location']+'</span><span>'+eventUnit['dateTime']+'</span>';
+    if(eventPriceToAppend.length>0){
+        let priceInfo = eventPriceToAppend[0];
+        eventDetailsToAppend+='<span>'+priceInfo['price']+" "+priceInfo['currency']+'</span>';
+    }
+    $("#cr-event-detail").empty();
+    $("#cr-event-detail").append(eventDetailsToAppend);
+
+    //Clean those fields
+    $("#event-potential-agent").empty();
+    $('#rights-to-sell').prop('checked', false);
+    $('#rights-to-scan').prop('checked', false);
+}
+
+//[BLOCK-AAAAA]
+function PREventDisplayConfigRights(res){
+    
+    let arrEvents = res['arr_event'];
+    
+    if(arrEvents['isOnline']==1){
+        displayEventToConfigRights(arrEvents);
+    }
+    else{
+        resetDisplayedFieldsMA();
+        if(Array.isArray(arrEvents)){alert("Oops! Something went wrong. If this error message persits, reach to customer service.");}
+        else{alert("You cannot do any configurations now. You are offline");}
+
+    }    
+}
+
+function resetDisplayedFieldsMA(){
+    $("#cr-event-title").text("");
+    $("#cr-poster-pic").attr("src", "#");
+    $("#cr-event-detail").empty();
+    $("#event-potential-agent").empty();
+    $('#rights-to-sell').prop('checked', false);
+    $('#rights-to-scan').prop('checked', false);
+}
+
+//FUNCTIONS FOR CONFIGURATIONS FUNCTIONALITIES
+//Function to display events into box-suggestion-events -->PAIR-DOWN-DOWN
+function displaySuggestionsEvent(arr, desDis){
+    if(arr.length>0){
+        for(let i=0; i<arr.length; i++){
+            let unitSuggest = arr[i];
+            let HTMLUnitSuggest = '<span><strong>'+unitSuggest['title']+'</strong><b> -->id: </b><em>'+unitSuggest['idEvent']+'</em></span>';
+            $("#"+desDis).append(HTMLUnitSuggest);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+//[BLOCK-AAAAA]
+function PREventSuggestions2(res){
+    $("#box-suggestion-events-2").empty();
+    let arrStatus = res['arr_status'];
+    
+    if(!(arrStatus['divers_error']=="USER_OFFLINE")){
+        let arrEvents = res['arr_my_events'];
+        let resultArrEvent = displaySuggestionsEvent(arrEvents,"box-suggestion-events-2");
+        if(!resultArrEvent){
+            $("#box-suggestion-events-2").append("<strong>No event found</strong");
+        } 
+    }
+    else{
+        $("#box-suggestion-events-2").append("<strong>You are offline. Login to see your events</strong");
+    }    
+}
+
+
+//[BLOCK-AAAAA]
+//Diplay users into user-box
+function displayUsers(user, index){
+    let addedUser = "<span class='categ-unit'>"+user+"<a class='x-delete' id='user-"+index+"'>X</a></span>";
+    $("#event-potential-agent").append(addedUser);
+}
+
+//[BLOCK-B]
+//Function request return of save-changes user preferences
+function RSCUserPreferences(res){
+    if(res.arr_status.action_status ==1){
+        $("#config-msg-user-preferences").css("color","#47d447");
+        $("#config-msg-user-preferences").text("Modification saved!");
+        $("#config-preferences-box").css("display","none");
+    }
+    else{
+        $("#config-msg-user-preferences").css("color","red");
+        $("#config-msg-user-preferences").text("Modification failed to be saved! Make sure your inputs are correct."); 
+    }
+}
+
+//[BLOCK-B]
+//Handle return of categ array for user in personnal settings
+function displayCategsConfig(res){
+    $("#categs-config-box").empty();
+    let arrCategs = res['arr_return'].arr_all_categ;
+
+    if(res['arr_return'].arr_all_categ.length>0){
+        for(let i=0; i<res['arr_return'].arr_all_categ.length;i++){
+            let HTMLElementCateg = '<span class="categ-unit background-not-selected">'+res['arr_return'].arr_all_categ[i].title+'</span>';
+            for(let j=0; j<res['arr_return'].arr_user_categ.length; j++){
+                if(res['arr_return'].arr_user_categ[j] == res['arr_return'].arr_all_categ[i].title){
+                    HTMLElementCateg = '<span class="categ-unit background-selected">'+res['arr_return'].arr_all_categ[i].title+'</span>';
+                }
+            }
+            $("#categs-config-box").append(HTMLElementCateg);
+        }
+    }
+    else{
+        let HTMLElementCateg = '<strong>No categories available</strong>';
+        $("#box-categories").append(HTMLElementCateg);
+    }
+}
+
+//[BLOCK-C]
+//Function to display socials to their inputs
+function displaySocials(res){
+    if(res.arr_status.action_status == 1){
+        $("#fb-link").val(res.arr_return.facebook);
+        $("#ig-link").val(res.arr_return.instagram);
+        $("#wsapp-tel").val(res.arr_return.whatsApp);
+    }
+    else{
+        alert("Oops! Something went wrong. Cannot get user social links");
+    }
+}
+
+//[BLOCK C]
+//Function request return of save-changes user socials
+function RSCUserSocials(res){
+    if(res.arr_status.action_status ==1){
+        $("#config-msg-user-socials").css("color","#47d447");
+        $("#config-msg-user-socials").text("Modification saved!");
+        $("#config-social-links-box").css("display","none");
+    }
+    else{
+        $("#config-msg-user-socials").css("color","red");
+        $("#config-msg-user-socials").text("Modification failed to be saved! Make sure your inputs are correct."); 
+    }
+}
+
+//[BLOCK-D]
+//Fucntion to handle return on click on config-account title
+function RCOConfigAcc(res){
+    if(res.arr_status.action_status ==1){
+        //Action succeed process the return
+        if(res.arr_return.is_account_verified==0){
+            if(res.arr_return.is_email_verified==1){
+                $("#config-acc-verification-box").css("display", "flex");
+                $("#acc-email").text(res.arr_return.email);
+            }
+            else{
+                $("#config-msg-user-acc-verification").css("color","black");
+                $("#config-msg-user-acc-verification").text("Oops! You cannot request for account verification if you have not confirm your email address on signing up on our platform. Please make sure you verify your email address via the email we sent to you the first time you sign up on our plateform. Or request for email verification right below:");
+                $("#config-msg-user-acc-verification").append("<br/><a href='#'>Request email verification</a>")
+            }
+
+        }
+        else if(res.arr_return.is_account_verified==1){
+            $("#config-msg-user-acc-verification").css("color","green");
+            $("#config-msg-user-acc-verification").text("Your account have been successfully verified");
+        }
+        else if(res.arr_return.is_account_verified==2){
+            $("#config-msg-user-acc-verification").css("color","black");
+            $("#config-msg-user-acc-verification").text("Our team is considering your request for account verification.");
+        }
+       
+    }
+    else{
+        //Action failed
+        $("#config-acc-verification-box").css("display","none");
+        $("#config-msg-user-acc-verification").css("color","black");
+        $("#config-msg-user-acc-verification").text("Oops! Something went wrong. Make sure you are logged in <br\> If this problem persist logout and login and try the account verification again. <br> If the previous solution does not work, maybe your account has been compromised. Reach for help from our support team.");
+    }
+}
+
+//[BLOCK-D]
+//Function to handle return of docs submission for acc-verification
+function RAVRequest(res){
+    if(res.arr_status.action_status == 1){
+        if(res.arr_return.doc_saved_to_db == 1 && res.arr_return.doc_send_via_email == 1){
+            $("#config-acc-verification-box").css("display","none");
+            $("#config-msg-user-acc-verification").css("color","black");
+            $("#config-msg-user-acc-verification").text("Our team is considering your request for account verification.");
+        }
+        else{
+            $("#config-acc-verification-box").css("display","none");
+            $("#config-msg-user-acc-verification").css("color","red");
+            $("#config-msg-user-acc-verification").text("Request for account verification failed."); 
+        }
+         
+    }
+    else{
+        $("#config-acc-verification-box").css("display","none");
+        $("#config-msg-user-acc-verification").css("color","red");
+        $("#config-msg-user-acc-verification").text("Request for account verification failed. Reasons: ..."); 
+    }
+}
+
+function logoutHelper(res){
+    if(res['succ_logout']==1){
+        //Remove tokens
+        if (typeof(Storage) !== "undefined") {
+            // Code for localStorage
+            localStorage.removeItem("tokenHash");
+            localStorage.removeItem("username");
+        } 
+        window.location.replace("lsrs_login.html");
+    }
+}
+
 //Function for requests
-function requestSender(destinationToRequest, obj, processorFunc){
+function requestSender(destinationToRequest, obj, processorFunc, msgLoader="NONE"){
     $.ajax({
         url: destinationToRequest,
         data: obj,
         type: "POST",
         dataType : "json",
+        beforeSend:function(){
+            //Launch  custom zima loader
+            if(msgLoader!="NONE"){
+                $("#zima-loader").css("display","flex");
+                $("#text-loading").text(msgLoader);
+            }
+        }
     })
     .done(function( response ) {
+        $("#zima-loader").css("display","none");
         console.log(response);
         processorFunc(response)
     })
     .fail(function( xhr, status, errorThrown ) {
+        $("#zima-loader").css("display","none");
         alert( "Sorry, there was a problem!" );
         console.log( "Error: " + errorThrown );
         console.log( "Status: " + status );
@@ -1727,393 +2110,10 @@ function requestSenderFormData(destination, formData, helperFunc){
         },   
         success:function(data)
         {
-            console.log(data);
+            //console.log(data);
             helperFunc(data);
         }
        });
 
 }
 
-function consoleDisplay(res){
-    console.log(res);
-}
-
-function appendEventsCardTo(arr){
-    if(arr.length>0){
-        for(let i=0; i<arr.length;i++){
-            let unitEvent = arr[i];
-            let posterLink = unitEvent['posterLink'];
-            if(posterLink == "NONE"){
-                posterLink = "media/icons/cover 11.png";
-            }
-
-            let HTMLEventUnit = ' <div class="post">\
-            <h3 class="info">'+unitEvent['title']+'</h3>\
-            <img class="post-image" src="media/icons/loadingSpinner.gif" data-src="'+posterLink+'" data-srcset="'+posterLink+'" width="100%"/>\
-            <div class="btns-container-prof">\
-            <a href="etc_display_event.html?e='+unitEvent['idEvent']+'"><button class="main-action-btn-profile">View event</button></a>\
-            </div>\
-        </div>';
-
-            let HTMLEventElement = '<div class="wrapper-flip-card">\
-            <div class="scene scene--card">\
-                <div class="card-event">\
-                  <div class="card__face card__face--front">\
-                      <img id="img-poster-flip" class="lazy" src="media/icons/loadingSpinner.gif" data-src="'+posterLink+'" data-srcset="'+posterLink+'" width="100%" height="100%"/>\
-                  </div>\
-                  <div class="card__face card__face--back" id="back-card-flip">\
-                    <span>'+unitEvent['title']+'</span>\
-                      <span><span><img src="media/icons/clock.png"/></span>'+unitEvent['dateTime']+'</span>\
-                      <span><span><img src="media/icons/location.png"/></span>'+unitEvent['location']+'</span>\
-                      <span><span><img src="media/icons/price.png"/></span>'+unitEvent['price']+'</span>\
-                  </div>\
-                </div>\
-            </div>\
-            <div class="container-btn">\
-                <a href="etc_display_event.html?e='+unitEvent['idEvent']+'"><button>View event</button></a>\
-            </div>\
-        </div>';
-
-        //Append event card to the catalogue
-        $("#container-events-flip-card").append(HTMLEventUnit);
-
-        }
-        return 1;
-    }
-    return 0;
-}
-
-function requestHandlerEventCard(res){
-   if(res['actor']!="SELF"){
-        let arrEvent = res['arrEvent'];
-        let resultArrEvent = appendEventsCardTo(arrEvent);
-
-        //Lazy load handling
-        let Lazyimages = [].slice.call($(".post-image"));
-        
-        if("IntersectionObserver" in window){
-            let observer = new IntersectionObserver((entries, observer)=>{
-                entries.forEach(function(entry){
-                    if(entry.isIntersecting){
-                        let lazyimage = entry.target;
-                        lazyimage.src = lazyimage.dataset.src;
-                        lazyimage.srcset = lazyimage.dataset.srcset;
-                        lazyimage.classList.remove("post-image");
-                        observer.unobserve(lazyimage);
-                    }
-                })
-            });
-            //Loop through all images
-            Lazyimages.forEach((lazyimage)=>{
-                observer.observe(lazyimage);
-            })
-        }
-   }
-
-}
-
-//FUNCTIONS FOR CONFIGURATIONS FUNCTIONALITIES
-//Function to display events into box-suggestion-events
-function displaySuggestionsEvent(arr, desDis){
-    if(arr.length>0){
-        for(let i=0; i<arr.length; i++){
-            let unitSuggest = arr[i];
-            let HTMLUnitSuggest = '<span><strong>'+unitSuggest['title']+'</strong><b> -->id: </b><em>'+unitSuggest['idEvent']+'</em></span>';
-            $("#"+desDis).append(HTMLUnitSuggest);
-        }
-        return 1;
-    }
-    return 0;
-}
-
-//Function to handle event display in pop-up suggestion box HTTP part
-function PREventSuggestions(res){
-    $("#box-suggestion-events").empty();
-    let arrStatus = res['arr_status'];
-    
-    if(!(arrStatus['divers_error']=="USER_OFFLINE")){
-        let arrEvents = res['arr_my_events'];
-        let resultArrEvent = displaySuggestionsEvent(arrEvents,"box-suggestion-events");
-        if(!resultArrEvent){
-            $("#box-suggestion-events").append("<strong>No event found</strong");
-        } 
-    }
-    else{
-        $("#box-suggestion-events").append("<strong>You are offline. Login to see your events</strong");
-    }    
-}
-
-function PREventSuggestions2(res){
-    $("#box-suggestion-events-2").empty();
-    let arrStatus = res['arr_status'];
-    
-    if(!(arrStatus['divers_error']=="USER_OFFLINE")){
-        let arrEvents = res['arr_my_events'];
-        let resultArrEvent = displaySuggestionsEvent(arrEvents,"box-suggestion-events-2");
-        if(!resultArrEvent){
-            $("#box-suggestion-events-2").append("<strong>No event found</strong");
-        } 
-    }
-    else{
-        $("#box-suggestion-events-2").append("<strong>You are offline. Login to see your events</strong");
-    }    
-}
-
-
-function displaySuggestionsCity(arr, desDis){
-    if(arr.length>1){
-        for(let i=1; i<arr.length; i++){
-            let unitSuggest = arr[i];
-            let HTMLUnitSuggest = '<span class="content">'+unitSuggest['name']+'</span>';
-            $("#"+desDis).append(HTMLUnitSuggest);
-        }
-        return 1;
-    }
-    return 0;
-}
-
-function PRCCSuggestions(res){
-    
-    let arrCities = res['arr_cities'];
-        $("#box-suggestion-cities").empty();
-        let resultArrCities = displaySuggestionsCity(arrCities,"box-suggestion-cities");
-        if(!resultArrCities){
-            $("#box-suggestion-cities").append("<strong class='content'>No city found</strong");
-        }  
-
-}
-
-function displayEventToEdit(arr){
-        let eventUnit = arr;
-        //pass title, short msg, description
-        $("#field-event-title").val(eventUnit['title']);
-        $("#field-event-post-msg").val(eventUnit['postMessage']);
-        $("#field-event-description").val(eventUnit['description']);
-
-        //Add posters
-        let postersArr = eventUnit['linkPosters'];
-        if(postersArr.length>0){
-            //Get the posters quota images to be updloaded per event
-            quotaPosters = quotaPosters - (postersArr.length);
-            $("#ancient-posters").empty();
-            for(let i=0; i<postersArr.length;i++){
-                let onePoster = '<span class="unit-ancient-poster">\
-                    <span class="remove-poster">Delete</span>\
-                    <img src="'+postersArr[i]+'"/>\
-                    </span>';
-                
-                //Add it to arrPosters
-                //arrPoters.push(postersArr[i]);
-                //Append it to ancient poster box
-                $("#ancient-posters").append(onePoster);
-            }
-        }
-        else{
-            $("#ancient-posters").empty();
-            let noPoster ='<span class="unit-ancient-poster">\
-                <span>No poster(s)</span>\
-                <img src="media/icons/nothing1.gif"/>\
-                </span>';
-
-            $("#ancient-posters").append(noPoster);  
-        }
-        
-        //Add country and city value
-        $("#event-country").val(eventUnit['location_country']);
-        $("#id-city").val(eventUnit['location_city']);
-
-        //Address and datetime
-        $("#field-event-address").val(eventUnit['location']);
-        //Treat the datetime string
-        eventDateTime = eventUnit['dateTime'].replace(" ", "T");
-        $("#id-date-time").val(eventDateTime);
-
-        //Add categories already set
-        let arrEventCateg = eventUnit['categories'];
-        if(arrEventCateg.length>0){
-            $("#event-categ").empty();
-            for(let i=0; i<arrEventCateg.length;i++){
-                let oneCateg = '<span class="categ-unit">'+arrEventCateg[i]+'<a class="x-delete" id="'+i+'">X</a></span>';
-                $("#event-categ").append(oneCateg);
-                arrCateg.push(arrEventCateg[i]);
-
-            }
-        }
-
-        //Add price and currency
-        let arrPrice = eventUnit['prices'];
-        if(arrPrice.length>0){
-            let currentPrice = arrPrice[0];
-            $("#field-event-price").val(currentPrice['price']);
-            $("#price-currency").text(currentPrice['currency']);
-        }
-        else{
-            //$("#price-currency").text(currentPrice['currency']);
-            $("#field-event-price").attr("readonly", true);
-            $("#field-event-price").val("Price unavailable");
-            $("#price-currency").text("X");
-        }
-
-        //Add default add new poster unit
-        $("#new-posters").empty();
-        let HTMLDefaultAddNewPoster = '<span class="unit-new-poster">\
-                <span>Upload New</span>\
-                <img src="media/posters/post1.jpg"/>\
-                </span>';
-        $("#new-posters").append(HTMLDefaultAddNewPoster);
-        
-
-}
-
-function PREventDisplayToEdit2(res){
-    
-    let arrEvents = res['arr_event'];
-    
-    if(arrEvents['isOnline']==1){
-        displayEventToEdit(arrEvents);
-    }
-    else{
-        alert("You cannot edit event. You are offline");
-    }    
-}
-
-function displayEventToConfigRights(arr){
-    let eventUnit = arr;
-    $("#cr-event-title").text(eventUnit['title']);
-
-    let arrPosters = eventUnit['linkPosters'];
-    if(arrPosters.length>0){
-        $("#cr-poster-pic").attr("src", arrPosters[0]);
-    }
-    else{
-        $("#cr-poster-pic").attr("src", "media/icons/no-bg-post.jpg");
-    }
-
-    let eventPriceToAppend = eventUnit['prices'];
-    let eventDetailsToAppend = '<span>'+eventUnit['location']+'</span><span>'+eventUnit['dateTime']+'</span>';
-    if(eventPriceToAppend.length>0){
-        let priceInfo = eventPriceToAppend[0];
-        eventDetailsToAppend+='<span>'+priceInfo['price']+" "+priceInfo['currency']+'</span>';
-    }
-    $("#cr-event-detail").empty();
-    $("#cr-event-detail").append(eventDetailsToAppend);
-}
-
-function PREventDisplayConfigRights(res){
-    
-    let arrEvents = res['arr_event'];
-    
-    if(arrEvents['isOnline']==1){
-        displayEventToConfigRights(arrEvents);
-    }
-    else{
-        alert("You cannot do any configurations now. You are offline");
-    }    
-}
-
-//Function to display users into box-suggestion-users
-function displaySuggestionsUser(arr, desDis){
-    if(arr.length>0){
-        for(let i=0; i<arr.length; i++){
-            let unitSuggest = arr[i];
-            let HTMLUnitSuggest = '<span>@<strong>'+unitSuggest['username']+'</strong></span>';
-            $("#"+desDis).append(HTMLUnitSuggest);
-        }
-        return 1;
-    }
-    return 0;
-}
-//Function to handle user display in pop-up suggestion box HTTP part
-function PRUserSuggestions(res){
-    let arrUsers = res['arr_users'];
-        $("#box-suggestion-users").empty();
-        let resultArrUsers = displaySuggestionsUser(arrUsers,"box-suggestion-users");
-        if(!resultArrUsers){
-            $("#box-suggestion-users").append("<strong>No user found</strong");
-        }  
-
-}
-//To work this function depend on some external libraries
-//<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> (must be included in the <head> section of the html page)
-//I must have installed locally easyqrcode because it is fetch inside the function
-// The function might need some editing of html tag and ids where it will get and append data
-/*
-//Here is the HTML markup when it was being programmed for the first time
-<h1>QRCODE TEST</h1>
-        <input type="text" placeholder="Enter text to generate QRCODE" id="text-qrcode"/>
-        <button id="btn-test">Generate QRcode</button>
-           
-            <div class="ticket-preview" id="ticket-preview">
-                <div class="ticket-info">
-                    <h3>Some title</h3>
-                    <p>
-                        This div could contain the firt posters as background<br>
-                        The main information of the ticket<br>
-                        The username, the platform name<br>
-                        + some good design to make it beautiful.
-                    </p>
-                </div>
-                <div class = "qrcode" id="qrcode">
-
-                </div>
-            </div>
-
-            <div id="previewImg">
-
-            </div>
-
-//CSS code related to the HTML markup
-<style>
- body{ background-color: ivory; }
- canvas{border:1px solid red;}
-
-            /*Ticket CSS */
-           // .ticket-preview{display:flex; flex-direction: row; width:700px; height:250px; /*border:1px solid blue;*/}
-           // .ticket-info{display:flex; flex-direction:column; width: 60%; /*border:1px solid red;*/}
-           // .ticket-info h3 {padding:2px; margin-bottom:2px;}
-           // .ticket-info p{padding:2px; margin-top:2px;}
-          //  .qrcode{/*border:1px solid yellow; */width:270px;}</style>
-
- //*/
-
-/*function createQRcode(codeTicket, logoLink="media/icons/user-temp.png"){
-
-    //TEST QRCODE
-    $.getScript("easyqrcodejs/src/easy.qrcode.js", function() {
-        //Show to allow screenshot
-        //$("#ticket-preview").show();
-        $("#myModal").css("display","block");
-
-        var qrcode = new QRCode(document.getElementById("qrcode"), {
-            text: codeTicket,
-            logo: logoLink,
-            logoWidth: undefined,
-            logoHeight: undefined,
-            logoBackgroundColor: '#f1f1f1',
-            logoBackgroundTransparent: false,
-            backgroundImage: undefined,
-            width: 100,
-            height: 100,
-        });
-
-        html2canvas(document.getElementById("ticket-content"),		{
-            allowTaint: true,
-            useCORS: true
-        }).then(function (canvas) {
-            var anchorTag = document.createElement("a");
-            document.body.appendChild(anchorTag);
-            //document.getElementById("previewImg").appendChild(canvas);	
-            anchorTag.download = "filename.jpg";
-            anchorTag.href = canvas.toDataURL();
-            anchorTag.target = '_blank';
-            anchorTag.click();
-        });
-
-        //clear
-        qrcode.clear();
-        //$("#ticket-preview").hide();
-        $("#myModal").css("display","none");
-
-    });
-
-}*/

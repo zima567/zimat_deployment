@@ -27,18 +27,18 @@
         <div class="container event-creation-wrapper" id="event-creation-wrapper">
 
                 <label for="for-event-title">What is the event title:</label>
-                <span><input type="text" class="form-control" placeholder="Enter the title of event" id="event-title"/></span>
+                <span><input type="text" class="form-control" placeholder="Enter the title of event" id="event-title" autocomplete="new-password"/></span>
                 <label for="for-posters">Upload one or more images:</label>
                 <div class="preview" id="preview"></div>
                 <input type="file" name='files[]' multiple id="event-pictures" accept="image/png, image/gif, image/jpeg" style="display: none;">
                 <div><button class="btn btn-secondary" id="idBtnUploadImg">Choose event image(s)</button></div>
     
                 <label for="for-event-title">Post short message:</label>
-                <span><input type="text" class="form-control" placeholder="Enter a short message to promote your post" id="post-short-msg"/></span>
+                <span><input type="text" class="form-control" placeholder="Enter a short message to promote your post" id="post-short-msg" autocomplete="new-password"/></span>
 
                 <div>
                 <label for="description">Tell us more about your event:</label>
-                <textarea class="form-control"  rows="5" id="id-description" name="description-area">
+                <textarea class="form-control"  rows="5" id="id-description" name="description-area" autocomplete="new-password">
                    
                 </textarea>
                 </div>
@@ -47,7 +47,7 @@
                 <div class="loc-date-time-info">
                     <div class="box-suggestion-input-pair">
                         <span class="btn-input-pair">
-                            <input type="text" class="form-control" placeholder="Country" id="id-country"/>
+                            <input type="text" class="form-control" placeholder="Country" id="id-country" autocomplete="new-password"/>
                             <button class="btn btn-primary" id="edit-country">Edit</button>
                         </span>
                         <div class="box-suggestion" id="box-suggestion-countries">
@@ -56,7 +56,7 @@
                     </div>
                     <div class="box-suggestion-input-pair">
                         <span class="btn-input-pair">
-                            <input type="text" class="form-control" placeholder="City" id="id-city"/>
+                            <input type="text" class="form-control" placeholder="City" id="id-city" autocomplete="new-password"/>
                             <button class="btn btn-primary" id="edit-city">Edit</button>
                         </span>
                         <div class="box-suggestion" id="box-suggestion-cities">
@@ -68,16 +68,20 @@
                 <label for="for-location">Address & date:</label>
                 <div class="loc-date-time-info">
                     <input type="text" class="form-control" placeholder="Address" id="id-location"/>
-                    <input type="datetime-local" class="form-control" value="2021-08-14T00:00" id="id-date-time"/>
+                    <span class="dateTime-timezone">
+                        <input type="datetime-local" value="2021-08-14T00:00" id="id-date-time"/>
+                        <select class="form-control" name="timezone" id="idTimezone">
+                            <option selected="true" disabled="disabled">Timezone(s)</option>  
+                            <!--Display other timezone options-->
+                        </select>
+                    </span>
+                    
                 </div>
     
                 <label for="categories">Choose event categories:</label>
                 <select class="form-control" name="categList" id="idCategList">
                     <option selected="true" disabled="disabled">Select categories</option>
-                    <!--option value="Education">Education</option>
-                    <option value="Sport">Sport</option>
-                    <option value="Loisirs">Loisirs</option>
-                    <option value="Politique">Politique</option-->
+                    <!--Display of other options-->
                 </select>
                 <div class="event-categories" id="event-categ">
                     
@@ -85,15 +89,12 @@
     
                 <label for="tickets-creation">Create tickets for your event:</label>
                 <div class="ticket-creation">
-                    <input type="text" class="form-control" placeholder="number of tickets" id="id-nbr-ticket"/>
+                    <input type="text" class="form-control" placeholder="number of tickets" id="id-nbr-ticket" autocomplete="new-password"/>
                     <span class="ticket-price">
-                        <input type="text" placeholder="unit price" id="id-unit-price"/>
+                        <input type="text" placeholder="unit price" id="id-unit-price" autocomplete="new-password"/>
                         <select class="form-control" name="currency" id="idCurrency">
                             <option selected="true" disabled="disabled">Choose currency</option>  
-                            <!--option value="usd">USD</option>
-                            <option value="eu">EURO</option>
-                            <option value="rbles">RUBLES</option>
-                            <option value="gdes">GOURDES</option-->
+                            <!--Display other currency options-->
                         </select>
                     </span>
                 </div>
@@ -106,8 +107,8 @@
                     </span>
                    
                     <span class="radio-btn">
-                        <input type="radio" id="on-line" value="ONLINE" name="payment-method">
-                        <label for="online-payment">Online payment</label> 
+                        <input type="radio" id="on-line" value="ONLINE" name="payment-method" disabled>
+                        <label for="online-payment">Online payment (Not yet available)</label> 
                     </span>     
                 </div>
     
@@ -148,6 +149,8 @@
         <footer class="bg-light text-center text-lg-start">
             <!-- Copyright -->
             <div class="text-center p-3" style="background-color: #fff;  border-top: 1px solid #dfdfdf;">
+                <a class="text-dark" href="lsrs_support.html">Need help? Reach to our support team</a><br/>
+                
               © 2022 Copyright:
               <a class="text-dark" href="https://www.zimaware.com">Zimaware Inc.</a>
             </div>

@@ -277,20 +277,6 @@ body {
   to {opacity: 1}
 }
 
-/*END of slide show CSS*/
-
-  /*@media (max-width: 1100px){
-    .right-col, .search-box{
-        display: none;
-    }
-    .nav-wrapper,
-    .wrapper{
-        width: 90%;
-    }
-    .wrapper{
-        display: block;
-    }
-}*/
 
 /*MODAL CSS For number of tickets and payment*/
 /* The Modal (background) */
@@ -448,11 +434,13 @@ body {
 
 /*CSS for agent box*/
 .wrapper-agents{
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 8px;
+  margin-top: 25px;
   width: 100%;
 }
 
@@ -488,6 +476,34 @@ body {
   border: none;
   background-color: #3498db;
   color: white;
+}
+
+/*CSS for event-outdated notification box-msg*/
+.outdated-notification{
+ padding: 8px;
+ margin: 4px;
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ border-radius: 15px;
+ background-color: #d9534f;
+}
+
+.outdated-notification span{
+  padding: 4px;
+  text-align: center;
+  color: white;
+}
+
+.outdated-notification .notification-msg{
+  font-size: 18px;
+  font-weight:bold;
+}
+
+.outdated-notification .notification-msg-details{
+  font-size: 14px;
+  font-style: italic;
 }
 
 @media (min-width: 500px){

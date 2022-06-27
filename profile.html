@@ -13,9 +13,15 @@
     <script src="js/profile.js"></script>
 </head>
 <body class="class-body-profile">
+    <!--Creating loading custom spinning loader-->
+    <div class="bg-transpa" id="zima-loader">
+        <div class="loader"></div>
+        <div class="text-loading-container" id="text-loading"></div>
+    </div>
+    
     <div class="profile-body">
         <div class="container-fluid">
-            <div class="card">
+            <div class="card-profile">
                 <div class="image"> <span><img id="userimage" src="media/icons/user-icon.png"></span>
                     <h3 id="user-fname-lname"></h3>
                     <h4 id="username"></h4>
@@ -36,10 +42,7 @@
                     <span class="user-stat" id="followers-tot"><h2>0</h2> <span>FOLLOWERS</span></span>
                 </div>
                 <div class="button" id="button-action"> 
-                    <!--button id="btn-follow">FOLLOW</button> 
-                    <button id="btn-unfollow">UNFOLLOW</button> 
-                    <button id="btn-share">SHARE</button> 
-                    <button id="btn-edit">EDIT</button-->
+                    <!--Action buttons-->
                 </div>
             </div>
         </div>
@@ -68,40 +71,14 @@
         </div>
 
         <div class="container container-events-flip-card" id="container-events-flip-card">
-            
-            <!--div class="wrapper-flip-card">
-                <div class="scene scene--card">
-                    <div class="card-event">
-                    <div class="card__face card__face--front">
-                        <img id="img-poster-flip" src="media/icons/cover 11.png" width="100%" height="100%"/>
-                    </div>
-                    <div class="card__face card__face--back" id="back-card-flip">
-                        <span><span><img src="media/icons/clock.png"/></span>22:22:22</span>
-                        <span><span><img src="media/icons/location.png"/></span>22:22:22</span>
-                        <span><span><img src="media/icons/price.png"/></span>22:22:22</span>
-                    </div>
-                    </div>
-                </div>
-                <div class="container-btn">
-                    <button>View event</button>
-                </div>
-            </div-->
-
-            <!--div class="post">
-                <h3 class="info">Title of event</h3>
-                <img class="post-image" src="media/icons/cover 11.png"/>
-                <div class="btns-container-prof">
-                    <a href="#"><button class="main-action-btn-profile">View event</button></a>
-                </div>
-            </div-->
-
+            <!--All events created by user-->
         </div>
 
         <!--Modal manage event editing-->
         <div class="configuration-modal" id="modal-manage-event">
             <div class="configuration-modal-content">
                 <div class="wrapper-search-event-to-edit">
-                    <span class="pair-input-edit"><input type="search" placeholder="search for event by title" id="id-search-event" /><button id="change-event">Change</button></span>
+                    <span class="pair-input-edit"><input type="search" placeholder="search for event by title" id="id-search-event" autocomplete="new-password"/><button id="change-event">Change</button></span>
                     <div class="box-suggestion-events" id="box-suggestion-events">
                         <!--List of event suggested-->
                     </div>
@@ -126,20 +103,10 @@
                 <div class="container-posters-btn">
                         <div class="container-posters">
                             <div class="ancient-posters" id="ancient-posters">
-
-                                <!--span class="unit-ancient-poster">
-                                    <span class="remove-poster">No poster(s)</span>
-                                    <img src="media/icons/nothing1.gif"/>
-                                </span-->
-                                
+                               <!--ancient poster display--> 
                             </div>
                             <div class="new-posters" id="new-posters">
-
-                                <!--span class="unit-new-poster">
-                                    <span>Upload New</span>
-                                    <img src="media/posters/post1.jpg"/>
-                                </span-->
-
+                                <!--New poster display-->
                             </div>
 
                         </div>
@@ -219,7 +186,7 @@
         <!--POPUP for profile configuration-->
         <div class="custom-model-main" id="popup-profile-config">
             <div class="custom-model-inner">        
-            <div class="close-btn" id="close-popup-edit-profile">×</div>
+            <div class="close-btn">×</div>
                 <div class="custom-model-wrap">
                     <div class="pop-up-content-wrap">
                     <div id="id-content-popup">
@@ -261,7 +228,7 @@
         <div class="configuration-modal" id="modal-manage-agent">
             <div class="configuration-modal-content">
                 <div class="wrapper-search-event-to-edit">
-                    <span class="pair-input-edit"><input type="search" placeholder="search for event by title" id="id-search-event-2" /><button id="change-event-2">Change</button></span>
+                    <span class="pair-input-edit"><input type="search" placeholder="search for event by title" id="id-search-event-2" autocomplete="new-password"/><button id="change-event-2">Change</button></span>
                     <div class="box-suggestion-events" id="box-suggestion-events-2">
                         <!--List of event suggested-->
                     </div>
@@ -273,7 +240,7 @@
                             <div class="event-preview">
                                 <div class="post">
                                     <h3 class="info-ticket" id="cr-event-title"><!--Title of event--></h3>
-                                    <img class="" id="cr-poster-pic" src="media/icons/cover 11.png" width="100%"/>
+                                    <img class="" id="cr-poster-pic" src="#" width="100%"/>
                                     <div class="box-event-details-info" id="cr-event-detail">
                                         <!--Details about event-->
                                     </div>
@@ -336,50 +303,9 @@
         <div class="configuration-modal" id="modal-user-wallet">
             <div class="configuration-modal-content">
                 <div class="wrapper-fields-to-edit" id="wrapper-fields-to-edit-3" style="display: flex;">  
-                <div class="inner-wrapper-wallet" id="inner-wrapper-wallet">
+                    <div class="inner-wrapper-wallet" id="inner-wrapper-wallet">
 
-                        <div class="wallet-event-unit">
-
-                            <div class="info-wallet-header">
-                                <span class="title-header">Grand match de foot</span>
-                                <span class="other-header-info">
-                                    <span><b>Date & time</b><br/> 2022-12-11 19:00</span>
-                                    <span><b>Address</b><br/> Mopra 16</span>
-                                    <span><b>Location</b><br/> Russia, Oryol</span>
-                                </span>
-                            </div>
-                            <div class="info-wallet-body">
-
-                                <div class="info-block">
-                                    <span class="title-block"><span class="title">TICKETS -></span> <span class="number">500</span></span>
-                                    <span class="box-block">
-                                        <span>Sold: 450</span>
-                                        <span>Scanned:300</span>
-                                    </span>
-                                </div>
-                                <div class="info-block">
-                                    <span class="title-block"><span class="title">PRICES -></span> <span class="number">19 800 Rbles</span></span>
-                                    <span class="box-block">
-                                        <span>Price: 450 Rbles (220)</span>
-                                        <span>Price: 500 Rbles (140)</span>
-                                    </span>
-                                </div>
-                                <div class="info-block">
-                                    <span class="title-block"><span class="title">AGENT(S) -></span> <span class="number">2</span></span>
-                                    <span class="box-block">
-                                        <!--Table of event statistic control-->
-                                    </span>  
-                                </div>
-                                <div class="info-block">
-                                    <span class="title-block"><span class="title">SERVICE FEE -></span> <span class="number">144 Rbles</span></span>
-                                    <span class="box-block">
-                                        <span>Status: NOT PAID</span>
-                                        <span>Payment info: link</span>
-                                    </span>
-                                </div>
-
-                            </div>
-                        </div>
+                        
 
                     </div>
                 </div>
@@ -486,13 +412,22 @@
             </div>
         </div>
     </div>
-    <!--Bottom nav bar-->
-    <!--nav class="container-fluid bottom-menu">
-            <li><a href="#"><i class="bi bi-house-door-fill"></i></a><span>Home</span></li>
-            <li><a href="#"><i class="bi bi-wallet-fill"></i></a><span>Account</span></li>
-            <li><a href="#"><i class="bi bi-search"></i></a><span>Search</span></li>
-            <li><a href="#"><i class="bi bi-sliders"></i></a><span>Settings</span></li>
-    </nav-->
+
+    <!--POPUP INFORMATION BOX3-->
+    <div class="custom-model-main" id="pop-up-box3">
+        <div class="custom-model-inner">        
+        <div class="close-btn">×</div>
+            <div class="custom-model-wrap">
+                <div class="pop-up-content-wrap">
+                <div id="id-content-popup3">
+                    <input type="text" id="event-link-val" readonly/>
+                    <button id="btn-cpy-link">Copy link</button>
+                </div>
+                </div>
+            </div>  
+        </div>  
+        <div class="bg-overlay"></div>
+    </div>
 
     <!--Mobile bottom navigation bar-->
     <nav class="app-navigation">
@@ -522,16 +457,6 @@
                     <a href="etc_search.html?type=all">
 
                         <i class="bi bi-search"></i>
-
-                    </a>
-
-                </div>
-
-                <div class="app-navigation-container-icon">
-
-                    <a href="#0">
-
-                        <i class="bi bi-sliders"></i>
 
                     </a>
 

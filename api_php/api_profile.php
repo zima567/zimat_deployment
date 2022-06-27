@@ -10,15 +10,18 @@ $APIResponse = array();
 $APIResponse = array_merge($APIResponse, $con_status);
 
 //Utilities variables
-$queryErrorAndStatus = array("query_error"=>"NONE", "user_found"=>0, "actor"=>"NOT_SELF"); //Just add the info of if user is found or not here for faster
+$queryErrorAndStatus = array("query_error"=>"NONE", "user_found"=>0, "actor"=>"NOT_SELF", "is_user_online"=>0); //Just add the info of if user is found or not here for faster
 $userProfileInfo = array();
 
 //POST variables
 $userId = isset($_POST['idUser'])? $_POST['idUser'] : 0;
 
 //Determine actor
-if(isset($_SESSION['idUser']) && $_SESSION['idUser'] == $userId){
-    $queryErrorAndStatus['actor'] = "SELF";
+if(isset($_SESSION['idUser'])){
+    $queryErrorAndStatus['is_user_online'] = 1;
+    if($_SESSION['idUser'] == $userId){
+        $queryErrorAndStatus['actor'] = "SELF";
+    }  
 }
 
 try{

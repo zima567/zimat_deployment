@@ -266,9 +266,10 @@ if(isset($_SESSION['idUser'])){
 
                         if(isset($_POST['update_date_time'])){
                             //Update event date $_POST['dateTime']
-                            $sql_update_dateTime = "UPDATE `event` SET `dateTime` =? WHERE `idEvent` =?";
+                            $event_status = "RESCHEDULED";
+                            $sql_update_dateTime = "UPDATE `event` SET `dateTime` =?, `status` =? WHERE `idEvent` =?";
                             $stmt_update_dateTime= $connection->prepare($sql_update_dateTime);
-                            if($stmt_update_dateTime->execute([$_POST['update_date_time'], $_POST['idEvent']])){$fieldUpdateStatus['is_dateTime_updated']=1;}
+                            if($stmt_update_dateTime->execute([$_POST['update_date_time'], $event_status, $_POST['idEvent']])){$fieldUpdateStatus['is_dateTime_updated']=1;}
                            
                         }
 

@@ -1,3 +1,24 @@
+ /*CSS for header going back*/
+ .page-top-bar{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px;
+  background: #fff;
+  border-bottom: 1px solid #dfdfdf;
+  
+}
+.page-top-bar h1{
+  font-size: 22px;
+}
+.page-top-bar a {
+  margin-right: 15px;
+}
+.page-top-bar i{
+  font-size: 25px;
+  color: black;
+}
+
 .wrapper {
     display: flex;
     flex-direction: column;
@@ -84,4 +105,9 @@
     color: #424242;
     padding: 20px;
     font-weight: 400;
+}
+
+.job_post{
+  font-size: 16px;
+  font-style: italic;
 }

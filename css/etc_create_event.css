@@ -122,6 +122,18 @@ body{
     flex-direction: column;
 }
 
+.dateTime-timezone{
+    display: flex;
+    flex-direction: row;
+}
+
+.dateTime-timezone input{
+    width: 70%;
+}
+.dateTime-timezone select{
+    width: 30%;
+}
+
 .box-suggestion-input-pair{
     display: flex;
     flex-direction: column;

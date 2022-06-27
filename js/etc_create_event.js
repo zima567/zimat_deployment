@@ -11,7 +11,7 @@ $(document).ready(function(){
     requestSender(destinationReq, dataObj, PRCategDisplay);
 
     //Get today date and set min-date
-    console.log(currentDateAndTime());
+    //console.log(currentDateAndTime());
     $("#id-date-time").val(currentDateAndTime());
     $("#id-date-time").attr('min', currentDateAndTime());
 
@@ -68,6 +68,11 @@ $(document).ready(function(){
         let dataObj ={family_suggest:"TICKET_CURRENCY", query_data:"", countryName:$("#id-country").val().trim()};
         let destinationReq = "api_php/api_etc_suggestion_v2.php";
         requestSender(destinationReq, dataObj, PRCurrencyDisplay);
+
+        //Display appropriate GMT for country selected
+        let dataObj2 ={family_suggest:"COUNTRY_TIMEZONE", query_data:"", countryName:$("#id-country").val().trim()};
+        let destinationReq2 = "api_php/api_etc_suggestion_v2.php";
+        requestSender(destinationReq2, dataObj2, PRGMTDisplay);
     });
     //On click on Edit country button
     $("#edit-country").on("click", function(){
@@ -166,6 +171,7 @@ $(document).ready(function(){
         let eventLocation_country = $("#id-country").val();
         let eventLocation_city = $("#id-city").val();
         let eventDateTime = $("#id-date-time").val();
+        let eventTimezone = $("#idTimezone").val();
         let eventArrCateg = arrCateg;
         let eventNbrTicket = $("#id-nbr-ticket").val();
         let eventTicketPrice = $("#id-unit-price").val().trim();
@@ -206,6 +212,7 @@ $(document).ready(function(){
             formData.append('location_country', eventLocation_country);
             formData.append('location_city', eventLocation_city);
             formData.append('dateTime', eventDateTime);
+            formData.append('eventTimezone', eventTimezone);
             formData.append('nbrTicket', eventNbrTicket);
             formData.append('ticketPrice', eventTicketPrice);
             formData.append('currency', priceCurrency);
@@ -227,7 +234,7 @@ $(document).ready(function(){
                 success:function(data)
                 {
                     $("#zima-loader").css("display","none");
-                    console.log(data);
+                    //console.log(data);
                     RPEventCreation(data);
 
                 }
@@ -286,6 +293,11 @@ var imagesPreview = function(input, placeToInsertImagePreview) {
     }
 
 };
+
+//Void function for testing purposes
+function voidFunction(res){
+
+}
 
 //Get current date and time
 function currentDateAndTime(){
@@ -347,15 +359,37 @@ function displayCurrencies(arr, desBis){
             let unitCurrency = arr[i];
             let HTMLUnitCurrency = '';
             if(i==0){
-                HTMLUnitCurrency = '<option value="'+unitCurrency['currencyCode']+'">'+unitCurrency['currencyCode']+' <em> - national currency</em></option>';
+                HTMLUnitCurrency = '<option selected="true" value="'+unitCurrency['currencyCode']+'">'+unitCurrency['currencyCode']+' <em> - national currency</em></option>';
+                $("#"+desBis).append(HTMLUnitCurrency);
             }
-            HTMLUnitCurrency = ' <option value="'+unitCurrency['currencyCode']+'">'+unitCurrency['currencyCode']+'</option>';
-            $("#"+desBis).append(HTMLUnitCurrency);
+            else{
+                HTMLUnitCurrency = ' <option value="'+unitCurrency['currencyCode']+'" disabled>'+unitCurrency['currencyCode']+'</option>';
+                $("#"+desBis).append(HTMLUnitCurrency);
+            }
         }
         return 1;
     }
     return 0;
 }
+
+//Display GMT (timezones)
+function displayGMT(arr, desBis){
+    if(arr.length>0){
+        for(let i=0; i<arr.length;i++){
+            if(i==0){
+                let HTMLUnitGMT = ' <option selected="true" value="'+arr[i]+'">'+arr[i]+'</option>';
+                $("#"+desBis).append(HTMLUnitGMT);
+            }
+            else{
+                let HTMLUnitGMT = ' <option value="'+arr[i]+'">'+arr[i]+'</option>';
+                $("#"+desBis).append(HTMLUnitGMT);
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
+
 
 function requestSender(destinationToRequest, obj, processorFunc){
     $.ajax({
@@ -365,7 +399,7 @@ function requestSender(destinationToRequest, obj, processorFunc){
         dataType : "json",
     })
     .done(function( response ) {
-        console.log(response);
+        //console.log(response);
         processorFunc(response)
     })
     .fail(function( xhr, status, errorThrown ) {
@@ -407,6 +441,15 @@ function PRCurrencyDisplay(res){
     let resultArrCurrencies = displayCurrencies(arrCurrencies, "idCurrency");
     if(!resultArrCurrencies){
         $("#idCurrency").append('<option selected="true" disabled="disabled">Currency not found</option>'); 
+    }
+}
+
+function PRGMTDisplay(res){
+    $("#idTimezone").children().not(':first').remove();
+    let arrGMT = res['arr_timezone'];
+    let resultArrGMT = displayGMT(arrGMT, "idTimezone");
+    if(!resultArrGMT){
+        $("#idTimezone").append('<option selected="true" disabled="disabled">No GMT</option>'); 
     }
 }
 

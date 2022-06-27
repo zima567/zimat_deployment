@@ -7,8 +7,6 @@ require ("connection.php");
 //api response
 //$APIResponse = array();
 $APIResponse = array("arr_status"=>array(), "arr_event"=>array());
-//$APIResponse = array_merge($APIResponse, $con_status);
-//array_push($APIResponse, array()); // api_response[0] will contain status con, status query,
 
 //Utilities variables
 $queryError = array("query_error"=>"NONE");
@@ -18,7 +16,7 @@ $falseVar = 0;
 $eventID = $_POST['idEvent'];
 
 try{
-    $sql_select_event = "SELECT `idEvent`, `title`, `postMessage`, `description`, `location`, `country`.`name` AS `location_country`, `cities`.`name` AS `location_city`, `dateTime`, `status`, `directorFK`, `username`, `avatar`, `firstName`, `lastName`, `address`, `bio` FROM ((((`event` INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `country` ON `event`.`location_country` = `country`.`idCountry`) INNER JOIN `cities` ON `event`.`location_city` = `cities`.`idCity`) WHERE `event`.`idEvent`=?";
+    $sql_select_event = "SELECT `idEvent`, `title`, `postMessage`, `description`, `location`, `country`.`name` AS `location_country`, `cities`.`name` AS `location_city`, `dateTime`, `world_timezone`.`GMT` AS `event_GMT`,`status`, `directorFK`, `username`, `avatar`, `firstName`, `lastName`, `address`, `bio` FROM (((((`event` INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `country` ON `event`.`location_country` = `country`.`idCountry`) INNER JOIN `cities` ON `event`.`location_city` = `cities`.`idCity`)INNER JOIN `world_timezone` ON `event`.`event_GMT` = `world_timezone`.`idWTimezone`) WHERE `event`.`idEvent`=?";
     $stmt1 = $connection->prepare($sql_select_event);
 
     $sql_select_posters = "SELECT `linkToPoster` FROM `event_poster` WHERE `idEventFK`=?"; //many records
@@ -35,15 +33,44 @@ try{
 
     $sql_available_ticket = "SELECT COUNT(`idTicket`) AS `availableTicket` FROM `event_ticket` WHERE `idEventFK`=? AND `sold`=?";
     $stmt6 = $connection->prepare($sql_available_ticket); //Return number of available ticket
+
+    $sql_sell_out = "SELECT `totalTicket`, `qtSold` FROM `event_ticket_counter` WHERE `idEventFK` =?";
+    $stmt_sell_out = $connection->prepare($sql_sell_out);
+
      /*Remember to prevent access to agents info and available ticket to offline user */
 
-     $sql_is_agent = "SELECT `idAgentFK` FROM `event_agent` WHERE `idAgentFK` =? AND `idEventFK` =?";
-     $stmt7 = $connection->prepare($sql_is_agent);
+    $sql_is_agent = "SELECT `idAgentFK` FROM `event_agent` WHERE `idAgentFK` =? AND `idEventFK` =?";
+    $stmt7 = $connection->prepare($sql_is_agent);
 
     $stmt1->execute([$eventID]);
     if($stmt1->rowCount()>0){
         //This event exist
         $row_event_info = $stmt1->fetch();
+
+        //Check event Status, configure if needed
+        $event_current_status =$row_event_info['status'];
+        $eventGMT = $row_event_info['event_GMT'];
+        $currentTimezone = new DateTime("now", new DateTimeZone($eventGMT));
+        $currentTimezone = $currentTimezone->format('Y-m-d H:i:s');
+        $eventdateTime = $row_event_info['dateTime'];
+        if($currentTimezone > $eventdateTime){
+            $event_current_status = "OUTDATED";
+            $sql_update_event_status = "UPDATE `event` SET `status` =? WHERE `idEvent` =?";
+            $stmt_update_event_status = $connection->prepare($sql_update_event_status);
+            $stmt_update_event_status->execute([$event_current_status, $row_event_info['idEvent']]);
+        }
+
+        //Check selling status (OPEN OR SOLDOUT)
+        $sellStatus = "OPEN";
+        $stmt_sell_out->execute([$row_event_info['idEvent']]);
+        if($stmt_sell_out->rowCount()>0){
+            $row_sell_out = $stmt_sell_out->fetch();
+            if($row_sell_out['totalTicket']==$row_sell_out['qtSold']){
+                $sellStatus = "SOLDOUT";
+            }
+        }
+
+
         $temp_arr_event = array("idEvent"=>$row_event_info['idEvent'],
                                             "title"=>$row_event_info['title'],
                                             "postMessage"=>$row_event_info['postMessage'],
@@ -52,7 +79,8 @@ try{
                                             "location_country"=>$row_event_info['location_country'],
                                             "location_city"=>$row_event_info['location_city'],
                                             "dateTime"=>$row_event_info['dateTime'],
-                                            "status"=>$row_event_info['status'],
+                                            "status"=>$event_current_status,
+                                            "sell_status"=>$sellStatus,
                                             "directorFK"=>$row_event_info['directorFK'],
                                             "username"=>$row_event_info['username'],
                                             "avatar"=>$row_event_info['avatar'],

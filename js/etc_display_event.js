@@ -369,13 +369,21 @@ function MPREvent(res){
           <span><img src="media/icons/location.png"/><span>'+arrEvent['location']+'</span></span>\
           <span><img src="media/icons/clock.png"/><span>'+arrEvent['dateTime']+'</span></span>\
           <span><img src="media/icons/price.png"/><span>'+lastPrice['price']+lastPrice['currency']+'</span></span>\
-        </div>\
-        <div class="product-price-btn">';
+        </div>';
+
+        //Check status to display corresponding info
+        if(arrEvent['status'] =="OUTDATED"){
+            HTMLElement+='<div class="outdated-notification"><span class="notification-msg">Event is outdated</span>\
+                                <span class="notification-msg-details">This event has started or it had already happened.</span>\
+                          </div>';
+        }
+
+        HTMLElement+='<div class="product-price-btn">';
 
         //Handle event diplay for agent, simple user, online, offline
         if(lastPrice['onlinePayment'] ==1){
             if(arrEvent['isOnline']==1){
-                HTMLElement+='<button type="button" id="buy-event-ticket">buy now</button>';
+                HTMLElement+=((arrEvent['sell_status'] !="SOLDOUT")? '<button type="button" id="buy-event-ticket">buy now</button>':'<button type="button" >EVENT SOLDOUT</button>');
             }
             else{
                 HTMLElement+='<button type="button" id="login-buy-btn">Login to purchase</button>';
@@ -383,7 +391,7 @@ function MPREvent(res){
         }
         else{
             if(arrEvent['isAgent'] ==1){
-                HTMLElement+='<button type="button" id="buy-event-ticket">Sell ticket</button>';
+                HTMLElement+=((arrEvent['sell_status'] !="SOLDOUT")? '<button type="button" id="buy-event-ticket">Sell ticket</button>':'<button type="button">EVENT SOLDOUT</button>');
             }
             else{
                 //HTMLElement+='<div class="info-about-agent"><span><img src="#"/></span>Agent_user_name</div>';
@@ -393,7 +401,7 @@ function MPREvent(res){
                         var agentUnit = ' <div class="agent-unit">\
                                            <div class="info-unit">\
                                             <span>'+element['username']+'</span>\
-                                            <span>Authorized agent</span>\
+                                            <span>Authorized agent  | '+((arrEvent['sell_status'] != "SOLDOUT")?"<b style='color:green'>SELL OPEN</b>":"<b style='color:red'>EVENT SOLDOUT</b>")+'</span>\
                                             </div>\
                                             <div class="link-unit">\
                                             <a href="'+element['facebook']+'"><i class="bi bi-facebook"></i></a>\

@@ -32,6 +32,7 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
         $location_country = $_POST['location_country'];
         $location_city = $_POST['location_city'];
         $dateTime = $_POST['dateTime'];
+        $eventTimezone = $_POST['eventTimezone'];
         $arrCateg = isset($_POST['arrCateg'])? $_POST['arrCateg'] : array();
         //$arrCateg = array("Daniel", "wawa");
         $nbrTicket = isset($_POST['nbrTicket'])? $_POST['nbrTicket'] : 0;
@@ -96,7 +97,7 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
         try{
             //Queries
             //Think about adding a transaction for the queries*********
-            $sql_insert_event = "INSERT INTO `event` (`title`, `postMessage`, `description`, `location_country`, `location_city`, `location`, `dateTime`, `status`, `directorFK`,`postDateTime`) VALUES(?,?,?,?,?,?,?,?,?,?)";
+            $sql_insert_event = "INSERT INTO `event` (`title`, `postMessage`, `description`, `location_country`, `location_city`, `location`, `dateTime`, `event_GMT`, `status`, `directorFK`,`postDateTime`) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
             $stmt1 = $connection->prepare($sql_insert_event);
 
             //Get country and city ids of event
@@ -105,6 +106,10 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
 
             $sql_id_city = "SELECT `idCity` FROM `cities` WHERE `name` =?";
             $stmt_id_city = $connection->prepare($sql_id_city);
+
+            //Get id timezone in Database
+            $sql_id_GMT = "SELECT `idWTimezone` FROM `world_timezone` WHERE `GMT` =?";
+            $stmt_id_GMT = $connection->prepare($sql_id_GMT);
 
             $sql_insert_posters = "INSERT INTO `event_poster`(`linkToPoster`, `dateUploaded`, `idEventFK`) VALUES(?,?,?)";
             $stmt2 = $connection->prepare($sql_insert_posters);
@@ -144,8 +149,19 @@ if(isset($_SESSION['idUser']) && $_SESSION['idUser']!=""){
                 //Throw error that city or country not supported
                 throw new PDOException("error: Country and/or city not supported"); 
             }
+            //Get id Timezone
+            $idGMT ="";
+            $stmt_id_GMT->execute([$eventTimezone]);
+            if($stmt_id_GMT->rowCount()>0){
+                $row_id_GMT = $stmt_id_GMT->fetch();
+                $idGMT = $row_id_GMT['idWTimezone'];
+            }
+            else{
+                //Throw error that Timezone not supported
+                throw new PDOException("error: Timezone not supported");  
+            }
 
-            $stmt1->execute([$title, $postMessage, $description, $location_country, $location_city, $location, $dateTime, $status, $userId, $postDateTime]);
+            $stmt1->execute([$title, $postMessage, $description, $location_country, $location_city, $location, $dateTime, $idGMT, $status, $userId, $postDateTime]);
             //Get last inserted event id
             $idInsertedEvent = $connection->lastInsertId();
 

@@ -272,6 +272,26 @@ body{
     margin-right: 10px;
 }
 
+.event-status{
+    font-size:11px; 
+    font-style:italic; 
+    padding:8px; border-radius:15px; 
+    color:white;
+}
+
+.event-scheduled{
+    background-color:#5bc0de; 
+}
+
+.event-rescheduled{
+    background-color:#f0ad4e;
+    color: black;
+}
+
+.event-outdated{
+    background-color:#d9534f; 
+}
+
 .post-time{
     color: rgba(0, 0, 0, 0.5);
     font-size: 12px;

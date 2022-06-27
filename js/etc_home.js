@@ -78,7 +78,7 @@ $(document).ready(function(){
         })
         .done(function( response ){
             $("#mini-text-loader").css("display", "none");
-            console.log(response);
+            //console.log(response);
             myTicketsRequestHandler(response);
         })
         .fail(function( xhr, status, errorThrown ) {
@@ -204,7 +204,7 @@ $(document).ready(function(){
             dataType : "json",
         })
         .done(function( response ) {
-            console.log(response);
+            //console.log(response);
             likeActionHandler(response, eventID, pointerParent, imgLikeElement);
         })
         .fail(function( xhr, status, errorThrown ) {
@@ -557,9 +557,20 @@ function appendEventsToCatalogue(arrEventSelection, catalogue="idCatalogue"){
             </div>';
             
             //Add the number of likes
+            let bg_event_status ="";
+            if(arrEF['status']=="SCHEDULED"){
+                bg_event_status = "event-scheduled";
+            }
+            else if(arrEF['status']=="RESCHEDULED"){
+                bg_event_status = "event-rescheduled";
+            }
+            else{
+                bg_event_status = "event-outdated";
+            }
+
             event_unit+='<p class="likes" id="event-like-nbr-'+arrEF['idEvent']+'">'+arrEF['nbrLike']+' likes</p>\
             <p class="description"><span>'+arrEF['username']+'</span>'+arrEF['postMessage']+'</p>\
-            <p class="description"><span>'+arrEF['title']+'</span><p>\
+            <p class="description"><span>'+arrEF['title']+'</span><span class="event-status '+bg_event_status+'">'+arrEF['status']+'<span><p>\
                 <div class="main-info description">\
                     <span><img src="media/icons/location.png"/><span>'+arrEF['location']+'</span></span>\
                     <span><img src="media/icons/clock.png"/><span>'+arrEF['dateTime']+'</span></span>';
@@ -689,7 +700,6 @@ function usersRequestHandler(res){
     else{
         let loginIcon = '<a href="lsrs_login.html"><img src="media/icons/login.png" alt="login-icon"/></a>'
         $("#logout").html(loginIcon);
-
         //For bottom menu
         $("#profile-link2").attr("href", "lsrs_login.html");
     }

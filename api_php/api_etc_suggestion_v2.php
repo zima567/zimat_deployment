@@ -8,18 +8,14 @@ require ("connection.php");
 $APIResponse = array("arr_status"=>array());
 //Utilities variables
 $arrError = array("query_error"=>"NONE", "divers_error"=>"NONE", "family_suggest"=>"NONE", "family_suggest_is_handled"=>0);
-$arrayCountries = array();
-$arrayCities = array();
-$arrayCateg = array();
-$arrayListCurrencies = array();
-$arrayUsers = array();
-$arrayMyEvents = array();
 
 try{
     if(isset($_POST['family_suggest']) && isset($_POST['query_data'])){
         $arrError['family_suggest'] = $_POST['family_suggest'];
         if($_POST['family_suggest'] == "COUNTRY_CITY"){
             $arrError['family_suggest_is_handled'] = 1;
+            $arrayCountries = array();
+            $arrayCities = array();
 
             //SQLs Countries & cities
             $sql_all_countries = "SELECT `idCountry`, `name`, `currencyCode`, `currencyName`, `language`, `isFederation` FROM `country` INNER JOIN `currency` ON `country`.`idCurrencyFK`=`currency`.`idCurrency` WHERE `country`.`name` LIKE ? OR `country`.`name` LIKE ? OR `country`.`name` LIKE ?";
@@ -75,10 +71,14 @@ try{
                 }
                 
             }
+            $temp_arr_API = array("arr_countries"=>$arrayCountries, "arr_cities"=>$arrayCities);
+            $APIResponse = array_merge($APIResponse, $temp_arr_API);
 
         }
         elseif($_POST['family_suggest'] == "EVENT_CATEGORIES"){
             $arrError['family_suggest_is_handled'] = 1;
+            $arrayCateg = array();
+
             //SQLs get categories
             $sql_cateogories = "SELECT * FROM `category`";
             $stmt_categories = $connection->prepare($sql_cateogories);
@@ -90,9 +90,13 @@ try{
                                                   "title"=>$row_categories['title']));
                 }
             }
+            $temp_arr_API = array("arr_categ"=>$arrayCateg);
+            $APIResponse = array_merge($APIResponse, $temp_arr_API);
         }
         elseif($_POST['family_suggest'] =="TICKET_CURRENCY" && isset($_POST['countryName'])){
             $arrError['family_suggest_is_handled'] = 1;
+            $arrayListCurrencies = array();
+
             //SQLs get currencies
             $sql_nation_currency = "SELECT `idCurrency`, `currencyCode`, `currencyName` FROM `country` INNER JOIN `currency` ON `country`.`idCurrencyFK`=`currency`.`idCurrency` WHERE `country`.`name` =?";
             $stmt_nation_currency = $connection->prepare($sql_nation_currency);
@@ -122,9 +126,30 @@ try{
                                                       "currencyName"=>"NONE"));
             }
 
+            $temp_arr_API = array("arr_currencies"=>$arrayListCurrencies);
+            $APIResponse = array_merge($APIResponse, $temp_arr_API);
+
+        }
+        elseif($_POST['family_suggest'] =="COUNTRY_TIMEZONE" && isset($_POST['countryName'])){
+            $arrError['family_suggest_is_handled'] = 1;
+            $arrayGMT = array();
+
+            //SQL get country timezone(s)
+            $sql_get_tz = "SELECT `GMT` FROM ((`country_timezone` INNER JOIN `world_timezone` ON `country_timezone`.`idWTimezoneFK` = `world_timezone`.`idWTimezone`) INNER JOIN `country` ON `country_timezone`.`idCountryFK` = `country`.`idCountry`) WHERE `country`.`name` =?";
+            $stmt_get_tz = $connection->prepare($sql_get_tz);
+            $stmt_get_tz->execute([$_POST['countryName']]);
+            if($stmt_get_tz->rowCount()>0){
+                while($row_get_tz = $stmt_get_tz->fetch()){
+                    array_push($arrayGMT, $row_get_tz['GMT']);
+                }
+            }
+
+            $temp_arr_API = array("arr_timezone"=>$arrayGMT);
+            $APIResponse = array_merge($APIResponse, $temp_arr_API);
         }
         elseif($_POST['family_suggest'] =="USER_CITY"){
             $arrError['family_suggest_is_handled'] = 1;
+            $arrayCities = array();
 
             $sql_range_cities = "SELECT `idCity`, `cities`.`name` AS `city_name`, `idCountry`, `country`.`name` AS `country_name` FROM `cities` INNER JOIN `country` ON `cities`.`idCountryFK` = `country`.`idCountry` WHERE `cities`.`name` LIKE ? OR `cities`.`name` LIKE ? OR `cities`.`name` LIKE ? LIMIT 100";
             $stmt_range_cities = $connection->prepare($sql_range_cities);
@@ -141,10 +166,13 @@ try{
                                                 "country_name"=>$row_cities['country_name']));
                 }
             }
+            $temp_arr_API = array("arr_cities"=>$arrayCities);
+            $APIResponse = array_merge($APIResponse, $temp_arr_API);
 
         }
         elseif($_POST['family_suggest'] =="USERS_PLATFORM"){
             $arrError['family_suggest_is_handled'] = 1;
+            $arrayUsers = array();
 
             $sql_range_users = "SELECT `idUser`, `username` FROM `user`  WHERE `username` LIKE ? OR `username` LIKE ? OR `username` LIKE ? LIMIT 100";
             $stmt_range_users = $connection->prepare($sql_range_users);
@@ -160,9 +188,12 @@ try{
                                                   "username"=>$row_users['username']));
                 }
             }
+            $temp_arr_API = array("arr_users"=>$arrayUsers);
+            $APIResponse = array_merge($APIResponse, $temp_arr_API);
         }
         elseif($_POST['family_suggest'] =="USER_EVENTS"){
             $arrError['family_suggest_is_handled'] = 1;
+            $arrayMyEvents = array();
 
             $sql_event_basic_info = "SELECT `idEvent`, `title` FROM `event` WHERE `directorFK` =? AND ( `title` LIKE ? OR `title` LIKE ? OR `title` LIKE ? )";
             $stmt0 = $connection->prepare($sql_event_basic_info);
@@ -186,6 +217,8 @@ try{
             else{
                 $arrError['divers_error'] = "USER_OFFLINE";
             }
+            $temp_arr_API = array("arr_my_events"=>$arrayMyEvents);
+            $APIResponse = array_merge($APIResponse, $temp_arr_API); 
 
         }
         else{
@@ -207,32 +240,6 @@ try{
 //Query error
 $arr_status = array_merge($con_status, $arrError);
 $APIResponse['arr_status'] = $arr_status;
-if($arrError['family_suggest_is_handled']){
-    if($arrError['family_suggest']=="COUNTRY_CITY"){
-        $temp_arr_API = array("arr_countries"=>$arrayCountries, "arr_cities"=>$arrayCities);
-        $APIResponse = array_merge($APIResponse, $temp_arr_API);
-    }
-    elseif($arrError['family_suggest']=="EVENT_CATEGORIES"){
-        $temp_arr_API = array("arr_categ"=>$arrayCateg);
-        $APIResponse = array_merge($APIResponse, $temp_arr_API);
-    }
-    elseif($arrError['family_suggest']=="TICKET_CURRENCY"){
-        $temp_arr_API = array("arr_currencies"=>$arrayListCurrencies);
-        $APIResponse = array_merge($APIResponse, $temp_arr_API);
-    }
-    elseif($arrError['family_suggest']=="USER_CITY"){
-        $temp_arr_API = array("arr_cities"=>$arrayCities);
-        $APIResponse = array_merge($APIResponse, $temp_arr_API); 
-    }
-    elseif($arrError['family_suggest']=="USERS_PLATFORM"){
-        $temp_arr_API = array("arr_users"=>$arrayUsers);
-        $APIResponse = array_merge($APIResponse, $temp_arr_API); 
-    }
-    elseif($arrError['family_suggest']=="USER_EVENTS"){
-        $temp_arr_API = array("arr_my_events"=>$arrayMyEvents);
-        $APIResponse = array_merge($APIResponse, $temp_arr_API); 
-    }
-}
 
 //var_dump($APIResponse);
 header('Content-type:application/json');

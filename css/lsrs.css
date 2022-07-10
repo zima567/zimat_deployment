@@ -34,8 +34,18 @@ height: calc(100% - 73px);
 .bottom-socials a{
     text-decoration: none;
 }
+
 .bottom-socials i{
     font-size: 24px;
+}
+
+.socials i{
+    font-size: 24px;
+}
+
+.socials a{
+    text-decoration: none;
+    margin: 4px;
 }
 .error-text{
     color: red;

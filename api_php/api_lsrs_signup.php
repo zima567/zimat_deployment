@@ -69,7 +69,7 @@ try{
         $verificationLink = "localhost/zimat_deployment/verification.php?z=".urlencode(base64_encode($email))."&i=".$randomCode;
 
         $sender =$gsv_senderN1;
-        $senderTitle ="Zimaware INC.";
+        $senderTitle ="Zimaccess Team";
         $receiver =$email;
         $receiverTitle = $username." Welcome to our platform! We hope you have the best experience with us.";
         $subject = "Email confirmation";
@@ -117,7 +117,7 @@ try{
                   <table role="presentation" style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
                     <tr>
                       <td style="padding:40px 30px 30px 30px;text-align:center;font-size:24px;font-weight:bold;">
-                        <a href="#" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/logo.png" width="165" alt="Logo" style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;"></a>
+                        <a href="#" style="text-decoration:none;"><img src="https://www.zimaccess.com/media/icons/zimaware_logo1.jpeg" width="165" alt="Logo" style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;"></a>
                       </td>
                     </tr>
                     <tr>
@@ -128,7 +128,7 @@ try{
                     </tr>
                     <tr>
                       <td style="padding:0;font-size:24px;line-height:28px;font-weight:bold;">
-                        <a href="#" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/1200x800-2.png" width="600" alt="" style="width:100%;height:auto;display:block;border:none;text-decoration:none;color:#363636;"></a>
+                        <a href="#" style="text-decoration:none;"><img src="https://www.zimaccess.com/media/icons/std_scan_bg2.webp" width="600" alt="" style="width:100%;height:auto;display:block;border:none;text-decoration:none;color:#363636;"></a>
                       </td>
                     </tr>
                     <tr>
@@ -142,7 +142,7 @@ try{
                     </tr>
                     <tr>
                       <td style="padding:30px;font-size:24px;line-height:28px;font-weight:bold;background-color:#ffffff;border-bottom:1px solid #f0f0f5;border-color:rgba(201,201,207,.35);">
-                        <a href="#" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/1200x800-1.png" width="540" alt="" style="width:100%;height:auto;border:none;text-decoration:none;color:#363636;"></a>
+                        <a href="#" style="text-decoration:none;"><img src="https://www.zimaccess.com/media/icons/std_forgot_pwd.jpg" width="540" alt="" style="width:100%;height:auto;border:none;text-decoration:none;color:#363636;"></a>
                       </td>
                     </tr>
                     <tr>
@@ -154,8 +154,7 @@ try{
                     </tr>
                     <tr>
                       <td style="padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
-                        <p style="margin:0 0 8px 0;"><a href="http://www.facebook.com/" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/facebook_1.png" width="40" height="40" alt="f" style="display:inline-block;color:#cccccc;"></a> <a href="http://www.twitter.com/" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/twitter_1.png" width="40" height="40" alt="t" style="display:inline-block;color:#cccccc;"></a></p>
-                        <p style="margin:0;font-size:14px;line-height:20px;">&reg; zimaccess, All rights reserved<br><a class="unsub" href="wwww.zimaware.com" style="color:#cccccc;text-decoration:underline;">Reach to our support team</a></p>
+                        <p style="margin:0;font-size:14px;line-height:20px;">Copyright &reg; 2022 zimaccess. All rights reserved.<br><a class="unsub" href="https://wwww.zimaccess.com/lsrs_support.html" style="color:#cccccc;text-decoration:underline;">Reach to our support team</a></p>
                       </td>
                     </tr>
                   </table>

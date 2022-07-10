@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`country` (
   CONSTRAINT `fk_idCurrencyFK_idCurrency_country`
     FOREIGN KEY (`idCurrencyFK`)
     REFERENCES `zimaware_zimatdb`.`currency` (`idCurrency`)
-    ON DELETE NO ACTION
+    ON DELETE SET NULL
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`cities` (
   CONSTRAINT `fk_idCountryFK_idCountry_cities`
     FOREIGN KEY (`idCountryFK`)
     REFERENCES `zimaware_zimatdb`.`country` (`idCountry`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -113,12 +113,12 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_profile` (
 CONSTRAINT `fk_location_country_user_profile`
 	FOREIGN KEY (`location_country`)
     REFERENCES `zimaware_zimatdb`.`country` (`idCountry`)
-    ON DELETE NO ACTION
+    ON DELETE SET NULL
     ON UPDATE NO ACTION,
 CONSTRAINT `fk_location_city_user_profile`
 	FOREIGN KEY (`location_city`)
     REFERENCES `zimaware_zimatdb`.`cities` (`idCity`)
-    ON DELETE NO ACTION
+    ON DELETE SET NULL
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -191,7 +191,7 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_verified` (
   CONSTRAINT `fk_idUserFK_idUser_user_verified`
     FOREIGN KEY (`idUserFK`)
     REFERENCES `zimaware_zimatdb`.`user` (`idUser`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -203,11 +203,11 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event` (
   `title` VARCHAR(255) NULL,
   `postMessage` VARCHAR(255),
   `description` TEXT(300) NULL,
-  `location_country` INT NOT NULL,
-  `location_city` INT NOT NULL,
+  `location_country` INT NULL,
+  `location_city` INT NULL,
   `location` VARCHAR(255),
   `dateTime` DATETIME NOT NULL,
-  `event_GMT` INT NOT NULL,
+  `event_GMT` INT NULL,
   `status` VARCHAR(255) NULL, /*OUTDATED, SCHEDULED, RESCHEDULED*/
   `directorFK` INT NOT NULL,
   `postDateTime` DATETIME NOT NULL,
@@ -216,22 +216,22 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event` (
   CONSTRAINT `fk_directorFK_idUser`
     FOREIGN KEY (`directorFK`)
     REFERENCES `zimaware_zimatdb`.`user` (`idUser`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_location_country_idCountry`
     FOREIGN KEY (`location_country`)
     REFERENCES `zimaware_zimatdb`.`country` (`idCountry`)
-    ON DELETE NO ACTION
+    ON DELETE SET NULL
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_location_city_idCity`
     FOREIGN KEY (`location_city`)
     REFERENCES `zimaware_zimatdb`.`cities` (`idCity`)
-    ON DELETE NO ACTION
+    ON DELETE SET NULL
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_event_timezone_event`
     FOREIGN KEY (`event_GMT`)
     REFERENCES `zimaware_zimatdb`.`world_timezone` (`idWTimezone`)
-    ON DELETE NO ACTION
+    ON DELETE SET NULL
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -257,7 +257,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_pricing` (
   `idPrice` INT NOT NULL auto_increment,
-  `price` DECIMAL(6,2) DEFAULT 0000.00,
+  `price` DECIMAL(11,2) DEFAULT 000000000.00,
   `currency` VARCHAR(255) NULL,
   `onlinePayment` BOOLEAN DEFAULT 0,
   `offlinePayment` BOOLEAN DEFAULT 0,
@@ -284,7 +284,7 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_categ` (
    CONSTRAINT `fk_idCategFK_idCateg_eventCateg`
     FOREIGN KEY (`idCategFK`)
     REFERENCES `zimaware_zimatdb`.`category` (`idCategory`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_idEventFK_idEvent_eventCateg`
     FOREIGN KEY (`idEventFK`)
@@ -336,27 +336,27 @@ ENGINE = InnoDB;
 -- Table `zimaware_zimatdb`.`ticket_order`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`ticket_order` (
-  `idTicketFK` INT NOT NULL,
-  `idCustomerFK` INT NOT NULL,
+  `idTicketFK` INT NOT NULL unique,
+  `idCustomerFK` INT NULL,
   `securityCode` VARCHAR(255) NULL,
   `idPriceFK` INT NOT NULL,
-  `commission` DECIMAL(6,2) DEFAULT 0000.00,
+  `commission` DECIMAL(11,2) DEFAULT 000000000.00,
   `orderDate` DATETIME,
   `scanned` BOOLEAN DEFAULT 0,
   `whoFK` INT NULL,
   `when` DATETIME NULL,
   `idAgentFK` INT NULL,
-  PRIMARY KEY (`idTicketFK`, `idCustomerFK`),
+  PRIMARY KEY (`idTicketFK`),
   INDEX `index_idTicketFK_From_idTicket` (`idTicketFK` ASC),
   CONSTRAINT `fk_idTicketFK_idTicket_TicketOrder`
     FOREIGN KEY (`idTicketFK`)
     REFERENCES `zimaware_zimatdb`.`event_ticket` (`idTicket`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_idCustomerFK_idUser_TicketOrder`
     FOREIGN KEY (`idCustomerFK`)
     REFERENCES `zimaware_zimatdb`.`user` (`idUser`)
-    ON DELETE NO ACTION
+    ON DELETE SET NULL
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_idPriceFK_idPrice_TicketOrder`
     FOREIGN KEY (`idPriceFK`)
@@ -366,12 +366,12 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`ticket_order` (
 	CONSTRAINT `fk_idAgentFK_idAgent_TicketOrder`
     FOREIGN KEY (`idAgentFK`)
     REFERENCES `zimaware_zimatdb`.`event_agent` (`idAgentFK`)
-    ON DELETE NO ACTION
+    ON DELETE SET NULL
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_whoFK_idUser_TicketOrder`
     FOREIGN KEY (`whoFK`)
     REFERENCES `zimaware_zimatdb`.`event_agent` (`idAgentFK`)
-    ON DELETE NO ACTION
+    ON DELETE SET NULL
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 

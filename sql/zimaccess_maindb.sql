@@ -1,21 +1,21 @@
 /*REALISATION DATABASE FOR TICKETMARKETPLACE PROJECT*/
--- DROP SCHEMA IF EXISTS `zimaccess_zimatdb`;
--- CREATE SCHEMA IF NOT EXISTS `zimaccess_zimatdb` DEFAULT CHARACTER SET utf8 ;
--- USE `zimaccess_zimatdb` ;
+-- DROP SCHEMA IF EXISTS `zimaccess_maindb`;
+-- CREATE SCHEMA IF NOT EXISTS `zimaccess_maindb` DEFAULT CHARACTER SET utf8 ;
+USE `zimaccess_maindb` ;
 
 -- -----------------------------------------------------
--- Table `world_timezone`------------------
+-- Table `zimaccess_maindb`.`world_timezone`------------------
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `world_timezone` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`world_timezone` (
   `idWTimezone` INT NOT NULL auto_increment,
   `GMT` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idwtimezone`))
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `currency`------------------
+-- Table `zimaccess_maindb`.`currency`------------------
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `currency` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`currency` (
   `idCurrency` INT NOT NULL auto_increment,
   `currencyCode` VARCHAR(255) NOT NULL,
   `currencyName` VARCHAR(255) NULL,
@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS `currency` (
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `country`
+-- Table `zimaccess_maindb`.`country`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `country` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`country` (
   `idCountry` INT NOT NULL auto_increment,
   `name` VARCHAR(255),
   `idCurrencyFK` INT NULL,
@@ -35,15 +35,15 @@ CREATE TABLE IF NOT EXISTS `country` (
    INDEX `country_From_origin` (`idCountry` ASC),
   CONSTRAINT `fk_idCurrencyFK_idCurrency_country`
     FOREIGN KEY (`idCurrencyFK`)
-    REFERENCES `currency` (`idCurrency`)
+    REFERENCES `zimaccess_maindb`.`currency` (`idCurrency`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `cities`
+-- Table `zimaccess_maindb`.`cities`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `cities` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`cities` (
   `idCity` INT NOT NULL auto_increment,
   `name` VARCHAR(255),
   `idCountryFK` INT NOT NULL,
@@ -51,15 +51,15 @@ CREATE TABLE IF NOT EXISTS `cities` (
    INDEX `cities_From_origin` (`idCity` ASC),
   CONSTRAINT `fk_idCountryFK_idCountry_cities`
     FOREIGN KEY (`idCountryFK`)
-    REFERENCES `country` (`idCountry`)
+    REFERENCES `zimaccess_maindb`.`country` (`idCountry`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `country_timezone`
+-- Table `zimaccess_maindb`.`country_timezone`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `country_timezone` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`country_timezone` (
   `idCountryFK` INT NOT NULL,
   `idWTimezoneFK` INT NOT NULL,
   `note` TEXT(300) NULL,
@@ -67,20 +67,20 @@ CREATE TABLE IF NOT EXISTS `country_timezone` (
    INDEX `country_From_country_timezone` (`idCountryFK` ASC),
   CONSTRAINT `fk_idCountryFK_id_country_timezone`
     FOREIGN KEY (`idCountryFK`)
-    REFERENCES `country` (`idCountry`)
+    REFERENCES `zimaccess_maindb`.`country` (`idCountry`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_idWTimezoneFK_id_country_timezone`
     FOREIGN KEY (`idWTimezoneFK`)
-    REFERENCES `world_timezone` (`idWTimezone`)
+    REFERENCES `zimaccess_maindb`.`world_timezone` (`idWTimezone`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `user`
+-- Table `zimaccess_maindb`.`user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `user` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`user` (
   `idUser` INT NOT NULL auto_increment,
   `username` VARCHAR(255) NOT NULL,
   `email` VARCHAR(255) NULL,
@@ -90,9 +90,9 @@ CREATE TABLE IF NOT EXISTS `user` (
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `user_profile`
+-- Table `zimaccess_maindb`.`user_profile`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `user_profile` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`user_profile` (
   `idUserFK` INT NOT NULL,
   `avatar` VARCHAR(255) NULL DEFAULT "NONE",
   `firstName` VARCHAR(255) NULL DEFAULT "NONE",
@@ -107,25 +107,25 @@ CREATE TABLE IF NOT EXISTS `user_profile` (
   INDEX `fk_idUserFK_user_user_profile_index` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_user_user_profile`
 	FOREIGN KEY (`idUserFK`)
-    REFERENCES `user` (`idUser`)
+    REFERENCES `zimaccess_maindb`.`user` (`idUser`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
 CONSTRAINT `fk_location_country_user_profile`
 	FOREIGN KEY (`location_country`)
-    REFERENCES `country` (`idCountry`)
+    REFERENCES `zimaccess_maindb`.`country` (`idCountry`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
 CONSTRAINT `fk_location_city_user_profile`
 	FOREIGN KEY (`location_city`)
-    REFERENCES `cities` (`idCity`)
+    REFERENCES `zimaccess_maindb`.`cities` (`idCity`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `user_socials`
+-- Table `zimaccess_maindb`.`user_socials`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `user_socials` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`user_socials` (
   `idUserFK` INT NOT NULL,
   `facebook` VARCHAR(255) NULL DEFAULT "NONE",
   `instagram` VARCHAR(255) NULL DEFAULT "NONE",
@@ -136,15 +136,15 @@ CREATE TABLE IF NOT EXISTS `user_socials` (
   INDEX `fk_idUserFK_user_user_socials_index` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_user_user_socials`
 	FOREIGN KEY (`idUserFK`)
-    REFERENCES `user` (`idUser`)
+    REFERENCES `zimaccess_maindb`.`user` (`idUser`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `verification_code`
+-- Table `zimaccess_maindb`.`verification_code`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `verification_code` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`verification_code` (
   `idVc` INT NOT NULL auto_increment,
   `idUserFK` INT NOT NULL,
   `code` VARCHAR(255) NULL,
@@ -153,15 +153,15 @@ CREATE TABLE IF NOT EXISTS `verification_code` (
     INDEX `fk_idUserFK_user_verification_code_index` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_user_verification_code`
 	FOREIGN KEY (`idUserFK`)
-    REFERENCES `user` (`idUser`)
+    REFERENCES `zimaccess_maindb`.`user` (`idUser`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `user_support`
+-- Table `zimaccess_maindb`.`user_support`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `user_support` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`user_support` (
   `idIssue` INT NOT NULL auto_increment,
   `email` VARCHAR(255) NOT NULL,
   `issue` TEXT(500) NULL,
@@ -171,18 +171,18 @@ ENGINE = InnoDB;
 
 -- SECTION FOR EVENT TABLES ###Last add 13.04.2022
 -- -----------------------------------------------------
--- Table `category`
+-- Table `zimaccess_maindb`.`category`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `category` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`category` (
   `idCategory` INT NOT NULL auto_increment,
   `title` VARCHAR(255),
   PRIMARY KEY (`idCategory`))
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `user_verified`
+-- Table `zimaccess_maindb`.`user_verified`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `user_verified` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`user_verified` (
   `idUserFK` INT NOT NULL auto_increment,
   `doc` VARCHAR(255) NULL,
   `verified` INT DEFAULT 0,
@@ -190,15 +190,15 @@ CREATE TABLE IF NOT EXISTS `user_verified` (
    INDEX `index_user_verified_From_origin` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_idUser_user_verified`
     FOREIGN KEY (`idUserFK`)
-    REFERENCES `user` (`idUser`)
+    REFERENCES `zimaccess_maindb`.`user` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `event`
+-- Table `zimaccess_maindb`.`event`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `event` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`event` (
   `idEvent` INT NOT NULL auto_increment,
   `title` VARCHAR(255) NULL,
   `postMessage` VARCHAR(255),
@@ -215,30 +215,30 @@ CREATE TABLE IF NOT EXISTS `event` (
   INDEX `index_idEvent_From_origin` (`idEvent` ASC),
   CONSTRAINT `fk_directorFK_idUser`
     FOREIGN KEY (`directorFK`)
-    REFERENCES `user` (`idUser`)
+    REFERENCES `zimaccess_maindb`.`user` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_location_country_idCountry`
     FOREIGN KEY (`location_country`)
-    REFERENCES `country` (`idCountry`)
+    REFERENCES `zimaccess_maindb`.`country` (`idCountry`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_location_city_idCity`
     FOREIGN KEY (`location_city`)
-    REFERENCES `cities` (`idCity`)
+    REFERENCES `zimaccess_maindb`.`cities` (`idCity`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_event_timezone_event`
     FOREIGN KEY (`event_GMT`)
-    REFERENCES `world_timezone` (`idWTimezone`)
+    REFERENCES `zimaccess_maindb`.`world_timezone` (`idWTimezone`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `event_poster`
+-- Table `zimaccess_maindb`.`event_poster`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `event_poster` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`event_poster` (
   `idPoster` INT NOT NULL auto_increment,
   `linkToPoster` VARCHAR(255) NULL,
   `dateUploaded` DATETIME NULL,
@@ -247,15 +247,15 @@ CREATE TABLE IF NOT EXISTS `event_poster` (
   INDEX `index_idPoster_From_origin` (`idPoster` ASC),
   CONSTRAINT `fk_idEventFK_idEvent_eventPoster`
     FOREIGN KEY (`idEventFK`)
-    REFERENCES `event` (`idEvent`)
+    REFERENCES `zimaccess_maindb`.`event` (`idEvent`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `event_pricing`
+-- Table `zimaccess_maindb`.`event_pricing`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `event_pricing` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`event_pricing` (
   `idPrice` INT NOT NULL auto_increment,
   `price` DECIMAL(6,2) DEFAULT 0000.00,
   `currency` VARCHAR(255) NULL,
@@ -267,15 +267,15 @@ CREATE TABLE IF NOT EXISTS `event_pricing` (
   INDEX `index_idPrice_From_origin` (`idPrice` ASC),
   CONSTRAINT `fk_idEventFK_idEvent_eventPricing`
     FOREIGN KEY (`idEventFK`)
-    REFERENCES `event` (`idEvent`)
+    REFERENCES `zimaccess_maindb`.`event` (`idEvent`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `event_categ`
+-- Table `zimaccess_maindb`.`event_categ`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `event_categ` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`event_categ` (
   `idCategFK` INT NOT NULL,
   `idEventFK` INT NOT NULL,
   `hashtag` TEXT(300) NULL,
@@ -283,20 +283,20 @@ CREATE TABLE IF NOT EXISTS `event_categ` (
   INDEX `index_idEventFK_From_idEvent` (`idEventFK` ASC),
    CONSTRAINT `fk_idCategFK_idCateg_eventCateg`
     FOREIGN KEY (`idCategFK`)
-    REFERENCES `category` (`idCategory`)
+    REFERENCES `zimaccess_maindb`.`category` (`idCategory`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_idEventFK_idEvent_eventCateg`
     FOREIGN KEY (`idEventFK`)
-    REFERENCES `event` (`idEvent`)
+    REFERENCES `zimaccess_maindb`.`event` (`idEvent`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `event_agent`
+-- Table `zimaccess_maindb`.`event_agent`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `event_agent` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`event_agent` (
   `idAgentFK` INT NOT NULL,
   `idEventFK` INT NOT NULL,
   `sellingRight` BOOLEAN DEFAULT 0,
@@ -305,20 +305,20 @@ CREATE TABLE IF NOT EXISTS `event_agent` (
   INDEX `index_idAgentFK_From_origin` (`idAgentFK` ASC),
    CONSTRAINT `fk_idAgentFK_idUser_eventAgent`
     FOREIGN KEY (`idAgentFK`)
-    REFERENCES `user` (`idUser`)
+    REFERENCES `zimaccess_maindb`.`user` (`idUser`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_idEventFK_idEvent_eventAgent`
     FOREIGN KEY (`idEventFK`)
-    REFERENCES `event` (`idEvent`)
+    REFERENCES `zimaccess_maindb`.`event` (`idEvent`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `event_ticket`
+-- Table `zimaccess_maindb`.`event_ticket`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `event_ticket` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`event_ticket` (
   `idTicket` INT NOT NULL auto_increment,
   `ticketHash` VARCHAR(255) NULL,
   `sold` BOOLEAN DEFAULT 0,
@@ -327,15 +327,15 @@ CREATE TABLE IF NOT EXISTS `event_ticket` (
  INDEX `index_idTicket_From_origin` (`idTicket` ASC),
   CONSTRAINT `fk_idEventFK_idEvent_eventTicket`
     FOREIGN KEY (`idEventFK`)
-    REFERENCES `event` (`idEvent`)
+    REFERENCES `zimaccess_maindb`.`event` (`idEvent`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `ticket_order`
+-- Table `zimaccess_maindb`.`ticket_order`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `ticket_order` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`ticket_order` (
   `idTicketFK` INT NOT NULL,
   `idCustomerFK` INT NOT NULL,
   `securityCode` VARCHAR(255) NULL,
@@ -350,35 +350,35 @@ CREATE TABLE IF NOT EXISTS `ticket_order` (
   INDEX `index_idTicketFK_From_idTicket` (`idTicketFK` ASC),
   CONSTRAINT `fk_idTicketFK_idTicket_TicketOrder`
     FOREIGN KEY (`idTicketFK`)
-    REFERENCES `event_ticket` (`idTicket`)
+    REFERENCES `zimaccess_maindb`.`event_ticket` (`idTicket`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_idCustomerFK_idUser_TicketOrder`
     FOREIGN KEY (`idCustomerFK`)
-    REFERENCES `user` (`idUser`)
+    REFERENCES `zimaccess_maindb`.`user` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_idPriceFK_idPrice_TicketOrder`
     FOREIGN KEY (`idPriceFK`)
-    REFERENCES `event_pricing` (`idPrice`)
+    REFERENCES `zimaccess_maindb`.`event_pricing` (`idPrice`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
 	CONSTRAINT `fk_idAgentFK_idAgent_TicketOrder`
     FOREIGN KEY (`idAgentFK`)
-    REFERENCES `event_agent` (`idAgentFK`)
+    REFERENCES `zimaccess_maindb`.`event_agent` (`idAgentFK`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_whoFK_idUser_TicketOrder`
     FOREIGN KEY (`whoFK`)
-    REFERENCES `event_agent` (`idAgentFK`)
+    REFERENCES `zimaccess_maindb`.`event_agent` (`idAgentFK`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `event_ticket_counter`
+-- Table `zimaccess_maindb`.`event_ticket_counter`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `event_ticket_counter` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`event_ticket_counter` (
   `idEventFK` INT NOT NULL,
   `totalTicket` INT NULL DEFAULT 0,
   `qtSold` INT NULL DEFAULT 0,
@@ -387,49 +387,49 @@ CREATE TABLE IF NOT EXISTS `event_ticket_counter` (
   INDEX `index_idEventFK_From_idEvent` (`idEventFK` ASC),
   CONSTRAINT `fk_idEventFK_idEvent_eventTicketCounter`
     FOREIGN KEY (`idEventFK`)
-    REFERENCES `event` (`idEvent`)
+    REFERENCES `zimaccess_maindb`.`event` (`idEvent`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `user_follower`
+-- Table `zimaccess_maindb`.`user_follower`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `user_follower` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`user_follower` (
   `idUserFK` INT NOT NULL,
-  `idFollowerFK` INT NOT NULL,
+  `idFollowerFK` INT NULL,
   `followDate` DATETIME,
   PRIMARY KEY (`idUserFK`,`idFollowerFK`),
   INDEX `index_idUserFK_From_user_follower` (`idUserFK` ASC),
   CONSTRAINT `fk_idUserFK_idUser_user_follower`
     FOREIGN KEY (`idUserFK`)
-    REFERENCES `user` (`idUser`)
+    REFERENCES `zimaccess_maindb`.`user` (`idUser`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
      CONSTRAINT `fk_idUserFK_idFollowerFK_user_follower`
     FOREIGN KEY (`idFollowerFK`)
-    REFERENCES `user` (`idUser`)
+    REFERENCES `zimaccess_maindb`.`user` (`idUser`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `event_like`
+-- Table `zimaccess_maindb`.`event_like`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `event_like` (
+CREATE TABLE IF NOT EXISTS `zimaccess_maindb`.`event_like` (
   `idEventFK` INT NOT NULL,
-  `idLikerFK` INT NOT NULL,
+  `idLikerFK` INT NULL,
   `likeDate` DATETIME,
   PRIMARY KEY (`idEventFK`,`idLikerFK`),
   INDEX `index_idEventFK_From_event_like` (`idEventFK` ASC),
   CONSTRAINT `fk_idEventFK_idEvent_event_like`
     FOREIGN KEY (`idEventFK`)
-    REFERENCES `event` (`idEvent`)
+    REFERENCES `zimaccess_maindb`.`event` (`idEvent`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
      CONSTRAINT `fk_idLikerFK_idEventFK_event_like`
     FOREIGN KEY (`idLikerFK`)
-    REFERENCES `user` (`idUser`)
+    REFERENCES `zimaccess_maindb`.`user` (`idUser`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -437,21 +437,21 @@ ENGINE = InnoDB;
 
 -- DEFAULT INSERT QUERIES INTO OUR DATABASE
 -- insert default categories
-/*INSERT INTO `category` (`title`) VALUES
+/*INSERT INTO `zimaccess_maindb`.`category` (`title`) VALUES
 ("Education"),("Sport"),("Entertainment"),("Politics"),("Healthcare");
 
 -- insert default curencies
-INSERT INTO `currency`(`currencyCode`, `currencyName`) VALUES
+INSERT INTO `zimaccess_maindb`.`currency`(`currencyCode`, `currencyName`) VALUES
 ("Rubles","Russian Rouble"),("Gourdes","Haitian Gourde"),("USD","Dollar americain");
 
 -- insert default countries
-INSERT INTO `country` (`name`, `idCurrencyFK`, `language`, `isFederation`) VALUES
+INSERT INTO `zimaccess_maindb`.`country` (`name`, `idCurrencyFK`, `language`, `isFederation`) VALUES
 ("Haiti",(SELECT `currency`.`idCurrency` FROM `currency` WHERE `currency`.`currencyCode`="Gourdes"),"French", 0),
 ("Russia",(SELECT `currency`.`idCurrency` FROM `currency` WHERE `currency`.`currencyCode`="Rubles"),"Russian", 1),
 ("USA",(SELECT `currency`.`idCurrency` FROM `currency` WHERE `currency`.`currencyCode`="USD"),"English", 1);
 
 -- insert default cities
-INSERT INTO `cities` (`name`, `idCountryFK`) VALUES
+INSERT INTO `zimaccess_maindb`.`cities` (`name`, `idCountryFK`) VALUES
 ("Cayes", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Haiti")),
 ("Camp-Perrin", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Haiti")),
 ("Port-au-Prince", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Haiti")),
@@ -462,9 +462,9 @@ INSERT INTO `cities` (`name`, `idCountryFK`) VALUES
 ("Moscow", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Russia"));
 
 -- insert default timezones
-INSERT INTO `world_timezone`(`GMT`) VALUES
+INSERT INTO `zimaccess_maindb`.`world_timezone`(`GMT`) VALUES
 ("GMT-4"),("GMT+3"),("GMT+9"),("GMT-7"),("GMT-10");
 
 -- insert default country timezone
-  INSERT INTO `country_timezone` (`idCountryFK`, `idWTimezoneFK`) VALUES
+  INSERT INTO `zimaccess_maindb`.`country_timezone` (`idCountryFK`, `idWTimezoneFK`) VALUES
   (1,1), (2,2), (2,3), (3,4), (3,5);*/

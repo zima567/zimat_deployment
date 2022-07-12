@@ -19,7 +19,7 @@ if(isset($_SESSION['idUser']) && isset($_POST['stat_type'])){
 
             //SQLs
             //All event create by user online
-            $sql_user_events = "SELECT `idEvent`, `title`, `country`.`name` AS `location_country`, `cities`.`name` AS `location_city`, `location`, `dateTime`, `status` FROM ((`event` INNER JOIN `country` ON `event`.`location_country` = `country`.`idCountry`) INNER JOIN `cities` ON `event`.`location_city` = `cities`.`idCity`) WHERE `directorFK` =?";
+            $sql_user_events = "SELECT `idEvent`, `title`, `country`.`name` AS `location_country`, `cities`.`name` AS `location_city`, `location`, `dateTime`, `status` FROM ((`event` INNER JOIN `country` ON `event`.`location_country` = `country`.`idCountry`) INNER JOIN `cities` ON `event`.`location_city` = `cities`.`idCity`) WHERE `directorFK` =? ORDER BY `event`.`dateTime` ASC";
             $stmt_user_events = $connection->prepare($sql_user_events);
             //Total ticket for this event id
             $sql_tot_ticket = "SELECT `totalTicket`, `qtSold` FROM `event_ticket_counter` WHERE `idEventFK` =?";

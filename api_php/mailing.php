@@ -33,7 +33,7 @@ function sendSimpleMail($sender, $senderTitle, $receiver, $receiverTitle, $subje
         $mail->setFrom($sender, $senderTitle);
         $mail->addAddress($receiver, $receiverTitle);     //Add a recipient
         if($replyTo!=""){
-            $mail->addReplyTo($replyTo, 'ZIMAT-TEAM');
+            $mail->addReplyTo($replyTo, 'Customer');
         }
 
         if($attachmentFile!=""){

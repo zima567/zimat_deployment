@@ -311,7 +311,6 @@ $(document).ready(function(){
       $("#pop-up-box3").removeClass('model-open');
     });
 
-
     //End of hadling page complete load with jquery
 });
 

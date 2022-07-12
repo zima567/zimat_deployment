@@ -79,7 +79,7 @@ $(document).ready(function(){
             dataType : "json",
         })
         .done(function( response ) {
-            //console.log(response);
+            console.log(response);
             MPBtnFollowUnfollow(response);
         })
         .fail(function( xhr, status, errorThrown ) {
@@ -227,7 +227,7 @@ $(document).ready(function(){
             $("#config-preferences-box").css("display", "flex");
             let dataObj ={action_type:"T_SELECT", config_type:"select_categ_of_users"};
             let destinationReq = "api_php/api_configuration_module1.php";
-            requestSender(destinationReq, dataObj, displayCategsConfig);
+            requestSender(destinationReq, dataObj, displayCategsConfig, "NONE", "Loading supported categories...", "categs-config-box");
         }
 
     });
@@ -317,9 +317,16 @@ $(document).ready(function(){
             $("#config-msg-user-acc-verification").text("");
             let dataObj ={action_type:"T_SELECT", config_type:"select_user_acc_verification_info"};
             let destinationReq = "api_php/api_configuration_module1.php";
-            requestSender(destinationReq, dataObj, RCOConfigAcc); 
+            requestSender(destinationReq, dataObj, RCOConfigAcc, "Please wait while we are verifying requirements...");
         }
 
+    });
+
+    $("#config-msg-user-acc-verification").on("click", "#resend-email-link", function(e){
+        e.preventDefault();
+        let dataObj ={actionType:"REQUEST_EMAIL_VERIFICATION_LINK"};
+        let destinationReq = "api_php/api_btn_action.php";
+        requestSender(destinationReq, dataObj, RPEmailVerification, "Please wait...Email verification link is being sent");
     });
 
     //Handle button display for document submission
@@ -336,7 +343,7 @@ $(document).ready(function(){
         formData.append("doc_file", $('#file-acc-verification').get(0).files[0]);
 
         let destinationReq = "api_php/api_configuration_module1.php";
-        requestSenderFormData(destinationReq, formData, RAVRequest);
+        requestSenderFormData(destinationReq, formData, RAVRequest, "Please wait... It will take sometimes depending on the file size and the internet connection");
 
         //Hide button
         $("#btn-save-user-acc-verification").css("display","none");
@@ -423,7 +430,8 @@ $(document).ready(function(){
         }
 
         let destinationReq = "api_php/api_configuration_module1.php";
-        requestSenderFormData(destinationReq, formData, MPRProfileUpdate);
+        $("#popup-profile-config").removeClass("model-open");
+        requestSenderFormData(destinationReq, formData, MPRProfileUpdate, "Please wait... Profile is updating");
     });
 
     //HANDLE CLOSING OF POPUP BOX TO MODIFY PROFILE DETAILS
@@ -479,7 +487,7 @@ $(document).ready(function(){
         if(inputValueToQuery!=""){
             let dataObj ={family_suggest:"USER_EVENTS", query_data:inputValueToQuery};
             let destinationReq = "api_php/api_etc_suggestion_v2.php";
-            requestSender(destinationReq, dataObj, PREventSuggestions);
+            requestSender(destinationReq, dataObj, PREventSuggestions, "NONE", "Searching event...", "box-suggestion-events");
     
         }
         else{
@@ -513,7 +521,7 @@ $(document).ready(function(){
         //Display event to be edited
         let dataObj = {idEvent:idChosenEvent};
         let destinationReq = "api_php/api_etc_display_one.php";
-        requestSender(destinationReq, dataObj, PREventDisplayToEdit2);
+        requestSender(destinationReq, dataObj, PREventDisplayToEdit2, "Loading event details...");
 
     });
      //On click on change event button
@@ -613,7 +621,7 @@ $(document).ready(function(){
             if(inputValueToQuery!="" && countryName!=""){
                 let dataObj ={family_suggest: "COUNTRY_CITY", query_data: inputValueToQuery, countryName: countryName};
                 let destinationReq = "api_php/api_etc_suggestion_v2.php";
-                requestSender(destinationReq, dataObj, PRCCSuggestions);
+                requestSender(destinationReq, dataObj, PRCCSuggestions, "NONE", "Searching city...", "box-suggestion-cities");
     
             }
             else{
@@ -782,7 +790,7 @@ $(document).ready(function(){
        
 
         let destinationReq = "api_php/api_configuration_module1.php";
-        requestSenderFormData(destinationReq, formData, MPREditingProcess);
+        requestSenderFormData(destinationReq, formData, MPREditingProcess, "Please wait... Event is being updated. It will take a while depending on editing fields");
     });
    //************************[BLOCK-AAAA]******************* */
 
@@ -827,7 +835,7 @@ $(document).ready(function(){
         if(inputValueToQuery!=""){
             let dataObj ={family_suggest:"USER_EVENTS", query_data:inputValueToQuery};
             let destinationReq = "api_php/api_etc_suggestion_v2.php";
-            requestSender(destinationReq, dataObj, PREventSuggestions2);
+            requestSender(destinationReq, dataObj, PREventSuggestions2, "NONE", "Searching event...", "box-suggestion-events-2");
     
         }
         else{
@@ -862,7 +870,7 @@ $(document).ready(function(){
         //Display event to be edited
         let dataObj = {idEvent:idChosenEvent};
         let destinationReq = "api_php/api_etc_display_one.php";
-        requestSender(destinationReq, dataObj, PREventDisplayConfigRights);
+        requestSender(destinationReq, dataObj, PREventDisplayConfigRights, "Loading event details...");
 
         //Show save changes button for event-agent-rights
         $("#btn-save-changes-agent").css("display","block");
@@ -889,7 +897,7 @@ $(document).ready(function(){
         if(inputValueToQuery!=""){
             let dataObj ={family_suggest:"USERS_PLATFORM", query_data:inputValueToQuery};
             let destinationReq = "api_php/api_etc_suggestion_v2.php";
-            requestSender(destinationReq, dataObj, PRUserSuggestions);
+            requestSender(destinationReq, dataObj, PRUserSuggestions, "NONE", "Searching username...", "box-suggestion-users");
     
         }
         else{
@@ -954,7 +962,7 @@ $(document).ready(function(){
         if(arrUsers.length>0 && idEventRightAccess!=""){
             let dataObj ={action_type:"T_UPDATE", config_type:"config_event_agents", idEvent:idEventRightAccess, arr_agents:arrUsers, sellingRight:sellingRight, scanningRight:scanningRight};
             let destinationReq = "api_php/api_configuration_module1.php";
-            requestSender(destinationReq, dataObj, MPRRAgentManagement);
+            requestSender(destinationReq, dataObj, MPRRAgentManagement, "Please wait...Agent(s) configuration processing");
             //Reset global variables related to right access assignments
             idEventRightAccess ="";
             arrUsers =[];
@@ -1145,6 +1153,11 @@ function MPBtnFollowUnfollow(res){
             $("#button-action .follow_unfollow").text("FOLLOW"); 
         }
     }
+    else{
+        if(res['action_error']=="USER_OFFLINE"){
+            alert("You are offline. Login first to be able to follow this user");
+        }
+    }
 }
 
 function stdDisplayUserInfo(res){
@@ -1163,6 +1176,11 @@ function stdDisplayUserInfo(res){
         $("#id-ln").val(res['lastName']);
 
         $("#username").text(res['username']);
+
+        //Display verified account tag
+        if(res['userVerified']==1){
+            $("#tag-user-verification").css("display","block");
+        }
 
         //Display bio
         bio = res['bio']==null? "NONE" : res['bio']; //Pay attention to what might return null to avoid bugs
@@ -1397,7 +1415,7 @@ function displayEventWallet(res){
                          </span>\
                      </div>\
                      <div class="info-block">\
-                         <span class="title-block"><span class="title">REVENUE -></span> <span class="number">'+(api_return[i].revenue!=null? api_return[i].revenue:0)+' '+api_return[i].prices[0].currency+'</span></span>\
+                         <span class="title-block"><span class="title">REVENUE -></span> <span class="number">'+(api_return[i].revenue!=null? api_return[i].revenue:0)+' '+(api_return[i].prices.length!=0? api_return[i].prices[0].currency : "No currency")+'</span></span>\
                          <span class="box-block">';
                  for(let j=0; j<api_return[i].prices.length;j++){
                      walletUnit+='<span>Price: '+api_return[i].prices[j].price+' '+api_return[i].prices[j].currency+' ('+api_return[i].prices[j].qt_ticket_sold+')</span>';
@@ -1415,7 +1433,7 @@ function displayEventWallet(res){
  
                  walletUnit+='</table></span></div>\
                      <div class="info-block">\
-                         <span class="title-block"><span class="title">SERVICE FEE -></span> <span class="number">'+(api_return[i].total_commission!=null? api_return[i].total_commission:0)+' '+api_return[i].prices[0].currency+'</span></span>\
+                         <span class="title-block"><span class="title">SERVICE FEE -></span> <span class="number">'+(api_return[i].total_commission!=null? api_return[i].total_commission:0)+' '+(api_return[i].prices.length!=0? api_return[i].prices[0].currency : "No currency")+'</span></span>\
                          <span class="box-block">\
                              <span>Status: '+api_return[i].status_commission+'</span>\
                              <span>Payment info: link</span>\
@@ -1600,7 +1618,7 @@ function displayEventToEdit(arr){
     $("#new-posters").empty();
     let HTMLDefaultAddNewPoster = '<span class="unit-new-poster">\
             <span>Upload New</span>\
-            <img src="media/posters/post1.jpg"/>\
+            <img src="media/icons/no-bg-post.jpg"/>\
             </span>';
     $("#new-posters").append(HTMLDefaultAddNewPoster);
 }
@@ -2010,7 +2028,7 @@ function RCOConfigAcc(res){
             else{
                 $("#config-msg-user-acc-verification").css("color","black");
                 $("#config-msg-user-acc-verification").text("Oops! You cannot request for account verification if you have not confirm your email address on signing up on our platform. Please make sure you verify your email address via the email we sent to you the first time you sign up on our plateform. Or request for email verification right below:");
-                $("#config-msg-user-acc-verification").append("<br/><a href='#'>Request email verification</a>")
+                $("#config-msg-user-acc-verification").append("<br/><a id='resend-email-link' style='text-decoration:underline; color:blue; cursor:pointer;'>Request email verification</a>");
             }
 
         }
@@ -2029,6 +2047,18 @@ function RCOConfigAcc(res){
         $("#config-acc-verification-box").css("display","none");
         $("#config-msg-user-acc-verification").css("color","black");
         $("#config-msg-user-acc-verification").text("Oops! Something went wrong. Make sure you are logged in <br\> If this problem persist logout and login and try the account verification again. <br> If the previous solution does not work, maybe your account has been compromised. Reach for help from our support team.");
+    }
+}
+
+function RPEmailVerification(res){
+    if(res.status==1){
+        $("#config-msg-user-acc-verification").css("color","green");
+        $("#config-msg-user-acc-verification").text("Email verification link has been successfully sent to your email address("+res.divers_data+"). Please check your inbox and confirm your email address than come back here to continue the proccess of verifying your user account.");
+    }
+    else{
+        $("#config-msg-user-acc-verification").css("color","red");
+        $("#config-msg-user-acc-verification").text("Failed to send the email confirmation. Close this option and try later. If you encounter this problem many times reach to customer service.");
+        $("#config-msg-user-acc-verification").append("<br/><a href='lsrs_support.html'>Customer support</a>");
     }
 }
 
@@ -2051,7 +2081,7 @@ function RAVRequest(res){
     else{
         $("#config-acc-verification-box").css("display","none");
         $("#config-msg-user-acc-verification").css("color","red");
-        $("#config-msg-user-acc-verification").text("Request for account verification failed. Reasons: ..."); 
+        $("#config-msg-user-acc-verification").text("Request for account verification failed. Possible reasons: 1) Document uploaded extensions not jpeg, png or pdf 2) File size greater than 1.5MB 3) System errors. PLEASE TRY AGAIN."); 
     }
 }
 
@@ -2068,7 +2098,7 @@ function logoutHelper(res){
 }
 
 //Function for requests
-function requestSender(destinationToRequest, obj, processorFunc, msgLoader="NONE"){
+function requestSender(destinationToRequest, obj, processorFunc, msgLoader="NONE", msgSearch="MSG-SEARCH", pointerEl="ID-EL"){
     $.ajax({
         url: destinationToRequest,
         data: obj,
@@ -2079,6 +2109,9 @@ function requestSender(destinationToRequest, obj, processorFunc, msgLoader="NONE
             if(msgLoader!="NONE"){
                 $("#zima-loader").css("display","flex");
                 $("#text-loading").text(msgLoader);
+            }
+            else if(msgLoader=="NONE" && msgSearch!="MSG-SEARCH" && pointerEl!="ID-EL"){
+                $("#"+pointerEl).text(msgSearch);
             }
         }
     })
@@ -2096,24 +2129,35 @@ function requestSender(destinationToRequest, obj, processorFunc, msgLoader="NONE
     });
 }
 
-function requestSenderFormData(destination, formData, helperFunc){
+function requestSenderFormData(destination, formData, helperFunc, msgLoader="NONE"){
     $.ajax({
         url:destination,
         method:"POST",
         data: formData,
         contentType: false,
-        //dataType : 'json',
+        dataType : 'json',
         cache: false,
         processData: false,
         beforeSend:function(){
-           //void
-        },   
-        success:function(data)
-        {
-            //console.log(data);
-            helperFunc(data);
-        }
-       });
+           //Launch  custom zima loader
+           if(msgLoader!="NONE"){
+            $("#zima-loader").css("display","flex");
+            $("#text-loading").text(msgLoader);
+            }
+        }   
+       })
+       .done(function( response ) {
+            $("#zima-loader").css("display","none");
+            console.log(response);
+            helperFunc(response)
+        })
+        .fail(function( xhr, status, errorThrown ) {
+            $("#zima-loader").css("display","none");
+            alert( "Sorry, there was a problem!" );
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+            console.dir( xhr );
+        });
 
 }
 

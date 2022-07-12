@@ -7,8 +7,6 @@ require ("connection.php");
 //api response
 //$APIResponse = array();
 $APIResponse = array("arr_status"=>array(), "arr_events_following"=>array(), "arr_event_related_categ"=>array(), "arr_my_event"=>array(), "arr_my_ticket"=>array(), "arr_event_default"=>array(), "arr_event_my_categ_country"=>array(), "arr_event_my_categ_city"=>array());
-//$APIResponse = array_merge($APIResponse, $con_status);
-//array_push($APIResponse, array()); // api_response[0] will contain status con, status query,
 
 //Utilities variables
 $queryError = array("query_error"=>"NONE", "user_online"=>0, "is_user_location_set"=>0);
@@ -60,7 +58,7 @@ try{
     $sql_select_my_events ="SELECT `idEvent`, `title`, `postMessage`, `location`, `dateTime`, `status`, `directorFK`, `postDateTime`, `username`, `idUser`,`avatar`, `address`, `verified` FROM (((`event`  INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `user_verified` ON `event`.`directorFK` = `user_verified`.`idUserFK`)  WHERE `event`.`directorFK`= ? ORDER BY `postDateTime` DESC" ;
     $stmt222 = $connection->prepare($sql_select_my_events);
 
-    $sql_select_my_tickets ="SELECT `idEvent`, `title`, `location`, `dateTime`, `status`, `directorFK`, `postDateTime`, `username`, `idUser`,`avatar`, `address`, `verified`, `idTicket`, `ticketHash`, `scanned`, `orderDate`, `securityCode` FROM (((((`event`  INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `user_verified` ON `event`.`directorFK` = `user_verified`.`idUserFK`)INNER JOIN `event_ticket` ON `event`.`idEvent` = `event_ticket`.`idEventFK`) INNER JOIN `ticket_order` ON `event_ticket`.`idTicket` = `ticket_order`.`idTicketFK`)  WHERE `ticket_order`.`idCustomerFK`= ? ORDER BY `postDateTime` DESC" ;
+    $sql_select_my_tickets ="SELECT `idEvent`, `title`, `location`, `dateTime`, `status`, `directorFK`, `postDateTime`, `username`, `idUser`,`avatar`, `address`, `verified`, `idTicket`, `ticketHash`, `scanned`, `orderDate`, `securityCode` FROM (((((`event`  INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `event`.`directorFK` = `user_profile`.`idUserFK`) INNER JOIN `user_verified` ON `event`.`directorFK` = `user_verified`.`idUserFK`)INNER JOIN `event_ticket` ON `event`.`idEvent` = `event_ticket`.`idEventFK`) INNER JOIN `ticket_order` ON `event_ticket`.`idTicket` = `ticket_order`.`idTicketFK`)  WHERE `ticket_order`.`idCustomerFK`= ? ORDER BY `event`.`dateTime` ASC, `ticket_order`.`orderDate` DESC" ;
     $stmt2222 = $connection->prepare($sql_select_my_tickets);
 
     //I have stopped the series of 22222 to avoid confusion
@@ -239,6 +237,10 @@ try{
                     $sql_to_get_events_ids.=")";
                 }
             }
+
+            if($lengthArr>0){
+                $sql_to_get_events_ids.=" ORDER BY `dateTime` ASC";
+            }
             return $sql_to_get_events_ids; 
         }
         return 0;
@@ -333,16 +335,22 @@ try{
         $stmt1->execute([$idUserOnline]);
         if($stmt1->rowCount()>0){
             //User is following other people
-            
             while($row1 = $stmt1->fetch()){
                 //$queryError['query_error'] = $datePastLimitFormated."vvvvvvvvvvv";//********************** */
                 //Query events related to that following
                 $stmt2->execute([$row1['idUserFK'], $idUserOnline, $datePastLimitFormated]);
                 //Here we will call the function
-                //array_push($arrEventsFollowing, getter_event_infos($stmt2, $stmt3, $stmt4, $stmt5));
                 $arrEventsFollowing = getter_event_infos($stmt2, $stmt3, $stmt4, $stmt5, $arrEventsFollowing);
         
             }
+
+            $eventDate = array();
+            foreach ($arrEventsFollowing as $key => $row)
+            {
+                $eventDate[$key] = $row['dateTime'];
+            }
+            array_multisort($eventDate, SORT_ASC, $arrEventsFollowing);
+
         }
         else{
             //user is not following people

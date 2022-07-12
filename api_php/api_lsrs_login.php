@@ -46,7 +46,7 @@ try{
                 //Set session variables
                 session_start();
                 $_SESSION['idUser'] = $row_select_user['idUser'];
-                //$_SESSION['verified'] = $row_verified['verified'];
+                $_SESSION['verified'] = $row_verified['verified'];
     
                if(isset($_POST['rememberMe']) && $_POST['rememberMe']==1){
                     //Create token hash
@@ -73,7 +73,7 @@ try{
              $_SESSION['idUser'] = $row_user_info['idUser'];
              $authentification['username'] = $_POST['username'];
              $authentification['tokenHash'] = "MATCH";
-             //$_SESSION['verified'] = $row_verified['verified'];
+             $_SESSION['verified'] = $row_verified['verified'];
         }
 
     }

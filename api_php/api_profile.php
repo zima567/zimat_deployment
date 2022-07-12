@@ -28,7 +28,7 @@ try{
     //select fields
     //idUser, username, email, bio, address, firtName, lastName, verified, profilePicture, totalSubcribers, list of upcoming_events
     //Select basic unique key user info
-    $sql_user_info ="SELECT `idUser`, `username`, `avatar`, `bio`, `firstName`, `lastName` FROM `user` INNER JOIN `user_profile` ON `user`.`idUser` = `user_profile`.`idUserFK` WHERE `idUser`=?";
+    $sql_user_info ="SELECT `idUser`, `username`, `avatar`, `bio`, `firstName`, `lastName`, `user_verified`.`verified` FROM ((`user` INNER JOIN `user_profile` ON `user`.`idUser` = `user_profile`.`idUserFK`) INNER JOIN `user_verified` ON `user`.`idUser` = `user_verified`.`idUserFK`) WHERE `idUser`=?";
     $stmt_user_info = $connection->prepare($sql_user_info);
 
     //Select number of followers of user
@@ -76,6 +76,7 @@ try{
         $row_user_info = $stmt_user_info->fetch();
         $temp_arr_info = array("idUser"=>$row_user_info['idUser'],
                               "username"=>$row_user_info['username'],
+                              "userVerified"=>($row_user_info['verified']==1? 1 : 0),
                               "avatar"=>$row_user_info['avatar'],
                               "bio"=>$row_user_info['bio'],
                               "firstName"=>$row_user_info['firstName'],

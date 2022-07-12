@@ -235,7 +235,6 @@ try{
 }
 
 
-
 //Final merge
 //Query error
 $arr_status = array_merge($con_status, $arrError);

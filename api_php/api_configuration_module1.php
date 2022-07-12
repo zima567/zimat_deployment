@@ -672,16 +672,16 @@ if(isset($_SESSION['idUser'])){
                             
                                 //Require email sender library at the very top
                                 $sender =$gsv_senderN1;
-                                $senderTitle ="Zimaware INC.";
+                                $senderTitle ="ZIMACCESS ACCOUNT VERIFICATION";
                                 $receiver =$gsv_receiver_account_verification_N1;
                                 $receiverTitle = $row_get_email['username']." Hello dear team member, this user is requesting account verification";
                                 $subject = "ACCOUNT VERIFICATION REQUEST";
-                                $body ='<p>This user is requesting account verification: '.$row_get_email['username'].'</p>';
+                                $body ='<p>User @'.$row_get_email['username'].' is requesting account verification.</p>';
                                 $altbody ="alternate msg for account verification";
                                 $emailResponse = sendSimpleMail($sender, $senderTitle, $receiver, $receiverTitle, $subject, $body, $altbody,  $arr_result_submission['email'], $file_name);
                                 //Check if email has been sent
                                 //$emailResponse['status'] == 1
-                                $multipleHandler['divers_error'] = $emailResponse['status'];
+                                //$multipleHandler['divers_error'] = $arr_result_submission['email'];//$emailResponse['error'];
                                 if($emailResponse['status'] == 1){
                                     //If email is sent successfully send api response +
                                     $connection->commit();

@@ -23,7 +23,7 @@ try{
     $sql_users_EL = "SELECT DISTINCT `idUser`, `username`, `avatar` FROM (((`event_like` INNER JOIN `event` ON `event_like`.`idEventFK` = `event`.`idEvent`) INNER JOIN `user` ON `event`.`directorFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `user`.`idUser` = `user_profile`.`idUserFK`) WHERE `idLikerFK` =?";
     $stmt2 = $connection->prepare($sql_users_EL);
 
-    $sql_users_FY = "SELECT `idUser`, `username`, `avatar` FROM ((`user_follower` INNER JOIN `user` ON `user_follower`.`idFollowerFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `user`.`idUser` = `user_profile`.`idUserFK`) WHERE `user_follower`.`idUserFK`=?";
+    $sql_users_FY = "SELECT `idUser`, `username`, `avatar` FROM ((`user_follower` INNER JOIN `user` ON `user_follower`.`idFollowerFK` = `user`.`idUser`) INNER JOIN `user_profile` ON `user`.`idUser` = `user_profile`.`idUserFK`) WHERE `user_follower`.`idUserFK`=? ORDER BY `user_follower`.`followDate` DESC";
     $stmt3 = $connection->prepare($sql_users_FY);
 
     $sql_users_MTF = "SELECT `idUser`, `username`, `avatar` FROM `user` INNER JOIN `user_profile` ON `user`.`idUser` = `user_profile`.`idUserFK` WHERE `username` =?";

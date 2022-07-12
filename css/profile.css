@@ -16,7 +16,7 @@
     align-items: center;
     height: 100vh;
     width: 100%;
-    z-index: 99;
+    z-index: 999;
     background: rgba(0, 0, 0, 0.6);
     color: white;
     font-size: 18px;
@@ -31,11 +31,14 @@
     height: 120px;
     -webkit-animation: spin 2s linear infinite; /* Safari */
     animation: spin 2s linear infinite;
-  }
+}
 
-  .bg-transpa .text-loading-container{
+.bg-transpa .text-loading-container{
       margin-top: 15px;
-  }
+      display: flex;
+      text-align: center;
+      padding: 8px;
+}
 
  /* Safari */
 @-webkit-keyframes spin {
@@ -145,6 +148,14 @@
     font-size: 13px;
     z-index: 100;
     color: #fff;
+}
+
+#tag-user-verification{
+    display: none;
+    color: green;
+    background-color: white;
+    padding: 8px;
+    border-radius: 15px;
 }
 
 .arc {
@@ -381,7 +392,7 @@
     width: 100%;
     height: 100vh;
     background-color: #f1f1f1;
-    z-index: 999;
+    z-index: 888;
 }
 
 .configuration-modal .configuration-modal-content{
@@ -816,7 +827,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    z-index: 0;
+    z-index: 888;
     -webkit-transition: background 0.15s linear;
     -o-transition: background 0.15s linear;
     transition: background 0.15s linear;

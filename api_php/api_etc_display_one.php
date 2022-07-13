@@ -28,7 +28,7 @@ try{
     $sql_event_categ = "SELECT `category`.`title` FROM `event_categ` INNER JOIN `category` ON `event_categ`.`idCategFK` = `category`.`idCategory` WHERE `idEventFK` =?";
     $stmt4 = $connection->prepare($sql_event_categ); //many records
 
-    $sql_select_agent = "SELECT `idAgentFK`, `sellingRight`, `scanningRight`, `username`, `facebook`, `instagram`, `twitter`, `vk`, `whatsApp` FROM ((`event_agent` INNER JOIN `user` ON `event_agent`.`idAgentFK` = `user`.`idUser`) INNER JOIN `user_socials` ON `event_agent`.`idAgentFK` = `user_socials`.`idUserFK`) WHERE `idEventFK`=?";
+    $sql_select_agent = "SELECT `idAgentFK`, `sellingRight`, `scanningRight`, `username`, `facebook`, `instagram`, `twitter`, `vk`, `whatsApp` FROM ((`event_agent` INNER JOIN `user` ON `event_agent`.`idAgentFK` = `user`.`idUser`) INNER JOIN `user_socials` ON `event_agent`.`idAgentFK` = `user_socials`.`idUserFK`) WHERE `event_agent`.`idEventFK`=? AND `event_agent`.`sellingRight` =?";
     $stmt5 = $connection->prepare($sql_select_agent); //many records
 
     $sql_available_ticket = "SELECT COUNT(`idTicket`) AS `availableTicket` FROM `event_ticket` WHERE `idEventFK`=? AND `sold`=?";
@@ -39,7 +39,7 @@ try{
 
      /*Remember to prevent access to agents info and available ticket to offline user */
 
-    $sql_is_agent = "SELECT `idAgentFK` FROM `event_agent` WHERE `idAgentFK` =? AND `idEventFK` =?";
+    $sql_is_agent = "SELECT `idAgentFK` FROM `event_agent` WHERE `idAgentFK` =? AND `idEventFK` =? AND `sellingRight`=?";
     $stmt7 = $connection->prepare($sql_is_agent);
 
     $stmt1->execute([$eventID]);
@@ -93,7 +93,7 @@ try{
                                             "categories"=>array(),
                                             "agents"=>array(),
                                             "availableTicket"=>0,
-                                            "isAgent"=>0,
+                                            "isSellingAgent"=>0,
                                             "isOnline"=>0);
         
         //Select posters
@@ -134,7 +134,7 @@ try{
             //user is online
             $temp_arr_event['isOnline'] = 1;
             //Select agents
-            $stmt5->execute([$eventID]);
+            $stmt5->execute([$eventID, 1]);
             if($stmt5->rowCount()>0){
                 $temp_arr_agent = array();
                 while($row_agents = $stmt5->fetch()){
@@ -159,9 +159,9 @@ try{
             }
 
             //Check if user is agent
-            $stmt7->execute([$_SESSION['idUser'], $eventID]);
+            $stmt7->execute([$_SESSION['idUser'], $eventID, 1]);
             if($stmt7->rowCount()>0){
-                $temp_arr_event['isAgent'] = 1;
+                $temp_arr_event['isSellingAgent'] = 1;
             }
 
         }

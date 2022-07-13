@@ -21,7 +21,9 @@ body {
   }
 
   /*CSS for header going back*/
-.page-top-bar{
+.page-top-bar a{
+    text-decoration: none;
+    color: black;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -33,7 +35,7 @@ body {
 .page-top-bar h1{
     font-size: 22px;
 }
-.page-top-bar a {
+.page-top-bar a i {
     margin-right: 15px;
 }
 .page-top-bar i{

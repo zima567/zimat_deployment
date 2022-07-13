@@ -1,6 +1,6 @@
 /*REALISATION DATABASE FOR TICKETMARKETPLACE PROJECT*/
--- DROP SCHEMA IF EXISTS `zimaware_zimatdb`;
--- CREATE SCHEMA IF NOT EXISTS `zimaware_zimatdb` DEFAULT CHARACTER SET utf8 ;
+ -- DROP SCHEMA IF EXISTS `zimaware_zimatdb`;
+ -- CREATE SCHEMA IF NOT EXISTS `zimaware_zimatdb` DEFAULT CHARACTER SET utf8 ;
 USE `zimaware_zimatdb` ;
 
 -- -----------------------------------------------------
@@ -347,6 +347,7 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_ticket_counter` (
   `totalTicket` INT NULL DEFAULT 0,
   `qtSold` INT NULL DEFAULT 0,
   `totalTicketOrigin` INT NULL DEFAULT 0,
+  `serviceFee` VARCHAR(255) NOT NULL DEFAULT "UNPAID", /*UNPAID, PAID*/
   PRIMARY KEY (`idEventFK`),
   INDEX `index_idEventFK_From_idEvent` (`idEventFK` ASC),
   CONSTRAINT `fk_idEventFK_idEvent_eventTicketCounter`
@@ -424,3 +425,11 @@ INSERT INTO `zimaware_zimatdb`.`cities` (`name`, `idCountryFK`) VALUES
 ("Jeremie", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Haiti")),
 ("Oryol", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Russia")),
 ("Moscow", (SELECT `country`.`idCountry` FROM `country` WHERE `country`.`name` ="Russia"));
+
+-- insert default timezones
+INSERT INTO `zimaware_zimatdb`.`world_timezone`(`GMT`) VALUES
+("GMT-4"),("GMT+3"),("GMT+9"),("GMT-7"),("GMT-10");
+
+-- insert default country timezone
+  INSERT INTO `zimaware_zimatdb`.`country_timezone` (`idCountryFK`, `idWTimezoneFK`) VALUES
+  (1,1), (2,2), (2,3), (3,4), (3,5);

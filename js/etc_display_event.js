@@ -84,7 +84,7 @@ $(document).ready(function(){
         if(inputValueToQuery!=""){
             let dataObj ={family_suggest:"USERS_PLATFORM", query_data:inputValueToQuery};
             let destinationReq = "api_php/api_etc_suggestion_v2.php";
-            requestSender(destinationReq, dataObj, PRUserSuggestions);
+            requestSender(destinationReq, dataObj, PRUserSuggestions, "NONE", "Searching user...", "box-suggestion-users");
     
         }
         else{
@@ -280,18 +280,30 @@ function showSlides(n) {
 }
 
 //Function for requests
-function requestSender(destinationToRequest, obj, processorFunc){
+function requestSender(destinationToRequest, obj, processorFunc, msgLoader="NONE", msgSearch="MSG-SEARCH", pointerEl="ID-EL"){
     $.ajax({
         url: destinationToRequest,
         data: obj,
         type: "POST",
         dataType : "json",
+        beforeSend:function(){
+            //Launch  custom zima loader
+            if(msgLoader!="NONE"){
+                $("#zima-loader").css("display","flex");
+                $("#text-loading").text(msgLoader);
+            }
+            else if(msgLoader=="NONE" && msgSearch!="MSG-SEARCH" && pointerEl!="ID-EL"){
+                $("#"+pointerEl).text(msgSearch);
+            }
+        }
     })
     .done(function( response ) {
+        $("#zima-loader").css("display","none");
         console.log(response);
         processorFunc(response)
     })
     .fail(function( xhr, status, errorThrown ) {
+        $("#zima-loader").css("display","none");
         alert( "Sorry, there was a problem!" );
         console.log( "Error: " + errorThrown );
         console.log( "Status: " + status );
@@ -326,6 +338,9 @@ function MPREvent(res){
         
         //Take care of event posters
         let postersLink = arrEvent['linkPosters'];
+        postersLink.length>0?void(0):( HTMLElement+= '<div class="mySlides fade">\
+                                                        <img src="media/icons/no-bg-post.jpg" style="width:100%">\
+                                                      </div>');
         for(let i=0; i<postersLink.length;i++){
             HTMLElement+= ' <div class="mySlides fade">\
             <img src="'+postersLink[i]+'" style="width:100%">\
@@ -359,7 +374,7 @@ function MPREvent(res){
         //Continue concatination
         //Get array prices
         let arrPrices = arrEvent['prices'];
-        let lastPrice = {onlinePayment:0, offlinePayment:0, price:"undefined", currency:""};
+        let lastPrice = {onlinePayment:0, offlinePayment:0, price:"FREE", currency:""};
         if(arrPrices.length>0){
             lastPrice = arrPrices[0];
         }
@@ -381,65 +396,70 @@ function MPREvent(res){
         HTMLElement+='<div class="product-price-btn">';
 
         //Handle event diplay for agent, simple user, online, offline
-        if(lastPrice['onlinePayment'] ==1){
-            if(arrEvent['isOnline']==1){
-                HTMLElement+=((arrEvent['sell_status'] !="SOLDOUT")? '<button type="button" id="buy-event-ticket">buy now</button>':'<button type="button" >EVENT SOLDOUT</button>');
+        if(lastPrice.price!="FREE"){
+            if(lastPrice['onlinePayment'] ==1){
+                if(arrEvent['isOnline']==1){
+                    HTMLElement+=((arrEvent['sell_status'] !="SOLDOUT")? '<button type="button" id="buy-event-ticket">buy now</button>':'<button type="button" >EVENT SOLDOUT</button>');
+                }
+                else{
+                    HTMLElement+='<button type="button" id="login-buy-btn">Login to purchase</button>';
+                }
             }
             else{
-                HTMLElement+='<button type="button" id="login-buy-btn">Login to purchase</button>';
+                if(arrEvent['isSellingAgent'] ==1){
+                    HTMLElement+=((arrEvent['sell_status'] !="SOLDOUT")? '<button type="button" id="buy-event-ticket">Sell ticket</button>':'<button type="button">EVENT SOLDOUT</button>');
+                }
+                else{
+                    //HTMLElement+='<div class="info-about-agent"><span><img src="#"/></span>Agent_user_name</div>';
+                    if(arrEvent['agents'].length>0)
+                    {
+                        arrEvent['agents'].forEach(element => {
+                            var agentUnit = ' <div class="agent-unit">\
+                                               <div class="info-unit">\
+                                                <span>'+element['username']+'</span>\
+                                                <span>Authorized agent  | '+((arrEvent['sell_status'] != "SOLDOUT")?"<b style='color:green'>SELL OPEN</b>":"<b style='color:red'>EVENT SOLDOUT</b>")+'</span>\
+                                                </div>\
+                                                <div class="link-unit">\
+                                                <a href="'+element['facebook']+'"><i class="bi bi-facebook"></i></a>\
+                                                <a href="'+element['instagram']+'"><i class="bi bi-instagram"></i></a>';
+                            //Take care of the whatsapp link
+                            //Detect if user is using phone or laptop
+                                //Detect if user is using phone or laptop
+                                if(mobileCheck()){
+                                    //whatsappPrefix="https//wa.me/phone=";
+                                    let preMsg = "I want to buy this ticket https://www.zimaware.com/zimat_deployment/etc_display_event.html?e="+res.arr_event.idEvent;
+                                    //href="https://wa.me/79961604211?text=Hi%27,%20like%20to%20chat%20with%20you"
+                                    let whatsappLink ="https://wa.me/"+element['whatsApp']+"?text="+encodeURIComponent(preMsg);
+                                    agentUnit+='<a href="'+whatsappLink+'"><i class="bi bi-whatsapp"></i></a>';
+                                }
+                                else{
+                                    let preMsg = "I want to buy this ticket https://www.zimaware.com/zimat_deployment/etc_display_event.html?e="+res.arr_event.idEvent;
+                                    let whatsappLink ="https://wa.me/79961604211?text="+encodeURIComponent(preMsg);
+                                    agentUnit+='<a href="'+whatsappLink+'"><i class="bi bi-whatsapp"></i></a>';
+                                }
+                                
+                                //Finish concatination
+                                agentUnit+='</div>';
+                                        
+                            $("#wrapper-agents").append(agentUnit);
+                        });
+                    }
+                    else{
+                        var agentUnitNone = ' <div class="agent-unit">\
+                                               <div class="info-unit">\
+                                                <span>You are offline</span>\
+                                                </div>\
+                                                <div class="link-unit">\
+                                                <a href="lsrs_login.html">Log in</a>\
+                                                <a href="lsrs_signup.html">Create account</a>\
+                                                </div>';
+                            $("#wrapper-agents").append(agentUnitNone);
+                    }
+                }
             }
         }
         else{
-            if(arrEvent['isAgent'] ==1){
-                HTMLElement+=((arrEvent['sell_status'] !="SOLDOUT")? '<button type="button" id="buy-event-ticket">Sell ticket</button>':'<button type="button">EVENT SOLDOUT</button>');
-            }
-            else{
-                //HTMLElement+='<div class="info-about-agent"><span><img src="#"/></span>Agent_user_name</div>';
-                if(arrEvent['agents'].length>0)
-                {
-                    arrEvent['agents'].forEach(element => {
-                        var agentUnit = ' <div class="agent-unit">\
-                                           <div class="info-unit">\
-                                            <span>'+element['username']+'</span>\
-                                            <span>Authorized agent  | '+((arrEvent['sell_status'] != "SOLDOUT")?"<b style='color:green'>SELL OPEN</b>":"<b style='color:red'>EVENT SOLDOUT</b>")+'</span>\
-                                            </div>\
-                                            <div class="link-unit">\
-                                            <a href="'+element['facebook']+'"><i class="bi bi-facebook"></i></a>\
-                                            <a href="'+element['instagram']+'"><i class="bi bi-instagram"></i></a>';
-                        //Take care of the whatsapp link
-                        //Detect if user is using phone or laptop
-                            //Detect if user is using phone or laptop
-                            if(mobileCheck()){
-                                //whatsappPrefix="https//wa.me/phone=";
-                                let preMsg = "I want to buy this ticket https://www.zimaware.com/zimat_deployment/etc_display_event.html?e="+res.arr_event.idEvent;
-                                //href="https://wa.me/79961604211?text=Hi%27,%20like%20to%20chat%20with%20you"
-                                let whatsappLink ="https://wa.me/"+element['whatsApp']+"?text="+encodeURIComponent(preMsg);
-                                agentUnit+='<a href="'+whatsappLink+'"><i class="bi bi-whatsapp"></i></a>';
-                            }
-                            else{
-                                let preMsg = "I want to buy this ticket https://www.zimaware.com/zimat_deployment/etc_display_event.html?e="+res.arr_event.idEvent;
-                                let whatsappLink ="https://wa.me/79961604211?text="+encodeURIComponent(preMsg);
-                                agentUnit+='<a href="'+whatsappLink+'"><i class="bi bi-whatsapp"></i></a>';
-                            }
-                            
-                            //Finish concatination
-                            agentUnit+='</div>';
-                                    
-                        $("#wrapper-agents").append(agentUnit);
-                    });
-                }
-                else{
-                    var agentUnitNone = ' <div class="agent-unit">\
-                                           <div class="info-unit">\
-                                            <span>You are offline</span>\
-                                            </div>\
-                                            <div class="link-unit">\
-                                            <a href="lsrs_login.html">Log in</a>\
-                                            <a href="lsrs_signup.html">Create account</a>\
-                                            </div>';
-                        $("#wrapper-agents").append(agentUnitNone);
-                }
-            }
+            HTMLElement+='<button type="button"><a href="etc_home.html">Home page</a></button>';
         }
 
         //Finish concatination
@@ -453,7 +473,7 @@ function MPREvent(res){
         //Feel the payment pop up
         ticketPrice =lastPrice['price'];
         ticketCurrency =lastPrice['currency'];
-        $("#img-event-mini-preview").attr("src", postersLink[0]);
+        postersLink.length>0?$("#img-event-mini-preview").attr("src", postersLink[0]): $("#img-event-mini-preview").attr("src", "media/icons/no-bg-post.jpg")
 
         //Control display of payment checkout modal
         if(lastPrice['onlinePayment']==0){

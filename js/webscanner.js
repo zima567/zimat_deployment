@@ -26,8 +26,11 @@ $(document).ready(function(){
             $.ajax({
                 url: "api_php/api_webscanner.php",
                 data: {hashcode:ticketHash, scan_date_time:currentDateAndTime(), security_code:securityCode, scan_ticket:"SET"},
+                contentType: false,
                 type: "POST",
                 dataType : "json",
+                cache: false,
+                processData: false,
                 beforeSend:function(){
                     $("#zima-loader").css("display","flex");
                     $("#text-loading").text("Scanning ticket...");

@@ -44,7 +44,7 @@ $(document).ready(function(){
         if(inputValueToQuery!=""){
             let dataObj ={family_suggest:"COUNTRY_CITY", query_data:inputValueToQuery};
             let destinationReq = "api_php/api_etc_suggestion_v2.php";
-            requestSender(destinationReq, dataObj, PRCCSuggestions);
+            requestSender(destinationReq, dataObj, PRCCSuggestions, "NONE", "Searching country...", "box-suggestion-countries");
 
         }
         else{
@@ -97,7 +97,7 @@ $(document).ready(function(){
             if(inputValueToQuery!=""){
                 let dataObj ={family_suggest: "COUNTRY_CITY", query_data: inputValueToQuery, countryName: countryName};
                 let destinationReq = "api_php/api_etc_suggestion_v2.php";
-                requestSender(destinationReq, dataObj, PRCCSuggestions);
+                requestSender(destinationReq, dataObj, PRCCSuggestions, "NONE", "Searching city...", "box-suggestion-cities");
     
             }
             else{
@@ -224,12 +224,12 @@ $(document).ready(function(){
                 method:"POST",
                 data: formData,
                 contentType: false,
-                //dataType : 'json',
+                dataType : 'json',
                 cache: false,
                 processData: false,
                 beforeSend:function(){
                     $("#zima-loader").css("display","flex");
-                    $("#text-loading").text("Creating your event...");
+                    $("#text-loading").text("Creating your event...It might take a while depending on poster(s) size and your internet connection");
                 },   
                 success:function(data)
                 {
@@ -391,18 +391,30 @@ function displayGMT(arr, desBis){
 }
 
 
-function requestSender(destinationToRequest, obj, processorFunc){
+function requestSender(destinationToRequest, obj, processorFunc, msgLoader="NONE", msgSearch="MSG-SEARCH", pointerEl="ID-EL"){
     $.ajax({
         url: destinationToRequest,
         data: obj,
         type: "POST",
         dataType : "json",
+        beforeSend:function(){
+            //Launch  custom zima loader
+            if(msgLoader!="NONE"){
+                $("#zima-loader").css("display","flex");
+                $("#text-loading").text(msgLoader);
+            }
+            else if(msgLoader=="NONE" && msgSearch!="MSG-SEARCH" && pointerEl!="ID-EL"){
+                $("#"+pointerEl).text(msgSearch);
+            }
+        }
     })
     .done(function( response ) {
-        //console.log(response);
+        $("#zima-loader").css("display","none");
+        console.log(response);
         processorFunc(response)
     })
     .fail(function( xhr, status, errorThrown ) {
+        $("#zima-loader").css("display","none");
         alert( "Sorry, there was a problem!" );
         console.log( "Error: " + errorThrown );
         console.log( "Status: " + status );
@@ -467,7 +479,6 @@ function RPEventCreation(res){
         if(res['status']==1){
             //event creation succeeded
             $("#operation-status-text").text("Your event has been successfully created");
-            $("#see-event-iacc-link").attr("href", "profile.html?e="+res['idCreator']);
             //Hide event creation wrapper
             $("#event-creation-wrapper").css("display", "none");
             //Show box after event submit
@@ -503,8 +514,6 @@ function RPEventCreation(res){
             }
             
             //Hide specific buttons
-            $("#see-event-iacc-link").css("display", "none");
-            $("#event-settings-link").css("display", "none");
            //Hide event creation wrapper
            $("#event-creation-wrapper").css("display", "none");
            //Show box after event submit 

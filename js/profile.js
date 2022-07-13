@@ -143,7 +143,7 @@ $(document).ready(function(){
         if(inputValueToQuery!=""){
             let dataObj ={family_suggest:"COUNTRY_CITY", query_data:inputValueToQuery};
             let destinationReq = "api_php/api_etc_suggestion_v2.php";
-            requestSender(destinationReq, dataObj, displaySuggestionsCountryConfig);
+            requestSender(destinationReq, dataObj, displaySuggestionsCountryConfig, "NONE", "Searching country...", "box-suggestion-countries-config");
 
         }
         else{
@@ -177,7 +177,7 @@ $(document).ready(function(){
             if(inputValueToQuery!=""){
                 let dataObj ={family_suggest: "COUNTRY_CITY", query_data: inputValueToQuery, countryName: countryName};
                 let destinationReq = "api_php/api_etc_suggestion_v2.php";
-                requestSender(destinationReq, dataObj, displaySuggestionsCityConfig);
+                requestSender(destinationReq, dataObj, displaySuggestionsCityConfig, "NONE", "Searching city", "box-suggestion-cities-config");
     
             }
             else{
@@ -1212,6 +1212,8 @@ function stdDisplayUserInfo(res){
         }
         $("#followers-tot").html(totFollowers);
 
+        //Empty buttons box before append
+        $("#button-action > button").length>0? $("#button-action").empty() : void(0);
         if(res['actor']=="SELF"){
             let groupBtn = '<button id="btn-edit">EDIT</button>\
                             <button id="btn-share-id-'+res['idUser']+'">SHARE</button>';
@@ -1457,7 +1459,10 @@ function displayEventWallet(res){
 function MPRProfileUpdate(res){
     let arrStatus = res['arr_status'];
     if(arrStatus['action_status']==1){
-        location.reload();
+        let destination = "api_php/api_profile.php";
+        let userID = getParameter("e");
+        let obj ={idUser:userID};
+        requestSender(destination, obj, stdDisplayUserInfo, "Re-loading profile informations to show last updates...");
     }
     else{
         alert("Profile details update failed: \nMake sure picture is not greater than 1.5MB\nMake sure picture format is among (jpeg, jpg, png)");
@@ -1820,7 +1825,7 @@ function MPRRAgentManagement(res){
         $("#img-result-agent-config").attr("src","media/icons/success.gif");
         let returnArr = res['arr_return'];
         for(let i=0; i<returnArr.length;i++){
-            let pAgentAndStatus = returnArr[0];
+            let pAgentAndStatus = returnArr[i];
             let pAStat ="succeeded";
             if(pAgentAndStatus['status']==0){
                 pAStat ="Failed";

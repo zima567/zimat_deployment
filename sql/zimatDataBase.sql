@@ -383,6 +383,7 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_ticket_counter` (
   `totalTicket` INT NULL DEFAULT 0,
   `qtSold` INT NULL DEFAULT 0,
   `totalTicketOrigin` INT NULL DEFAULT 0,
+   `serviceFee` VARCHAR(255) NOT NULL DEFAULT "UNPAID", /*UNPAID, PAID*/
   PRIMARY KEY (`idEventFK`),
   INDEX `index_idEventFK_From_idEvent` (`idEventFK` ASC),
   CONSTRAINT `fk_idEventFK_idEvent_eventTicketCounter`

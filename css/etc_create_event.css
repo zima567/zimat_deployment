@@ -38,6 +38,9 @@ body{
   }
 
   .bg-transpa .text-loading-container{
+      display: flex;
+      text-align: center;
+      padding: 8px;
       margin-top: 15px;
   }
   

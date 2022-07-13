@@ -21,7 +21,7 @@ try{
     $sql_update_hash_token = "UPDATE `user` SET `tokenHash` =? WHERE `idUser` =?";
     $stmt3 = $connection->prepare($sql_update_hash_token);
 
-    $sql_get_hash = "SELECT `idUser`, `tokenHash` FROM `user` WHERE `tokenHash` =? AND `username` =?";
+    $sql_get_hash = "SELECT `idUser`, `tokenHash`, `user_verified`.`verified` FROM `user` INNER JOIN `user_verified` ON `user`.`idUser` = `user_verified`.`idUserFK` WHERE `tokenHash` =? AND `username` =?";
     $stmt4 = $connection->prepare($sql_get_hash);
 
     if(isset($_POST['email']) && isset($_POST['password'])){
@@ -71,9 +71,10 @@ try{
              //Set session variables
              session_start();
              $_SESSION['idUser'] = $row_user_info['idUser'];
+             $_SESSION['verified'] = $row_user_info['verified'];
              $authentification['username'] = $_POST['username'];
              $authentification['tokenHash'] = "MATCH";
-             $_SESSION['verified'] = $row_verified['verified'];
+             
         }
 
     }

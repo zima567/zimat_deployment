@@ -208,7 +208,7 @@ function MPScanner(res){
 }
 
 function  VMPScanner(res){
-    if(res['isUserOnline']==1 && res['valid_hash_code']==1 && res['user_has_right']==1 && res['is_scanned']==0){
+    if(res['isUserOnline']==1 && res['valid_hash_code']==1 && res['user_has_right']==1 && res['is_scanned']==0 && res['scanner_status']=="TURN_ON"){
         //Pop up security box to enter security code for scanning
         $(".custom-model-main").addClass('model-open');
     }
@@ -239,6 +239,16 @@ function  VMPScanner(res){
         }
         else if(res['error']=="NO_SCANNING_RIGHTS"){
             let htmlNodeText = '<span>You have no rights to scan this ticket</span>';
+            $("#box-text-explanation").html(htmlNodeText);
+
+            let htmlNodeBtns = '<a href="etc_home.html"><button>HOME PAGE</button></a>';
+            $("#box-btn-actions").html(htmlNodeBtns);
+        }
+        else if(res['error']=="SCANNER_OFF"){
+            let htmlNodeText = '<span>The scanner is turned off for this new event</span><span>Please pay service fees.</span>';
+            for(let i=0; i<res.scanner_note.length; i++){
+                htmlNodeText+="<span>["+res.scanner_note[0].title+" : "+res.scanner_note[0].location+" : "+res.scanner_note[0].dateTime+" (fees required)]</span><br/><br/>";
+            }
             $("#box-text-explanation").html(htmlNodeText);
 
             let htmlNodeBtns = '<a href="etc_home.html"><button>HOME PAGE</button></a>';

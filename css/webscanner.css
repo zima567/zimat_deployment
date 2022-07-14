@@ -17,6 +17,14 @@ body{
     font-family: 'roboto', sans-serif;
 }
 
+.box-text-explanation{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+}
+
 /*CSS for My custom loader*/
 .bg-transpa{
   position: -webkit-sticky; /* Safari */

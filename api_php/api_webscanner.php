@@ -6,7 +6,7 @@ require ("connection.php");
 
 $APIResponse = array("arr_status"=>array());
 
-$arr_return_stat = array("scan_status"=>0, "isUserOnline"=>0, "idUserOnline"=>0, "valid_hash_code"=>0, "user_has_right"=>0, "is_scanned"=>1);
+$arr_return_stat = array("scan_status"=>0, "isUserOnline"=>0, "idUserOnline"=>0, "valid_hash_code"=>0, "user_has_right"=>0, "is_scanned"=>1, "scanner_status"=>"TURN_ON", "scanner_note"=>array());
 $arr_return_stat = array_merge($arr_return_stat, $con_status);
 $trueVar =1;
 $falseVar =0;
@@ -61,6 +61,18 @@ try{
         $sql_update_ticket = "UPDATE `ticket_order` SET `scanned` =?, `whoFK` =?, `when` =? WHERE `idTicketFK`=?"; 
         $stmt_update_ticket = $connection->prepare($sql_update_ticket);
 
+        //Check webScanner status
+        $sql_webScanner_status = "SELECT `webScanner` FROM `event_ticket_counter` WHERE `idEventFK` =? AND `webScanner` =?";
+        $stmt_webScanner_status = $connection->prepare($sql_webScanner_status);
+
+        //Update webScanner status
+        $sql_update_webScanner_status = "UPDATE `event_ticket_counter` SET `webScanner` =? WHERE `idEventFK` =?";
+        $stmt_update_webScanner_status = $connection->prepare($sql_update_webScanner_status);
+
+        //Check if user don't owe the platform
+        $sql_check_debt = "SELECT `idEvent`, `title`, `location`, `dateTime` FROM `event` INNER JOIN `event_ticket_counter` ON `event`.`idEvent` = `event_ticket_counter`.`idEventFK` WHERE `event`.`directorFK` =? AND `event`.`status` =? AND `event_ticket_counter`.`serviceFee`=?";
+        $stmt_check_debt = $connection->prepare($sql_check_debt);
+
        //verify if hashcode exists
        $stmt_event_hashcode->execute([$hashCode]);
        if($stmt_event_hashcode->rowCount()>0){
@@ -76,7 +88,38 @@ try{
                if($stmt_get_rights->rowCount()>0){
                     //user is agent of this event and have right to scan
                     $arr_return_stat['user_has_right'] = 1;
-                    if(isset($_POST['scan_ticket'])){
+
+                    //Check webScanner status
+                    $webScannerSwitchOff = "TURN_OFF";
+                    $stmt_webScanner_status->execute([$row_event_hashcode['idEvent'], $webScannerSwitchOff]);
+                    if($stmt_webScanner_status->rowCount()>0){
+                        //webScanner off
+                        //Verify if this event has access to use the web scanner
+                        $eventStatus = "OUTDATED"; $feeStatus = "UNPAID";
+                        $stmt_check_debt->execute([$row_event_hashcode['directorFK'], $eventStatus, $feeStatus]);
+                        if($stmt_check_debt->rowCount()>0){
+                           //Scanner is turned off for this event tickets the director have outdated unpaid event
+                           $arr_return_stat['scanner_status'] = "TURN_OFF";
+                           $errHandler['error'] ="SCANNER_OFF";
+                           $temp_events_owed = array();
+                           while($row_check_debt = $stmt_check_debt->fetch()){
+                                array_push($temp_events_owed, array("idEvent"=>$row_check_debt['idEvent'],
+                                                                    "title"=>$row_check_debt['title'],
+                                                                    "location"=>$row_check_debt['location'],
+                                                                    "dateTime"=>$row_check_debt['dateTime']));
+                           }
+                           $arr_return_stat['scanner_note'] = $temp_events_owed;
+
+                        }
+                        else{
+                            //Turn scanner on for this event tickets
+                            $webScannerSwitchOn = "TURN_ON";
+                            if(!$stmt_update_webScanner_status->execute([$webScannerSwitchOn, $row_event_hashcode['idEvent']])){$arr_return_stat['scanner_status'] = "TURN_OFF";}
+                            
+                        }
+                    }
+
+                    if(isset($_POST['scan_ticket']) && $arr_return_stat['scanner_status']=="TURN_ON"){
 
                         //Security code match
                         $security_match = false;

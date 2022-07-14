@@ -22,7 +22,7 @@ if(isset($_SESSION['idUser']) && isset($_POST['stat_type'])){
             $sql_user_events = "SELECT `idEvent`, `title`, `country`.`name` AS `location_country`, `cities`.`name` AS `location_city`, `location`, `dateTime`, `status` FROM ((`event` INNER JOIN `country` ON `event`.`location_country` = `country`.`idCountry`) INNER JOIN `cities` ON `event`.`location_city` = `cities`.`idCity`) WHERE `directorFK` =? ORDER BY `event`.`dateTime` ASC";
             $stmt_user_events = $connection->prepare($sql_user_events);
             //Total ticket for this event id
-            $sql_tot_ticket = "SELECT `totalTicket`, `qtSold` FROM `event_ticket_counter` WHERE `idEventFK` =?";
+            $sql_tot_ticket = "SELECT `totalTicket`, `qtSold`, `serviceFee` FROM `event_ticket_counter` WHERE `idEventFK` =?";
             $stmt_tot_ticket = $connection->prepare($sql_tot_ticket);
 
             //Total ticket scanned
@@ -88,6 +88,7 @@ if(isset($_SESSION['idUser']) && isset($_POST['stat_type'])){
                         $row_tot_ticket = $stmt_tot_ticket->fetch();
                         $event_unit['total_ticket'] = $row_tot_ticket['totalTicket'];
                         $event_unit['total_sold'] =  $row_tot_ticket['qtSold'];
+                        $event_unit['status_commission'] = $row_tot_ticket['serviceFee'];
                     }
 
                     //Get total scanned

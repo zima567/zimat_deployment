@@ -367,6 +367,12 @@ $(document).ready(function(){
         requestSender(destination, obj, displayEventWallet,"Loading wallet info...");
     });
 
+    //Handle click on red tag payment required wallet cards
+    $("#inner-wrapper-wallet").on("click", ".fee-tag-btn-card", function(event){
+        event.preventDefault();
+        alert("To proceed with payments, contact us directly.\nFirst email: zimaccessm6@gmail.com\nSecond email: zimaware@gmail.com\nPhone (Russia): +7 996 160 5155\nPhone(Haiti): +509 37 23 5549 (Haiti)");
+    });
+
     $("#close-modal-user-wallet").on("click", function(){
         $("#modal-user-wallet").css("display","none");
         $("#inner-wrapper-wallet").empty();
@@ -1400,7 +1406,7 @@ function displayEventWallet(res){
              $("#inner-wrapper-wallet").empty();
              let api_return = res['api_return'];
              for(let i=0; i<api_return.length;i++){
-                 let walletUnit = ' <div class="wallet-event-unit">\
+                let walletUnit = ' <div class="wallet-event-unit">\
                      <div class="info-wallet-header">\
                      <span class="title-header">'+api_return[i].title+'</span>\
                      <span class="other-header-info">\
@@ -1419,32 +1425,39 @@ function displayEventWallet(res){
                      <div class="info-block">\
                          <span class="title-block"><span class="title">REVENUE -></span> <span class="number">'+(api_return[i].revenue!=null? api_return[i].revenue:0)+' '+(api_return[i].prices.length!=0? api_return[i].prices[0].currency : "No currency")+'</span></span>\
                          <span class="box-block">';
-                 for(let j=0; j<api_return[i].prices.length;j++){
+                for(let j=0; j<api_return[i].prices.length;j++){
                      walletUnit+='<span>Price: '+api_return[i].prices[j].price+' '+api_return[i].prices[j].currency+' ('+api_return[i].prices[j].qt_ticket_sold+')</span>';
-                 }
+                }
  
-                 walletUnit+='</span></div>\
+                walletUnit+='</span></div>\
                      <div class="info-block">\
                          <span class="title-block"><span class="title">AGENT(S) -></span> <span class="number">'+api_return[i].agents.length+'</span></span>\
                          <span class="box-block">\
                              <table>\
                                  <tr><th>Username</th><th>Sell-Right</th><th>Scan-Right</th><th>Sold</th><th>Scan</th></tr>';
-                 for(let j=0; j<api_return[i].agents.length;j++){
+                for(let j=0; j<api_return[i].agents.length;j++){
                      walletUnit+='<tr><td>'+api_return[i].agents[j].username+'</td><td>'+(api_return[i].agents[j].sellingRight==1? "YES":"NO")+'</td><td>'+(api_return[i].agents[j].scanningRight==1? "YES":"NO")+'</td><td>'+api_return[i].agents[j].total_sold+'</td><td>'+api_return[i].agents[j].total_scanned+'</td></tr>';
-                 }
+                }
  
-                 walletUnit+='</table></span></div>\
+                walletUnit+='</table></span></div>\
                      <div class="info-block">\
                          <span class="title-block"><span class="title">SERVICE FEE -></span> <span class="number">'+(api_return[i].total_commission!=null? api_return[i].total_commission:0)+' '+(api_return[i].prices.length!=0? api_return[i].prices[0].currency : "No currency")+'</span></span>\
                          <span class="box-block">\
                              <span>Status: '+api_return[i].status_commission+'</span>\
-                             <span>Payment info: link</span>\
+                             <span><a href="#">Payment policy</a></span>\
                          </span>\
-                     </div></div></div>';
- 
-                 //Append event wallet unit
-                 $("#inner-wrapper-wallet").append(walletUnit);
-             }
+                     </div></div>';
+                 
+                //Check expired and unpaid commission fee
+                if(api_return[i].status =="OUTDATED" && api_return[i].status_commission=="UNPAID"){
+                    walletUnit+='<div class="fee-tag-btn-card" style="margin:4px; padding:12px; border-radius:15px; background-color:#df4759; border:none; color:white; text-align:center">Payment required</div>'
+                }
+
+                //Finish append
+                walletUnit+='</div>';
+                //Append event wallet unit
+                $("#inner-wrapper-wallet").append(walletUnit);
+            }
          }
          else{
              alert("You have not created any event yet");
@@ -1516,9 +1529,8 @@ function PREventSuggestions(res){
 function PREventDisplayToEdit2(res){
     
     let arrEvents = res['arr_event'];
-    
     if(arrEvents['isOnline']==1){
-        if(arrEvents['status']!="OUTDATED"){
+        if(arrEvents['status']!="ONGOING" && arrEvents['status']!="OUTDATED"){
             displayEventToEdit(arrEvents);
         }
         else{

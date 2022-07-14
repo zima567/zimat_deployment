@@ -53,6 +53,7 @@ try{
         $currentTimezone = new DateTime("now", new DateTimeZone($eventGMT));
         $currentTimezone = $currentTimezone->format('Y-m-d H:i:s');
         $eventdateTime = $row_event_info['dateTime'];
+        $eventdateTime = date('Y-m-d H:i:s', strtotime($eventdateTime . ' +1 day'));
         if($currentTimezone > $eventdateTime){
             $event_current_status = "OUTDATED";
             $sql_update_event_status = "UPDATE `event` SET `status` =? WHERE `idEvent` =?";
@@ -69,7 +70,6 @@ try{
                 $sellStatus = "SOLDOUT";
             }
         }
-
 
         $temp_arr_event = array("idEvent"=>$row_event_info['idEvent'],
                                             "title"=>$row_event_info['title'],

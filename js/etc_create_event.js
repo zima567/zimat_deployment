@@ -1,5 +1,5 @@
  //Var for side checks
- var allCorrect=true;
+ var allCorrect=false;
 
 $(document).ready(function(){
     //array categ
@@ -162,7 +162,7 @@ $(document).ready(function(){
     //Click on submit event
     $("#submit-event").on("click", function(){
         //Reset var allCorrect to true
-        allCorrect = true;
+        allCorrect = false;
         
         let eventTitle = $("#event-title").val().trim();
         let postMessage = $("#post-short-msg").val().trim();
@@ -180,9 +180,8 @@ $(document).ready(function(){
         let postDateTime = currentDateAndTime();
 
         //Check if currency and price are set correcly
-        if(priceCurrency==null && eventTicketPrice!=""){
-            allCorrect = false;
-            alert("Price and currency are incorrectly configured");
+        if((priceCurrency!=null && eventTicketPrice!="" && eventNbrTicket!="") || (eventTicketPrice=="" && eventNbrTicket=="")){
+            allCorrect = true;
         }
 
         if(eventTitle!="" && eventLocation!="" && eventDateTime!="" && allCorrect){
@@ -248,6 +247,9 @@ $(document).ready(function(){
             $("#id-content-popup").html(popHtmlContent);
             if(allCorrect){
                 $(".custom-model-main").addClass('model-open');
+            }
+            else{
+                alert("Number of tickets, Price and currency are incorrectly configured");
             }
            
         }

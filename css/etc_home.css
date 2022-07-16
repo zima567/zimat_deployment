@@ -24,6 +24,10 @@ body{
 .logo-n-version{
     display: flex;
     flex-direction: row;
+
+}
+.logo-n-version img{
+    width: 54px;
 }
 
 .logo-n-version .zimaccess-logo{

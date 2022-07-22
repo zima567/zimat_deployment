@@ -429,7 +429,7 @@ function CopyToClipboard(value, showNotification, notificationText) {
 function displayCategs(res){
     $("#box-categories").empty();
     let arrCategs = res['arr_return'].arr_all_categ;
-
+    Array.isArray(arrCategs)? void(0):arrCategs=[];
     if(arrCategs.length>0){
         for(let i=0; i<arrCategs.length;i++){
             let unitCateg = arrCategs[i];

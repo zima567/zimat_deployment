@@ -12,6 +12,8 @@ $APIResponse = array_merge($APIResponse, $con_status);
 //Utilities variables
 $queryError = array("query_error"=>"NONE");
 $resultSignUp = array("sign_up_success"=>0, "email_verification_sent"=>0);
+$stake = 0.2;
+$supportStake = 0.1;
 
 //POST variables
 $email = $_POST['email'];
@@ -40,6 +42,12 @@ try{
     $sql_insert_user_socials = "INSERT INTO `user_socials` (`idUserFK`) VALUES(?)";
     $stmt6 = $connection->prepare($sql_insert_user_socials);
 
+    $sql_insert_ambassador = "INSERT INTO `user_ambassador` (`idUserFK`, `idAmbassadorFK`, `stake`, `supportStake`) VALUES(?,?,?,?)";
+    $stmt_insert_ambassador = $connection->prepare($sql_insert_ambassador);
+
+    $sql_check_user = "SELECT `idUser` FROM `user` WHERE `username` =? AND `idUser`<>?";
+    $stmt_check_user = $connection->prepare($sql_check_user);
+
     $stmt1->execute([$username, $email]);
     if(!$stmt1->rowCount()>0){
 
@@ -55,6 +63,45 @@ try{
         $stmt5->execute([$idInsertedUser]);
         //Initiate user_socials
         $stmt6->execute([$idInsertedUser]);
+        //Set user ambassador
+        if(isset($_POST['ambassador'])){
+          //check if username exist
+          $stmt_check_user->execute([$_POST['ambassador'], $idInsertedUser]);
+          if($stmt_check_user->rowCount()>0){
+            //User exist
+            $row_check_user = $stmt_check_user->fetch();
+            $stmt_insert_ambassador->execute([$idInsertedUser, $row_check_user['idUser'], $stake, $supportStake]);
+          }
+          else{
+            //Set zimaccess as ambassador
+            $sysUser = "Zimaccess";
+            $sql_zimaccess = "SELECT `idUser` FROM `user` WHERE `username` =?";
+            $stmt_zimaccess = $connection->prepare($sql_zimaccess);
+            $stmt_zimaccess->execute([$sysUser]);
+            if($stmt_zimaccess->rowCount()>0){
+              $row_zimaccess = $stmt_zimaccess->fetch();
+              $stmt_insert_ambassador->execute([$idInsertedUser, $row_zimaccess['idUser'], $stake, $supportStake]);
+            }
+            else{
+              throw new PDOException("ERROR_UNABLE_TO_SET_REFERENCE"); 
+            }
+           
+          }
+        }
+        else{
+       //Set zimaccess as ambassador
+            $sysUser = "Zimaccess";
+            $sql_zimaccess = "SELECT `idUser` FROM `user` WHERE `username` =?";
+            $stmt_zimaccess = $connection->prepare($sql_zimaccess);
+            $stmt_zimaccess->execute([$sysUser]);
+            if($stmt_zimaccess->rowCount()>0){
+              $row_zimaccess = $stmt_zimaccess->fetch();
+              $stmt_insert_ambassador->execute([$idInsertedUser, $row_zimaccess['idUser'], $stake, $supportStake]);
+            }
+            else{
+              throw new PDOException("ERROR_UNABLE_TO_SET_REFERENCE"); 
+            }
+        }
         $connection->commit();
 
         $resultSignUp['sign_up_success']= 1;

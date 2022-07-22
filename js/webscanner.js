@@ -10,6 +10,7 @@ $(document).ready(function(){
             //ticketHash = decodeURIComponent(ticketHash);    
             let dataObj ={hashcode:ticketHash};
             let destinationReq = "api_php/api_webscanner.php";
+            console.log(dataObj);
             requestSender(destinationReq, dataObj, HTTPHashVerification, "Ticket verification...");
    }
    else{
@@ -21,9 +22,12 @@ $(document).ready(function(){
         //Hide modal
         $(".custom-model-main").removeClass('model-open');
         securityCode = $("#security-code").val().trim();
+        let destinationReq = "api_php/api_webscanner.php";
+        let dataObj = {hashcode:ticketHash, scan_date_time:currentDateAndTime(), security_code:securityCode, scan_ticket:"SET"}
+        console.log(dataObj);
         if(securityCode!="" && ticketHash!=""){
-
-            $.ajax({
+            requestSender(destinationReq, dataObj, HTTPResponseScanning, "Scanning ticket...");
+            /*$.ajax({
                 url: "api_php/api_webscanner.php",
                 data: {hashcode:ticketHash, scan_date_time:currentDateAndTime(), security_code:securityCode, scan_ticket:"SET"},
                 contentType: false,
@@ -49,7 +53,7 @@ $(document).ready(function(){
                 console.log( "Error: " + errorThrown );
                 console.log( "Status: " + status );
                 console.dir( xhr );
-            });
+            });*/
 
         }
         else{

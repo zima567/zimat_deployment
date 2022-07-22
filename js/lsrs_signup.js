@@ -97,6 +97,12 @@ $(document).ready(function(){
             //Send the request to the api
             let destinationToRequest = 'api_php/api_lsrs_signup.php';
             let obj ={email: emailVar, username: usernameVar, password:passwordVar};
+
+            //Add user reference
+            if($("#refUsername").val().trim()!=""){
+                obj.ambassador = $("#refUsername").val().trim();
+            }
+            
             requestSender(destinationToRequest, obj, FRPSignup);
         }
 

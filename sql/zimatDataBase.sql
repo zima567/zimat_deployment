@@ -28,7 +28,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`country` (
   `idCountry` INT NOT NULL auto_increment,
   `name` VARCHAR(255),
-  `idCurrencyFK` INT NULL,
+  `idCurrencyFK` INT NOT NULL,
   `language` VARCHAR(255),
   `isFederation` BOOLEAN DEFAULT 0,
   PRIMARY KEY (`idCountry`),
@@ -167,6 +167,29 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_support` (
   `issue` TEXT(500) NULL,
   `support_type` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idIssue`))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `zimaware_zimatdb`.`user_ambassador`
+-- -----------------------------------------------------
+-- DROP TABLE `zimaware_zimatdb`.`user_ambassador`;
+CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_ambassador` (
+  `idUserFK` INT NOT NULL,
+  `idAmbassadorFK` INT NOT NULL,
+  `stake` DECIMAL(2,1) DEFAULT 0.0,
+  `supportStake` DECIMAL(2,1) DEFAULT 0.0,
+  PRIMARY KEY (`idUserFK`),
+  INDEX `fk_idUserFK_user_user_ambassador_index` (`idUserFK` ASC),
+  CONSTRAINT `fk_idUserFK_user_user_ambassador`
+	FOREIGN KEY (`idUserFK`)
+    REFERENCES `zimaware_zimatdb`.`user` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_idAmbassadorFK_user_user_ambassador`
+	FOREIGN KEY (`idAmbassadorFK`)
+    REFERENCES `zimaware_zimatdb`.`user` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 -- SECTION FOR EVENT TABLES ###Last add 13.04.2022
@@ -337,7 +360,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`ticket_order` (
   `idTicketFK` INT NOT NULL unique,
-  `idCustomerFK` INT NULL,
+  `idCustomerFK` INT NOT NULL,
   `securityCode` VARCHAR(255) NULL,
   `idPriceFK` INT NOT NULL,
   `commission` DECIMAL(11,2) DEFAULT 000000000.00,
@@ -361,7 +384,7 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`ticket_order` (
     CONSTRAINT `fk_idPriceFK_idPrice_TicketOrder`
     FOREIGN KEY (`idPriceFK`)
     REFERENCES `zimaware_zimatdb`.`event_pricing` (`idPrice`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
 	CONSTRAINT `fk_idAgentFK_idAgent_TicketOrder`
     FOREIGN KEY (`idAgentFK`)
@@ -395,11 +418,35 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_ticket_counter` (
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `zimaware_zimatdb`.`ambassador_dividend`
+-- -----------------------------------------------------
+ -- DROP TABLE `zimaware_zimatdb`.`ambassador_dividend`;
+CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`ambassador_dividend` (
+  `idDividend` INT NOT NULL auto_increment,
+  `idEventFK` INT NOT NULL,
+  `idAmbassadorFK` INT NOT NULL,
+  `dividend` DECIMAL(11,2) DEFAULT 000000000.00,
+  `supportFees` DECIMAL(11,2) DEFAULT 000000000.00,
+  PRIMARY KEY (`idDividend`),
+  INDEX `fk_idDividend_ambassador_dividend_index` (`idDividend` ASC),
+  CONSTRAINT `fk_idEventFK_event_ambassador_dividend`
+	FOREIGN KEY (`idEventFK`)
+    REFERENCES `zimaware_zimatdb`.`event` (`idEvent`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_idAmbassadorFK_user_ambassador_dividend`
+	FOREIGN KEY (`idAmbassadorFK`)
+    REFERENCES `zimaware_zimatdb`.`user` (`idUser`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `zimaware_zimatdb`.`user_follower`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`user_follower` (
   `idUserFK` INT NOT NULL,
-  `idFollowerFK` INT NULL,
+  `idFollowerFK` INT NOT NULL,
   `followDate` DATETIME,
   PRIMARY KEY (`idUserFK`,`idFollowerFK`),
   INDEX `index_idUserFK_From_user_follower` (`idUserFK` ASC),
@@ -420,7 +467,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_like` (
   `idEventFK` INT NOT NULL,
-  `idLikerFK` INT NULL,
+  `idLikerFK` INT NOT NULL,
   `likeDate` DATETIME,
   PRIMARY KEY (`idEventFK`,`idLikerFK`),
   INDEX `index_idEventFK_From_event_like` (`idEventFK` ASC),
@@ -435,6 +482,23 @@ CREATE TABLE IF NOT EXISTS `zimaware_zimatdb`.`event_like` (
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+-- TRIGGERS SECTION
+-- DROP TRIGGER `INSERT_AMBASSADOR_DIVIDENT_ROW`;
+DROP TRIGGER IF EXISTS `INSERT_AMBASSADOR_DIVIDENT_ROW`;
+DELIMITER //
+CREATE TRIGGER `INSERT_AMBASSADOR_DIVIDENT_ROW`
+AFTER UPDATE ON `zimaware_zimatdb`.`event_ticket_counter`
+FOR EACH ROW
+BEGIN
+IF new.serviceFee="PAID" THEN
+INSERT INTO `zimaware_zimatdb`.`ambassador_dividend` (`idEventFK`, `idAmbassadorFK`, `dividend`, `supportFees`) VALUES (new.idEventFK, (SELECT `idAmbassadorFK` FROM `user_ambassador` WHERE `user_ambassador`.`idUserFK` =(SELECT `directorFK` FROM `event` WHERE `idEvent`=new.idEventFK)),((SELECT SUM(commission) FROM `ticket_order` INNER JOIN `event_ticket` ON `ticket_order`.`idTicketFK` = `event_ticket`.`idTicket` WHERE `event_ticket`.`idEventFK` = new.idEventFK)*(SELECT `stake` FROM `user_ambassador` WHERE `idUserFK` =(SELECT `directorFK` FROM `event` WHERE `idEvent`=new.idEventFK))), (((SELECT SUM(commission) FROM `ticket_order` INNER JOIN `event_ticket` ON `ticket_order`.`idTicketFK` = `event_ticket`.`idTicket` WHERE `event_ticket`.`idEventFK` = new.idEventFK)*(SELECT `stake` FROM `user_ambassador` WHERE `idUserFK` =(SELECT `directorFK` FROM `event` WHERE `idEvent`=new.idEventFK)))*(SELECT `supportStake` FROM `user_ambassador` WHERE `idUserFK` =(SELECT `directorFK` FROM `event` WHERE `idEvent`=new.idEventFK))));
+-- ELSE
+-- UPDATE `jpdb`.`Podcaster`
+-- SET `totalFollowers`=`totalFollowers`+1
+-- WHERE `Podcaster`.`userIduserFK`=new.userIduserFK;
+END IF;
+END;// 
 
 
 -- DEFAULT INSERT QUERIES INTO OUR DATABASE
